@@ -19,6 +19,8 @@
 
 unit uViewIntegrator;
 
+{$MODE Delphi}
+
 interface
 
 {$ifdef WIN32}

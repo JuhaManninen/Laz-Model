@@ -19,6 +19,8 @@
 
 unit uJavaClassImport;
 
+{$MODE Delphi}
+
 interface
 
 uses uCodeParser, Classes, uModel, uIntegrator, uModelEntity, uCodeProvider;

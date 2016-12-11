@@ -19,10 +19,16 @@
 
 unit uRtfdDiagram;
 
+{$MODE Delphi}
+
 interface
 {$ifdef WIN32}
 uses uViewIntegrator, essConnectPanel, uModelEntity, uModel, Controls, uListeners, Graphics,
-  Classes, Forms, uDiagramFrame, uRtfdComponents, uFeedback, Types;
+  Classes, Forms, uDiagramFrame, uRtfdComponents, uFeedback,
+{$ifdef fpc}
+  Windows,
+{$endif}
+   Types;
 {$endif}
 {$ifdef LINUX}
 uses uViewIntegrator, essConnectPanel, uModelEntity, uModel, QControls, uListeners, QGraphics,
@@ -91,7 +97,7 @@ type
 implementation
 
 {$ifdef WIN32}
-uses uRtfdDiagramFrame, Math, Windows, uError, SysUtils,
+uses uRtfdDiagramFrame, Math, LCLIntf, LCLType, LMessages, uError, SysUtils,
   uIterators, IniFiles, Dialogs, EssLayout, uConfig, contnrs, ExtCtrls,
   uIntegrator;
 {$endif}

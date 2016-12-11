@@ -19,11 +19,13 @@
 
 unit essConnectPanel;
 
+{$MODE Delphi}
+
 interface
 
 uses
 {$ifdef WIN32}
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LCLIntf, LCLType, windows, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls,Contnrs;
 {$endif}
 {$ifdef LINUX}
@@ -173,17 +175,19 @@ type
     property BevelOuter;
     property BevelWidth;
 {$ifdef WIN32}
-    property BiDiMode;
+{$ifndef fpc}
     property Ctl3D;
+    property Locked;
+    property ParentCtl3D;
+    property OnCanResize;
+{$endif}
+    property BiDiMode;
     property UseDockManager default True;
     property DockSite;
     property DragCursor;
     property DragKind;
     property FullRepaint;
-    property Locked;
     property ParentBiDiMode;
-    property ParentCtl3D;
-    property OnCanResize;
     property OnDockDrop;
     property OnDockOver;
     property OnEndDock;
@@ -227,7 +231,7 @@ procedure Register;
 
 implementation
 {$ifdef WIN32}
-uses Math, uRtfdComponents, uConfig, ShellAPI;
+uses Math, uRtfdComponents, uConfig;
 {$endif}
 {$ifdef LINUX}
 uses Math,Qt,Xlib, uRtfdComponents, uConfig;
@@ -438,7 +442,7 @@ end;
 
 procedure TessConnectPanel.Click;
 var
-  found: TWinControl;
+  found: TControl;
   child: TControl;
   editorExecuteString: String;
   mcont: TManagedObject;
@@ -448,7 +452,8 @@ var
 begin
   inherited;
   {$ifdef WIN32}
-  found := FindVCLWindow(Mouse.CursorPos);
+//  found := FindVCLWindow(Mouse.CursorPos);
+  found := Application.GetControlAtMouse;;
   {$endif}
   {$ifdef LINUX}
   found := FindControl(Mouse.CursorPos);
@@ -456,7 +461,8 @@ begin
   if Assigned(found) and (not FIsMoving)then
   begin
     mcont := FindManagedControl(found);
-    child := found.ControlAtPos(found.ScreenToClient(Mouse.CursorPos), False);
+//    child := found.ControlAtPos(found.ScreenToClient(Mouse.CursorPos), False);
+   child := Application.GetControlAtMouse;
   {$ifdef WIN32}
     if (GetAsyncKeyState(VK_CONTROL) and $F000) = 0 then
   {$endif}
@@ -579,7 +585,8 @@ var
 begin
   inherited;
   {$ifdef WIN32}
-  found := FindVCLWindow(Mouse.CursorPos);
+////  found := FindVCLWindow(Mouse.CursorPos);
+   found := Application.GetControlAtMouse;
   {$endif}
   {$ifdef LINUX}
   found := FindControl(Mouse.CursorPos);
@@ -683,7 +690,8 @@ begin
   FMemMousePos.y := Y;
 
   {$ifdef WIN32}
-  found := FindVCLWindow(Mouse.CursorPos);
+////TODO  found := FindVCLWindow(Mouse.CursorPos);
+  found := Application.GetControlAtMouse;
   {$endif}
   {$ifdef LINUX}
   found := FindControl(Mouse.CursorPos);
@@ -795,7 +803,8 @@ begin
   else
   begin
     {$ifdef WIN32}
-    found := FindVCLWindow(pt1);
+////TODO    found := FindVCLWindow(pt1);
+     found := Application.GetControlAtMouse;
     {$endif}
     {$ifdef LINUX}
     found := FindControl(pt1);
@@ -896,7 +905,8 @@ begin
 
 
       {$ifdef WIN32}
-      found := FindVCLWindow(Mouse.CursorPos);
+      //found := FindVCLWindow(Mouse.CursorPos);
+      found := Application.GetControlAtMouse;
       {$endif}
       {$ifdef LINUX}
       found := FindControl(Mouse.CursorPos);

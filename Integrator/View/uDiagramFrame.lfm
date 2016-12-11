@@ -1,37 +1,45 @@
 object DiagramFrame: TDiagramFrame
   Left = 0
+  Height = 459
   Top = 0
-  Width = 443
-  Height = 270
+  Width = 633
   Align = alClient
+  ClientHeight = 459
+  ClientWidth = 633
   TabOrder = 0
+  DesignLeft = 122
+  DesignTop = 244
   object Panel1: TPanel
     Left = 0
-    Top = 0
-    Width = 443
     Height = 28
+    Top = 0
+    Width = 633
     Align = alTop
     BevelOuter = bvNone
+    ClientHeight = 28
+    ClientWidth = 633
     TabOrder = 0
     object Label1: TLabel
-      Left = 72
-      Top = 7
-      Width = 59
+      Left = 70
       Height = 13
+      Top = 5
+      Width = 59
       Caption = 'Connections'
+      ParentColor = False
     end
     object Label2: TLabel
-      Left = 317
-      Top = 7
-      Width = 22
+      Left = 315
       Height = 13
+      Top = 5
+      Width = 24
       Caption = 'Filter'
+      ParentColor = False
     end
     object OpenButton: TSpeedButton
-      Left = 1
-      Top = 3
-      Width = 23
+      Left = 0
       Height = 22
+      Top = 1
+      Width = 23
       Action = MainModule.FileOpenAction
       Flat = True
       Glyph.Data = {
@@ -61,13 +69,14 @@ object DiagramFrame: TDiagramFrame
         D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D600000000
         0000000000CED3D6CED3D6CED3D6CED3D600CED3D6CED3D6CED3D6CED3D6CED3
         D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CE
-        D3D6CED3D600}
+        D3D6CED3D600
+      }
     end
     object LayoutButton: TSpeedButton
-      Left = 32
-      Top = 3
-      Width = 23
+      Left = 30
       Height = 22
+      Top = 1
+      Width = 23
       Action = MainModule.LayoutDiagramAction
       Flat = True
       Glyph.Data = {
@@ -95,44 +104,47 @@ object DiagramFrame: TDiagramFrame
         C6C6C3C67B7D7BCED3D6CED3D66B6D6BDEDFDEDEDFDEDEDFDEDEDFDE6B6D6BCE
         D3D6CED3D6CED3D67B7D7B7B7D7B7B7D7B7B7D7BBDBEBDCED3D6CED3D6313031
         6361636361636361636361637B7D7BCED3D6CED3D6CED3D6CED3D6CED3D6CED3
-        D6CED3D6CED3D6CED3D6}
+        D6CED3D6CED3D6CED3D6
+      }
     end
     object VisibilityCombo: TComboBox
-      Left = 344
-      Top = 4
-      Width = 145
+      Left = 342
       Height = 21
-      Style = csDropDownList
+      Top = 2
+      Width = 145
       Enabled = False
       ItemHeight = 13
-      TabOrder = 0
-      TabStop = False
-      OnChange = VisibilityComboChange
       Items.Strings = (
         'Show all members'
         'Hide private'
         'Hide private + protected'
-        'Hide all members')
+        'Hide all members'
+      )
+      OnChange = VisibilityComboChange
+      Style = csDropDownList
+      TabOrder = 0
+      TabStop = False
     end
     object ConnectionsCombo: TComboBox
-      Left = 137
-      Top = 4
-      Width = 165
+      Left = 135
       Height = 21
-      Style = csDropDownList
+      Top = 2
+      Width = 165
       Enabled = False
       ItemHeight = 13
-      TabOrder = 1
-      TabStop = False
-      OnChange = ConnectionsComboChange
       Items.Strings = (
         'Inheritance and associations'
-        'Inheritance only')
+        'Inheritance only'
+      )
+      OnChange = ConnectionsComboChange
+      Style = csDropDownList
+      TabOrder = 1
+      TabStop = False
     end
   end
   object ActionList: TActionList
-    Left = 71
-    Top = 37
+    left = 71
+    top = 37
     object OpenSelectedPackageAction: TAction
       Caption = 'Open selected package in diagram'
     end
@@ -142,8 +154,8 @@ object DiagramFrame: TDiagramFrame
     end
   end
   object PackagePopupMenu: TPopupMenu
-    Left = 65
-    Top = 136
+    left = 216
+    top = 48
     object Openselectedpackageindiagram1: TMenuItem
       Action = OpenSelectedPackageAction
     end
@@ -152,8 +164,8 @@ object DiagramFrame: TDiagramFrame
     end
   end
   object ClassInterfacePopupMenu: TPopupMenu
-    Left = 81
-    Top = 198
+    left = 81
+    top = 198
     object Hide2: TMenuItem
       Action = HideDiagramElementAction
     end

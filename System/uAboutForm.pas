@@ -19,11 +19,13 @@
 
 unit uAboutForm;
 
+{$MODE Delphi}
+
 interface
 
 {$ifdef WIN32}
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, StdCtrls;
 {$endif}
 {$ifdef LINUX}
@@ -53,10 +55,10 @@ type
 implementation
 
 {$ifdef WIN32}
-{$R *.DFM}
+{$R *.lfm}
 {$endif}
 {$ifdef LINUX}
-{$R *.xfm}
+{$R *.lfm}
 {$endif}
 
 uses uConst, uConfig;

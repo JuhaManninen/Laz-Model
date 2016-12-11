@@ -19,6 +19,8 @@
 
 unit uJavaClass;
 
+{$MODE Delphi}
+
 interface
 
 uses Classes;

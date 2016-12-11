@@ -19,6 +19,8 @@
 
 unit uFeedback;
 
+{$MODE Delphi}
+
 interface
 {$ifdef WIN32}
 uses classes, extctrls;

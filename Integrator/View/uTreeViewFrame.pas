@@ -19,10 +19,12 @@
 
 unit uTreeViewFrame;
 
+{$MODE Delphi}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, ImgList;
 
 type
@@ -38,7 +40,7 @@ type
 
 implementation
 uses uTreeViewIntegrator;
-{$R *.dfm}
+{$R *.lfm}
 
 procedure TTreeViewFrame.tvModelDblClick(Sender: TObject);
 var

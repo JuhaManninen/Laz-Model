@@ -19,6 +19,8 @@
 
 unit uRtfdDiagramFrame;
 
+{$MODE Delphi}
+
 interface
 
 {$ifdef LINUX}
@@ -30,7 +32,7 @@ uses
 {$endif}
 {$ifdef WIN32}
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   uDiagramFrame, ActnList, uRtfdDiagram, Menus, StdCtrls, ExtCtrls, uListeners,
   Buttons;
 {$endif}
@@ -54,10 +56,10 @@ implementation
 uses uError;
 
 {$ifdef WIN32}
-{$R *.DFM}
+{$R *.lfm}
 {$endif}
 {$ifdef LINUX}
-{$R *.xfm}
+{$R *.lfm}
 {$endif}
 
 

@@ -19,6 +19,8 @@
 
 unit uDocGen;
 
+{$MODE Delphi}
+
 interface
 
 uses uIntegrator, uModel, uModelEntity;

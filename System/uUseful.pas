@@ -19,10 +19,12 @@
 
 unit uUseful;
 
+{$MODE Delphi}
+
 interface
 
 {$ifdef WIN32}
-uses Classes, Forms, ComCtrls, shlobj;
+uses Classes, Forms, LCLIntf, LCLType, LMessages, ComCtrls, shlobj;
 {$endif}
 {$ifdef LINUX}
 uses Classes, QForms, QComCtrls;
@@ -51,7 +53,7 @@ type
     FTitle,FPath : string;
   public
     property Title: string read FTitle write FTitle;
-    function Execute: Boolean;
+//    function Execute: Boolean;
     property Path: string read FPath write FPath;
   end;
 
@@ -61,7 +63,7 @@ implementation
 
 {$ifdef WIN32}
 uses Controls, SysUtils,
-  Windows, activex, StdCtrls;
+   activex, StdCtrls;
 {$endif}
 {$ifdef LINUX}
 uses QControls, SysUtils;
@@ -106,11 +108,11 @@ end;
 
 
 {$IFDEF Win32}
-
+{
 function SetSelProc(Wnd: HWND; uMsg: UINT; lParam, lpData: LPARAM): Integer stdcall;
 begin
   if uMsg=BFFM_INITIALIZED then
-    Windows.SendMessage(Wnd, BFFM_SETSELECTION, 1, lpData );
+    SendMessage(Wnd, BFFM_SETSELECTION, 1, lpData );
   Result := 0;
 end;
 
@@ -146,7 +148,7 @@ begin
   end
   else
     Result := False;
-end;
+end; }
 {$ENDIF}
 
 {$IFDEF Linux}
@@ -168,8 +170,8 @@ var
   I : integer;
   Ok : boolean;
 begin
-  GetTempPath(200, @Buf);
-  TempPath := PChar(@Buf);
+
+  TempPath := GetTempDir(false);
   Ok := False;
   for I := 0 to 50 do
   begin

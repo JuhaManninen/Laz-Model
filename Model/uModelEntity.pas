@@ -25,6 +25,8 @@
 }
 unit uModelEntity;
 
+{$MODE Delphi}
+
 interface
 
 uses Classes, uDocumentation;
@@ -35,7 +37,7 @@ type
 
   TVisibility = (viPrivate, viProtected, viPublic, viPublished);
 
-  TModelEntity = class(TObject)
+  TModelEntity = class(TInterfacedObject)
   private
     function GetRoot: TModelEntity;
   protected
@@ -105,7 +107,7 @@ var
 implementation
 
 {$ifdef WIN32}
-uses Sysutils, Windows, uListeners, uModel;
+uses Sysutils, LCLIntf, LCLType, LMessages, uListeners, uModel;
 {$endif}
 {$ifdef LINUX}
 uses Sysutils, uListeners, uModel;

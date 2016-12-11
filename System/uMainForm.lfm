@@ -1,96 +1,96 @@
 object MainForm: TMainForm
-  Left = 306
-  Top = 122
-  Width = 648
+  Left = 84
   Height = 526
+  Top = 339
+  Width = 648
   Caption = 'x'
+  ClientHeight = 507
+  ClientWidth = 648
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  Font.Style = []
   Menu = MainMenu1
-  OldCreateOrder = False
-  Position = poScreenCenter
-  ShowHint = True
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
-  PixelsPerInch = 96
-  TextHeight = 13
+  Position = poScreenCenter
+  ShowHint = True
+  LCLVersion = '1.6.0.4'
   object Panel1: TPanel
     Left = 0
+    Height = 479
     Top = 28
-    Width = 640
-    Height = 452
+    Width = 648
     Align = alClient
     Caption = 'Panel1'
+    ClientHeight = 479
+    ClientWidth = 648
     TabOrder = 0
     object Splitter1: TSplitter
       Left = 201
+      Height = 457
       Top = 1
       Width = 8
-      Height = 430
-      Cursor = crHSplit
       Beveled = True
     end
     object StatusPanel: TPanel
       Left = 1
-      Top = 431
-      Width = 638
       Height = 20
+      Top = 458
+      Width = 646
       Align = alBottom
       Alignment = taLeftJustify
       BevelOuter = bvLowered
-      Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
       Font.Name = 'MS Sans Serif'
-      Font.Style = []
       ParentFont = False
       TabOrder = 0
     end
     object DiagramPanel: TPanel
       Left = 209
+      Height = 457
       Top = 1
-      Width = 430
-      Height = 430
+      Width = 438
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 1
     end
     object LeftPanel: TPanel
       Left = 1
+      Height = 457
       Top = 1
       Width = 200
-      Height = 430
       Align = alLeft
       BevelOuter = bvNone
+      ClientHeight = 457
+      ClientWidth = 200
       TabOrder = 2
       object Splitter2: TSplitter
+        Cursor = crVSplit
         Left = 0
+        Height = 8
         Top = 121
         Width = 200
-        Height = 8
-        Cursor = crVSplit
         Align = alTop
         Beveled = True
+        ResizeAnchor = akTop
       end
       object ZoomPanel: TPanel
         Left = 0
+        Height = 121
         Top = 0
         Width = 200
-        Height = 121
         Align = alTop
         BevelOuter = bvLowered
         TabOrder = 0
       end
       object TreePanel: TPanel
         Left = 0
+        Height = 328
         Top = 129
         Width = 200
-        Height = 301
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 1
@@ -99,18 +99,20 @@ object MainForm: TMainForm
   end
   object Panel2: TPanel
     Left = 0
-    Top = 0
-    Width = 640
     Height = 28
+    Top = 0
+    Width = 648
     Align = alTop
     BevelOuter = bvNone
+    ClientHeight = 28
+    ClientWidth = 648
     TabOrder = 1
     Visible = False
     object OpenButton: TSpeedButton
-      Left = 1
-      Top = 3
-      Width = 23
+      Left = 0
       Height = 22
+      Top = 1
+      Width = 23
       Action = MainModule.FileOpenAction
       Flat = True
       Glyph.Data = {
@@ -140,12 +142,13 @@ object MainForm: TMainForm
         D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D600000000
         0000000000CED3D6CED3D6CED3D6CED3D600CED3D6CED3D6CED3D6CED3D6CED3
         D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CED3D6CE
-        D3D6CED3D600}
+        D3D6CED3D600
+      }
     end
   end
   object MainMenu1: TMainMenu
-    Left = 46
-    Top = 55
+    left = 46
+    top = 55
     object File1: TMenuItem
       Caption = 'File'
       object Open1: TMenuItem
@@ -156,8 +159,6 @@ object MainForm: TMainForm
       end
       object ReopenMenuItem: TMenuItem
         Caption = '&Reopen'
-        object TMenuItem
-        end
       end
       object N1: TMenuItem
         Caption = '-'

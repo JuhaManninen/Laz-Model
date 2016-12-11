@@ -19,6 +19,8 @@
 
 unit uJavaParser;
 
+{$MODE Delphi}
+
 interface
 
 uses Classes, uCodeParser, uParseTree, uModel, uModelEntity, uIntegrator, uCodeProvider, Types;
@@ -81,7 +83,7 @@ type
 implementation
 
 {$ifdef WIN32}
-uses Windows, Dialogs, SysUtils, uError;
+uses LCLIntf, LCLType, LMessages, Dialogs, SysUtils, uError;
 {$endif}
 {$ifdef LINUX}
 uses QDialogs, SysUtils, uError;

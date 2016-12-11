@@ -19,6 +19,8 @@
 
 unit uTreeViewIntegrator;
 
+{$MODE Delphi}
+
 interface
 
 uses SysUtils, uViewIntegrator, uTreeViewFrame, uModel, Controls, uFeedback,

@@ -19,6 +19,8 @@
 
 unit uDocumentation;
 
+{$MODE Delphi}
+
 interface
 
 type

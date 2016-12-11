@@ -19,6 +19,8 @@
 
 unit uIterators;
 
+{$MODE Delphi}
+
 interface
 
 {

@@ -1,11 +1,13 @@
 unit uOpenFolderForm;
 
+{$MODE Delphi}
+
 interface
 
 {$WARN UNIT_PLATFORM OFF}
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ShellCtrls;
 
 type
@@ -24,6 +26,6 @@ type
 
 implementation
 
-{$R *.dfm}
+{$R *.lfm}
 
 end.

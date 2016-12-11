@@ -19,6 +19,8 @@
 
 unit uDelphiIntegrator;
 
+{$MODE Delphi}
+
 interface
 uses Classes, uIntegrator, uCodeIntegrator, uModel, uDelphiParser, uCodeProvider,
   uCodeParser;
@@ -74,9 +76,9 @@ end;
 class function TDelphiImporter.GetFileExtensions: TStringList;
 begin
   Result := TStringList.Create;
-  Result.Values['.pas'] := 'Delphi';
-  Result.Values['.dpr'] := 'Delphi project';
-  Result.Values['.dpk'] := 'Delphi package';
+  Result.Values['.pas'] := 'code';
+  Result.Values['.lpr'] := 'Lazarus project';
+  Result.Values['.lpk'] := 'Lazarus package';
 end;
 
 function TDelphiImporter.NeedPackageHandler(const AName: string; var AStream: TStream; OnlyLookUp: Boolean = False):String;

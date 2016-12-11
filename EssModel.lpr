@@ -1,6 +1,6 @@
 {
   ESS-Model
-  Copyright (C) 2002  Eldean AB, Peter Söderman, Ville Krumlinde
+  Copyright (C) 2002  Eldean AB, Peter SÃ¶derman, Ville Krumlinde
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -23,11 +23,13 @@
 
 program EssModel;
 
+{$MODE Delphi}
+
 {$R 'Res\files\essModelFiles.res' 'Res\files\essModelFiles.rc'}
 {%File 'EssModelReadme.txt'}
 
 uses
-  Forms,
+  Forms, Interfaces,
   uMainForm in 'System\uMainForm.pas' {MainForm},
   uMainModule in 'System\uMainModule.pas' {MainModule: TDataModule},
   uListeners in 'Model\uListeners.pas',

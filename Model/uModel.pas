@@ -19,6 +19,8 @@
 
 unit uModel;
 
+{$MODE Delphi}
+
 {
   Classes to represent the object model.
 }

@@ -19,6 +19,8 @@
 
 unit uMainModule;
 
+{$MODE Delphi}
+
 interface
 
 {$ifdef LINUX}
@@ -29,8 +31,8 @@ uses
 {$endif}
 {$ifdef WIN32}
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  uModel, uIntegrator, uCodeIntegrator, uDelphiIntegrator, ActnList, uViewIntegrator,
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  uModel, uIntegrator, uCodeIntegrator, uDelphiIntegrator, ActnList, uViewIntegrator, mymetafile,
   {$IFDEF DRAG_SUPPORT}DropSource, DropTarget, {$ENDIF}Menus, uFeedback, uTreeViewIntegrator,ExtCtrls;
 {$endif}
 
@@ -141,10 +143,10 @@ uses uMainForm,
 {$endif}
 
 {$ifdef WIN32}
-{$R *.DFM}
+{$R *.lfm}
 {$endif}
 {$ifdef LINUX}
-{$R *.xfm}
+{$R *.lfm}
 {$endif}
 
 

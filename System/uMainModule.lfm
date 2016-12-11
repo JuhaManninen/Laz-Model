@@ -1,19 +1,21 @@
 object MainModule: TMainModule
-  OldCreateOrder = False
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
-  Left = 219
-  Top = 203
+  OldCreateOrder = False
+  left = 219
+  top = 203
   Height = 540
+  HorizontalOffset = 225
+  VerticalOffset = 306
   Width = 783
   object ActionList: TActionList
-    Left = 81
-    Top = 128
+    left = 81
+    top = 128
     object CopyDiagramClipboardAction: TAction
       Caption = 'Copy diagram to clipboard'
       Enabled = False
-      ShortCut = 16451
       OnExecute = CopyDiagramClipboardActionExecute
+      ShortCut = 16451
     end
     object PrintDiagramAction: TAction
       Caption = 'Print diagram'
@@ -76,12 +78,5 @@ object MainModule: TMainModule
       Enabled = False
       OnExecute = ExportEmxActionExecute
     end
-  end
-  object CloseTimer: TTimer
-    Enabled = False
-    Interval = 200
-    OnTimer = CloseTimerTimer
-    Left = 72
-    Top = 40
   end
 end

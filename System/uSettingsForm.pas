@@ -19,11 +19,13 @@
 
 unit uSettingsForm;
 
+{$MODE Delphi}
+
 interface
 
 {$ifdef WIN32}
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls;
 {$endif}
 {$ifdef LINUX}
@@ -63,10 +65,10 @@ implementation
 uses uRegisterExtension, uConst, uIntegrator, contnrs, uConfig;
 
 {$ifdef WIN32}
-{$R *.DFM}
+{$R *.lfm}
 {$endif}
 {$ifdef LINUX}
-{$R *.xfm}
+{$R *.lfm}
 {$endif}
 
 const

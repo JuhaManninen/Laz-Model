@@ -19,6 +19,8 @@
 
 unit uFileProvider;
 
+{$MODE Delphi}
+
 interface
 uses Classes, uCodeProvider;
 

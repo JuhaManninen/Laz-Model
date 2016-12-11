@@ -19,6 +19,8 @@
 
 unit uCodeParser;
 
+{$MODE Delphi}
+
 interface
 uses Classes, uModel, Sysutils;
 type

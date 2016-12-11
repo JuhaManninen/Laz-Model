@@ -1,35 +1,31 @@
 object OpenFolderForm: TOpenFolderForm
-  Left = 174
-  Top = 107
-  Width = 398
+  Left = 61
   Height = 340
+  Top = 361
+  Width = 398
   Caption = 'Open folder'
+  ClientHeight = 340
+  ClientWidth = 398
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  Font.Style = []
-  OldCreateOrder = False
   Position = poOwnerFormCenter
-  DesignSize = (
-    390
-    313)
-  PixelsPerInch = 96
-  TextHeight = 13
+  LCLVersion = '1.6.0.4'
   object Label2: TLabel
     Left = 6
+    Height = 13
     Top = 262
     Width = 39
-    Height = 13
     Anchors = [akLeft, akBottom]
     Caption = 'File type'
+    ParentColor = False
   end
   object OkButton: TButton
     Left = 219
+    Height = 25
     Top = 272
     Width = 75
-    Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'OK'
     Default = True
@@ -38,9 +34,9 @@ object OpenFolderForm: TOpenFolderForm
   end
   object Button2: TButton
     Left = 301
+    Height = 25
     Top = 272
     Width = 75
-    Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'Cancel'
     ModalResult = 2
@@ -48,30 +44,29 @@ object OpenFolderForm: TOpenFolderForm
   end
   object FileTypeCombo: TComboBox
     Left = 52
+    Height = 21
     Top = 258
     Width = 69
-    Height = 21
-    Style = csDropDownList
     Anchors = [akLeft, akBottom]
     ItemHeight = 13
+    Style = csDropDownList
     TabOrder = 2
     TabStop = False
   end
   object PathTreeView: TShellTreeView
     Left = 8
+    Height = 240
     Top = 8
     Width = 372
-    Height = 240
-    ObjectTypes = [otFolders]
-    Root = 'rfDesktop'
-    UseShellImages = True
-    Anchors = [akLeft, akTop, akRight, akBottom]
-    AutoRefresh = False
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    FileSortType = fstNone
     HideSelection = False
     Indent = 19
-    ParentColor = False
     RightClickSelect = True
+    Root = 'C:\lazarus32\rfDesktop'
     ShowRoot = False
     TabOrder = 3
+    Options = [tvoAutoItemHeight, tvoKeepCollapsedNodes, tvoRightClickSelect, tvoShowButtons, tvoShowLines, tvoToolTips, tvoThemedDraw]
+    ObjectTypes = [otFolders]
   end
 end

@@ -19,9 +19,12 @@
 
 unit uRtfdComponents;
 
+{$MODE Delphi}
+
 interface
 {$ifdef WIN32}
-uses Windows, Messages, ExtCtrls, Classes, uModel, uModelEntity, StdCtrls, Controls, uListeners,
+uses LCLIntf, LCLType, LMessages, Windows,
+ Messages, ExtCtrls, Classes, uModel, uModelEntity, StdCtrls, Controls, uListeners,
   uViewIntegrator, Contnrs, uDiagramFrame;
 {$endif}
 {$ifdef LINUX}
@@ -440,7 +443,7 @@ begin
   FAlignment := taLeftJustify;
   FTransparent := True;
   //Top must be assigned so that all labels appears beneath each other when align=top
-  Top := MaxInt;
+  Top := MaxInt shr 2;
 end;
 
 procedure TRtfdCustomLabel.EntityChange(Sender: TModelEntity);
@@ -596,7 +599,7 @@ begin
   {$endif}
   Height := 16;
   //Top must be assigned so that all labels appears beneath each other when align=top
-  Top := MaxInt;
+  Top := MaxInt shr 2;
   Align := alTop;
 end;
 
@@ -932,7 +935,7 @@ begin
   if (Flags and DT_CALCRECT <> 0) and ((Text = '') and
     (Text[1] = '&') and (Text[2] = #0)) then Text := Text + ' ';
   Flags := Flags or DT_NOPREFIX;
-  Flags := DrawTextBiDiModeFlags(Flags);
+//  Flags := DrawTextBiDiModeFlags(Flags);
   Canvas.Font := Font;
   if not Enabled then
   begin

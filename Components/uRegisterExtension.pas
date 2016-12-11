@@ -22,6 +22,8 @@
 }
 unit uRegisterExtension;
 
+{$MODE Delphi}
+
 interface
 
 function ShellRegisterExtension( ext:String; menustring: String; command: String ): Boolean;
@@ -34,7 +36,7 @@ function DelphiUnregisterTool( Title: String ): Boolean;
 
 implementation
 {$ifdef WIN32}
-uses SysUtils, Windows, classes, registry;
+uses SysUtils, LCLIntf, LCLType, LMessages, classes, registry;
 {$endif}
 {$ifdef LINUX}
 uses SysUtils, classes;

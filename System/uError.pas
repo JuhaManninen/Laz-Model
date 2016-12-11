@@ -19,6 +19,8 @@
 
 unit uError;
 
+{$MODE Delphi}
+
 {
   Errorhandler.
   Use command line switch '-traceon' to display trace messages runtime.
@@ -61,7 +63,7 @@ implementation
 
 {$IFNDEF Release}
 {$ifdef WIN32}
-uses Windows, Controls;
+uses LCLIntf, LCLType, LMessages, Controls;
 {$endif}
 {$ifdef LINUX}
 uses QControls;

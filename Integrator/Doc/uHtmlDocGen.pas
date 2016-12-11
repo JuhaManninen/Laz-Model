@@ -19,6 +19,8 @@
 
 unit uHtmlDocGen;
 
+{$MODE Delphi}
+
 interface
 
 uses uDocGen, uModel, uModelEntity, uXmiExport;
@@ -42,7 +44,7 @@ type
 implementation
 {$ifdef WIN32}
 uses Forms, SysUtils, Graphics,
-  ShellApi, Windows, ComObj,
+  LCLIntf, LCLType, LMessages, ComObj,
   uConfig, Classes, uIterators, Dialogs, uViewIntegrator;
 {$endif}
 {$ifdef LINUX}
@@ -120,8 +122,7 @@ procedure THtmlDocGen.DocFinished;
 begin
   {$IFDEF Win32}
   if Assigned(Application.MainForm) then
-    ShellExecute(Application.MainForm.Handle,'open',PChar( DestPath +  'overview.html' ),'',
-      PChar( DestPath ),SW_SHOWDEFAULT);
+     OpenDocument(PChar( DestPath +  'overview.html' )); { *Converted from ShellExecute* }
   {$ENDIF}
 end;
 

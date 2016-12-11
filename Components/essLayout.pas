@@ -19,6 +19,8 @@
 
 unit essLayout;
 
+{$MODE Delphi}
+
 interface
 
 uses essConnectPanel;

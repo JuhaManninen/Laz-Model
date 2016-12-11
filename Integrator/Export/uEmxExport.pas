@@ -21,6 +21,8 @@
 // Exporter for the "ESS-Model XML" format
 unit uEmxExport;
 
+{$MODE Delphi}
+
 interface
 
 uses uIntegrator, uModelEntity, Classes, uModel, uFeedback;

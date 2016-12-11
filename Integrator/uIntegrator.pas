@@ -19,6 +19,8 @@
 
 unit uIntegrator;
 
+{$MODE Delphi}
+
 interface
 
 uses uModel, Classes, Contnrs, uCodeProvider;

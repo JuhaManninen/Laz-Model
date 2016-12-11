@@ -27,6 +27,8 @@
 }
 unit uXmiExportArgoUML;
 
+{$MODE Delphi}
+
 interface
 
 uses uIntegrator, uModelEntity, Classes, uModel, uFeedback;

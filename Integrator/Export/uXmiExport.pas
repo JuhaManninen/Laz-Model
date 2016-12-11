@@ -23,6 +23,8 @@
 }
 unit uXmiExport;
 
+{$MODE Delphi}
+
 interface
 
 uses uIntegrator, uModelEntity, Classes, uModel, uFeedback;

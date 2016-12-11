@@ -19,6 +19,8 @@
 
 unit SugiyamaLayout;
 
+{$MODE Delphi}
+
 {
   Layout according to the 'Sugiyama'-algoritm.
 

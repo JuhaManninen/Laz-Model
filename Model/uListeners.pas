@@ -19,6 +19,8 @@
 
 unit uListeners;
 
+{$MODE Delphi}
+
 {
   Listener interface for the objectmodel
 

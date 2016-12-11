@@ -19,6 +19,8 @@
 
 unit uMainForm;
 
+{$MODE Delphi}
+
 interface
 
 {$ifdef LINUX}
@@ -28,7 +30,7 @@ uses
 {$endif}
 {$ifdef WIN32}
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, StdCtrls, Menus, uMainModule, ComCtrls, uDiagramFrame, Buttons;
 {$endif}
 
@@ -84,10 +86,10 @@ implementation
 uses uConst, Math;
 
 {$ifdef WIN32}
-{$R *.DFM}
+{$R *.lfm}
 {$endif}
 {$ifdef LINUX}
-{$R *.xfm}
+{$R *.lfm}
 {$endif}
 
 

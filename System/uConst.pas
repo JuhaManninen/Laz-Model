@@ -19,6 +19,8 @@
 
 unit uConst;
 
+{$MODE Delphi}
+
 interface
 
 

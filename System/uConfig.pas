@@ -19,6 +19,8 @@
 
 unit uConfig;
 
+{$MODE Delphi}
+
 interface
 {$ifdef WIN32}
 uses Classes, registry;
@@ -70,7 +72,7 @@ implementation
 
 {$ifdef WIN32}
 uses Forms,
-   Windows,
+   LCLIntf, LCLType, LMessages,
    uConst,
    SysUtils;
 {$endif}

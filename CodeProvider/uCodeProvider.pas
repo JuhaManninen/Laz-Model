@@ -19,6 +19,8 @@
 
 unit uCodeProvider;
 
+{$MODE Delphi}
+
 interface
 
 uses Classes, uFeedback;
