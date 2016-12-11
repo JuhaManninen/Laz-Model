@@ -281,7 +281,7 @@ function ReadU2(Input: TStream): integer;
 var
   tmp : array[0..1] of byte;
 begin
-  Input.Read(tmp,2);
+  Input.Read(tmp{%H-},2);
   Result := (tmp[0] shl 8) or tmp[1];
 end;
 
@@ -289,7 +289,7 @@ function ReadU4(Input: TStream): longword;
 var
   tmp : array[0..3] of byte;
 begin
-  //$BEBAFECA
+  // $BEBAFECA
   Input.Read(tmp,4);
   Result := (tmp[0] shl 24) or (tmp[1] shl 16) or (tmp[2] shl 8) or tmp[3];
 end;
