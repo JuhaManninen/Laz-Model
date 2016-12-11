@@ -106,12 +106,7 @@ function Integrators : TIntegrators;
 
 implementation
 
-{$ifdef WIN32}
 uses SysUtils, uError, uUseful, uCodeParser, Dialogs;
-{$endif}
-{$ifdef LINUX}
-uses SysUtils, uError, uUseful, uCodeParser, QDialogs;
-{$endif}
 
 var
   _Integrators : TIntegrators = nil;

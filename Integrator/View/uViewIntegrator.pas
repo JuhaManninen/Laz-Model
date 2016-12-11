@@ -23,12 +23,8 @@ unit uViewIntegrator;
 
 interface
 
-{$ifdef WIN32}
-uses uIntegrator, uModel, uModelEntity, Controls, Graphics, IniFiles, Classes, uFeedback, Types;
-{$endif}
-{$ifdef LINUX}
-uses uIntegrator, uModel, uModelEntity, QControls, QGraphics, IniFiles, Classes, uFeedback;
-{$endif}
+uses uIntegrator, uModel, uModelEntity, Controls, Graphics,
+      IniFiles, Classes, uFeedback, Types;
 
 type
 
@@ -95,12 +91,7 @@ type
   procedure SetCurrentEntity(Value : TModelEntity);
 
 implementation
-{$ifdef WIN32}
-uses uRtfdDiagram, SysUtils, Forms, Contnrs, {$ifdef PNG_SUPPORT}pngimage,{$endif} math, uConfig;
-{$endif}
-{$ifdef LINUX}
-uses uRtfdDiagram, SysUtils, QForms;
-{$endif}
+uses uRtfdDiagram, SysUtils, Forms, Contnrs, math, uConfig;
 
 var
   _CurrentEntity : TModelEntity = nil;
@@ -171,19 +162,19 @@ begin
     FOnUpdateZoom(Self);
 end;
 
+
 procedure TDiagramIntegrator.SaveAsPicture(const FileName: string);
 var
   W,H : integer;
 
-  {$ifdef PNG_SUPPORT}
   procedure InToPng;
   var
     Bitmap : Graphics.TBitmap;
-    Png : TPngObject;
+    Png : TPortableNetworkGraphic;
     OldColors,UseMono : boolean;
   begin
     Bitmap := Graphics.TBitmap.Create;
-    Png := TPngObject.Create;
+    Png := TPortableNetworkGraphic.Create;
     try
       //Use b/w for large pictures to reduce memory consumption
       UseMono := Max(W,H)>16000;
@@ -215,40 +206,12 @@ var
       Png.Free;
     end;
   end;
-  {$endif}
-
-  procedure InToWMF;
-  var
-    Wmf : TMetaFile;
-    WmfCanvas : TMetaFileCanvas;
-  begin
-    Wmf := TMetafile.Create;
-    try
-      Wmf.Width := W;
-      Wmf.Height := H;
-      WmfCanvas := TMetafileCanvas.Create(Wmf, 0);
-      try
-        PaintTo(WmfCanvas, 0, 0, False);
-      finally
-        WmfCanvas.Free;
-      end;
-      Wmf.SaveToFile( FileName );
-    finally
-      Wmf.Free;
-    end;
-  end;
 
 begin
-  GetDiagramSize(W,H);
-  if Pos( 'wmf' , LowerCase( ExtractFileExt( FileName ) ))>0 then
-    InToWmf
-  else
-    {$ifdef PNG_SUPPORT}
-    InToPng
-    {$endif}
-    ;
-end;
 
+  GetDiagramSize(W{%H-},H{%H-});
+    InToPng
+end;
 
 procedure TDiagramIntegrator.SetShowAssoc(const Value: boolean);
 begin

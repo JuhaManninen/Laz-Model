@@ -23,18 +23,11 @@ unit uMainModule;
 
 interface
 
-{$ifdef LINUX}
+
 uses
-  Types, SysUtils, Classes, uModel, uIntegrator, uCodeIntegrator, uDelphiIntegrator, uViewIntegrator,
-  QForms, QControls, QMenus, uFeedback, QActnList, QGraphics, QDialogs,
-  ActnList, ExtCtrls;
-{$endif}
-{$ifdef WIN32}
-uses
-  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  uModel, uIntegrator, uCodeIntegrator, uDelphiIntegrator, ActnList, uViewIntegrator, mymetafile,
+  LCLIntf, LCLType,  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  uModel, uIntegrator, uDelphiIntegrator, ActnList, uViewIntegrator,
   {$IFDEF DRAG_SUPPORT}DropSource, DropTarget, {$ENDIF}Menus, uFeedback, uTreeViewIntegrator,ExtCtrls;
-{$endif}
 
 type
   TMainModule = class(TDataModule)
@@ -106,7 +99,6 @@ var
 
 implementation
 
-{$ifdef WIN32}
 uses uMainForm,
   Clipbrd,
   Printers,
@@ -124,30 +116,8 @@ uses uMainForm,
   uZoomFrame,
   uOpenFolderForm,
   uEmxExport;
-{$endif}
-{$ifdef LINUX}
-uses uMainForm,
-  QClipbrd,
-  QPrinters,
-  uFileProvider,
-  uDocGen,
-  uConfig,
-  uJavaClassImport,
-  uJavaParser,
-  uXmiExport,
-  uConst,
-  uError,
-  Contnrs,
-  uAboutForm,
-  uSettingsForm;
-{$endif}
 
-{$ifdef WIN32}
 {$R *.lfm}
-{$endif}
-{$ifdef LINUX}
-{$R *.lfm}
-{$endif}
 
 
 procedure TMainModule.DataModuleCreate(Sender: TObject);
@@ -282,7 +252,8 @@ end;
 
 procedure TMainModule.CopyDiagramClipboardActionExecute(Sender: TObject);
 var
-{$ifdef WIN32}
+
+{$ifndef WIN32}
   Wmf, Wmf1: TMetaFile;
   WmfCanvas, WmfCanvas1: TMetaFileCanvas;
 {$endif}
@@ -292,11 +263,13 @@ var
   W,H : integer;
   SrcRect: TRect;
 begin
-  Diagram.GetDiagramSize(W,H);
+
+
+  Diagram.GetDiagramSize(W{%H-},H{%H-});
 
   SrcRect := Diagram.GetSelectedRect;
 
-  {$ifdef WIN32}
+  {$ifndef WIN32}
   Wmf := TMetafile.Create;
   Wmf1 := TMetafile.Create;
   try
@@ -362,10 +335,6 @@ begin
 {$if Defined(WIN32) and Defined(DRAG_SUPPORT)}
   LoadProject(Drop.Files);
 {$ifend}
-
-{$ifdef LINUX}
-{ TODO : Fix for Linux DropFileTargetDrop}
-{$endif}
 end;
 
 
@@ -375,12 +344,7 @@ var
 begin
   F := TAboutForm.Create(nil);
   try
-{$ifdef WIN32}
     F.IconImage.Picture.Icon.Handle := LoadIcon(HInstance,'MAINICON');
-{$endif}
-{$ifdef LINUX}
-{ TODO : Fix for Linux }
-{$endif}
     F.NameLabel.Caption := uConst.ProgName + ' ' + uConst.ProgVersion;
     F.ShowModal;
   finally

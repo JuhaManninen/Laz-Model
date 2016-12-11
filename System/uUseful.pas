@@ -23,13 +23,8 @@ unit uUseful;
 
 interface
 
-{$ifdef WIN32}
-uses Classes, Forms, LCLIntf, LCLType, LMessages, ComCtrls, shlobj;
-{$endif}
-{$ifdef LINUX}
-uses Classes, QForms, QComCtrls;
-{$endif}
 
+uses Classes, SysUtils, Forms, LCLIntf, LCLType, Controls, ComCtrls ;
 
 type
   IEldeanProgress = interface(IUnknown)
@@ -61,20 +56,13 @@ type
 
 implementation
 
-{$ifdef WIN32}
-uses Controls, SysUtils,
-   activex, StdCtrls;
-{$endif}
-{$ifdef LINUX}
-uses QControls, SysUtils;
-{$endif}
 
 constructor TEldeanProgress.Create(Text: string; Max: integer);
 begin
   F := TForm.Create(Application.MainForm);
 
   F.BorderIcons := [];
-  F.BorderStyle := bsDialog; { TODO : Fix for Linux }
+  F.BorderStyle := bsDialog;
   F.Caption := Text;
   F.ClientHeight := 22;
   F.ClientWidth := 390;
@@ -151,13 +139,6 @@ begin
 end; }
 {$ENDIF}
 
-{$IFDEF Linux}
-function TBrowseForFolderDialog.Execute: Boolean;
-begin
-{ TODO : Fix for Linux }
-  Result := False;
-end;
-{$ENDIF}
 
 
 var
@@ -165,7 +146,6 @@ var
 
 function MakeTempDir : string;
 var
-  Buf: array[0..200] of byte;
   TempPath : string;
   I : integer;
   Ok : boolean;

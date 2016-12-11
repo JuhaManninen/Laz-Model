@@ -23,7 +23,7 @@ unit uJavaParser;
 
 interface
 
-uses Classes, uCodeParser, uParseTree, uModel, uModelEntity, uIntegrator, uCodeProvider, Types;
+uses Classes, uCodeParser, uModel, uModelEntity, uIntegrator, uCodeProvider, Types;
 
 type
   TJavaImporter = class(TImportIntegrator)
@@ -82,13 +82,7 @@ type
 
 implementation
 
-{$ifdef WIN32}
-uses LCLIntf, LCLType, LMessages, Dialogs, SysUtils, uError;
-{$endif}
-{$ifdef LINUX}
-uses QDialogs, SysUtils, uError;
-{$endif}
-
+uses LCLIntf, LCLType, Dialogs, SysUtils, uError;
 
 function ExtractPackageName(const CName: string): string;
 var

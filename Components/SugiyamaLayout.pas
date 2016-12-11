@@ -32,13 +32,7 @@ unit SugiyamaLayout;
 
 interface
 
-{$ifdef WIN32}
 uses essLayout, contnrs, Controls;
-{$endif}
-{$ifdef LINUX}
-uses essLayout, contnrs, QControls;
-{$endif}
-
 
 type
   TEdgeList = class;
@@ -54,14 +48,15 @@ type
     IsDummy : boolean;
     X,Y,H,W : integer;
     Control : TControl;
-    constructor Create;
   public
+    constructor Create;
     destructor Destroy; override;
   end;
 
   TEdge = class
   private
     FromNode,ToNode : TNode;
+  public
     constructor Create(const FromNode,ToNode : TNode);
   end;
 

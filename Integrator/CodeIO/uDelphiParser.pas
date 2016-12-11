@@ -46,7 +46,7 @@ unit uDelphiParser;
 {$MODE Delphi}
 
 interface
-uses Classes, uCodeParser, uParseTree, uModel, uModelEntity, Types;
+uses Classes, uCodeParser, uModel, uModelEntity, Types;
 
 type
 
@@ -152,12 +152,7 @@ type
 
 implementation
 
-{$ifdef WIN32}
-uses LCLIntf, LCLType, LMessages, Dialogs, SysUtils, uError;
-{$endif}
-{$ifdef LINUX}
-uses QDialogs, SysUtils, uError;
-{$endif}
+uses LCLIntf, LCLType,  Dialogs, SysUtils, uError;
 
 { TDelphiParser }
 

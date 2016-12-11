@@ -36,18 +36,8 @@ type
   end;
 
 implementation
-{$ifdef WIN32}
-uses Controls,
-  ExtCtrls,
-  SugiyamaLayout,
-  Classes;
-{$endif}
-{$ifdef LINUX}
-uses QControls,
-  QExtCtrls,
-  SugiyamaLayout,
-  Classes;
-{$endif}
+
+uses Controls, ExtCtrls, SugiyamaLayout, Classes;
 
 type
   TSimpleLayout = class(TEssLayout)

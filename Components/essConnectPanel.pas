@@ -24,14 +24,10 @@ unit essConnectPanel;
 interface
 
 uses
-{$ifdef WIN32}
-  LCLIntf, LCLType, windows, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+
+  LCLIntf, LCLType, windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls,Contnrs;
-{$endif}
-{$ifdef LINUX}
-  Types, SysUtils, Classes, QGraphics, QControls, QForms, QDialogs,
-  QExtCtrls,Contnrs;
-{$endif}
+
 
 type
   // Available linestyles
@@ -230,12 +226,7 @@ type
 procedure Register;
 
 implementation
-{$ifdef WIN32}
 uses Math, uRtfdComponents, uConfig;
-{$endif}
-{$ifdef LINUX}
-uses Math,Qt,Xlib, uRtfdComponents, uConfig;
-{$endif}
 
 type
   TCrackControl = class(TControl) end;
@@ -446,18 +437,11 @@ var
   child: TControl;
   editorExecuteString: String;
   mcont: TManagedObject;
-  {$ifdef LINUX}
-  keys_return: TXQueryKeymap;
-  {$endif}
+
 begin
   inherited;
-  {$ifdef WIN32}
 //  found := FindVCLWindow(Mouse.CursorPos);
   found := Application.GetControlAtMouse;;
-  {$endif}
-  {$ifdef LINUX}
-  found := FindControl(Mouse.CursorPos);
-  {$endif}
   if Assigned(found) and (not FIsMoving)then
   begin
     mcont := FindManagedControl(found);
@@ -465,12 +449,6 @@ begin
    child := Application.GetControlAtMouse;
   {$ifdef WIN32}
     if (GetAsyncKeyState(VK_CONTROL) and $F000) = 0 then
-  {$endif}
-  {$ifdef LINUX}
-  { TODO : There must be a better way to check if any of the Ctrl keys are pressed }
-    XQueryKeymap(Application.Display,keys_return);
-    if ((Byte(keys_return[4]) and 32) = 0) and
-       ((Byte(keys_return[13]) and 32)= 0) then
   {$endif}
     begin
       if ((GetAsyncKeyState(VK_SHIFT) and $F000) <> 0) and (child is TRtfdCustomLabel) then
@@ -496,40 +474,25 @@ begin
   end;
 end;
 
-{$ifdef WIN32}
 procedure TessConnectPanel.CMMouseEnter(var Message: TMessage);
-{$endif}
-{$ifdef LINUX}
-procedure TessConnectPanel.MouseEnter(AControl: TControl);
-{$endif}
 begin
   if Focused and Application.Active and (GetCaptureControl <> Self)then
     SetCaptureControl(Self);
 end;
 
-{$ifdef WIN32}
 procedure TessConnectPanel.CMMouseLeave(var Message: TMessage);
-{$endif}
-{$ifdef LINUX}
-procedure TessConnectPanel.MouseLeave(AControl: TControl);
-{$endif}
 var
   pt: TPoint;
   r: TRect;
 begin
   pt := Mouse.CursorPos;
 
-  IntersectRect(r,Parent.ClientRect,BoundsRect);
+  IntersectRect(r{%H-},Parent.ClientRect,BoundsRect);
   r.TopLeft := Parent.ClientToScreen(r.TopLeft);
   r.BottomRight := Parent.ClientToScreen(r.BottomRight);
 
   if (not PtInRect(r,pt)) and (not FIsRectSelecting) then
-    {$ifdef WIN32}
     ReleaseCapture;
-    {$endif}
-    {$ifdef LINUX}
-    if GetCaptureControl = Self then SetCaptureControl(nil);
-    {$endif}
 end;
 
 function TessConnectPanel.ConnectObjects(Src, Dst: TControl;
@@ -557,18 +520,11 @@ end;
 constructor TessConnectPanel.Create(AOwner: TComponent);
 begin
   inherited;
-{$ifdef LINUX}
-  // This panel needs to be able to get focus.
-  ControlStyle := ControlStyle - [csNoFocus];
-  QWidget_Setbackgroundmode(Handle,QWidgetBackgroundMode_NoBackground);
-{$endif}
   FManagedObjects := TList.Create;
   FConnections := TObjectList.Create(True);
   Color := clWhite;
   TempHidden := TObjectList.Create(False);
-  {$ifdef WIN32}
   UseDockManager := True;
-  {$endif}
 end;
 
 {$ifdef WIN32}
@@ -584,13 +540,8 @@ var
   found: TControl;
 begin
   inherited;
-  {$ifdef WIN32}
 ////  found := FindVCLWindow(Mouse.CursorPos);
    found := Application.GetControlAtMouse;
-  {$endif}
-  {$ifdef LINUX}
-  found := FindControl(Mouse.CursorPos);
-  {$endif}
   if Assigned(found) then
   begin
     FindManagedControl(found);
@@ -673,9 +624,6 @@ var
   found: TControl;
   mcont: TManagedObject;
   p2: TPoint;
-  {$ifdef LINUX}
-  keys_return: TXQueryKeymap;
-  {$endif}
 begin
   inherited;
 
@@ -689,13 +637,8 @@ begin
   FMemMousePos.x := X;
   FMemMousePos.y := Y;
 
-  {$ifdef WIN32}
 ////TODO  found := FindVCLWindow(Mouse.CursorPos);
   found := Application.GetControlAtMouse;
-  {$endif}
-  {$ifdef LINUX}
-  found := FindControl(Mouse.CursorPos);
-  {$endif}
 
   if found = Self then found := nil;
   if Assigned(found) then
@@ -704,16 +647,7 @@ begin
     if Assigned(mcont) then
     begin
 
-      {$ifdef WIN32}
-      if (not mcont.Selected) and ((GetAsyncKeyState(VK_CONTROL) and $f000)=0) then
-      {$endif}
-      {$ifdef LINUX}
-    { TODO : There must be a better way to check if any of the Ctrl keys are pressed }
-      XQueryKeymap(Application.Display,keys_return);
-      if (not mcont.Selected) and
-         ((Byte(keys_return[4]) and 32) = 0) and
-         ((Byte(keys_return[13]) and 32)= 0) then
-      {$endif}
+      if (not mcont.Selected) and not(ssCtrl in Shift) then
         ClearSelection;
 
       mcont.Selected := True;
@@ -786,29 +720,17 @@ begin
   dx := pt.x - FMemMousePos.x;
   dy := pt.y - FMemMousePos.y;
 
-  IntersectRect(r,Parent.ClientRect,BoundsRect);
+  IntersectRect(r{%H-},Parent.ClientRect,BoundsRect);
   r.TopLeft := Parent.ClientToScreen(r.TopLeft);
   r.BottomRight := Parent.ClientToScreen(r.BottomRight);
 
 
   if (not PtInRect(r,pt1)) and (not (FIsRectSelecting or FIsMoving)) then
-    {$ifdef WIN32}
     ReleaseCapture
-    {$endif}
-    {$ifdef LINUX}
-     begin
-        if GetCaptureControl = Self then SetCaptureControl(nil);
-     end
-    {$endif}
   else
   begin
-    {$ifdef WIN32}
 ////TODO    found := FindVCLWindow(pt1);
      found := Application.GetControlAtMouse;
-    {$endif}
-    {$ifdef LINUX}
-    found := FindControl(pt1);
-    {$endif}
 
     if FIsRectSelecting then
     begin
@@ -881,7 +803,7 @@ begin
   FIsMoving := False;
   pt.X := X;
   pt.Y := Y;
-  IntersectRect(r,Parent.ClientRect,BoundsRect);
+  IntersectRect(r{%H-},Parent.ClientRect,BoundsRect);
   r.TopLeft := Parent.ClientToScreen(r.TopLeft);
   r.BottomRight := Parent.ClientToScreen(r.BottomRight);
 
@@ -904,13 +826,8 @@ begin
       if GetCaptureControl <> Self then SetCaptureControl(Self);
 
 
-      {$ifdef WIN32}
       //found := FindVCLWindow(Mouse.CursorPos);
       found := Application.GetControlAtMouse;
-      {$endif}
-      {$ifdef LINUX}
-      found := FindControl(Mouse.CursorPos);
-      {$endif}
 
       if Assigned(found) then
       begin
@@ -1063,7 +980,7 @@ begin
         end;
     end;
 
-    CalcShortest(conn.FFrom.BoundsRect,conn.FTo.BoundsRect,p,p1);
+    CalcShortest(conn.FFrom.BoundsRect,conn.FTo.BoundsRect,p{%H-},p1{%H-});
     if FindManagedControl(conn.FFrom).Selected and (not FSelectedOnly) then
       Canvas.Pen.Color := clGreen
     else
@@ -1084,7 +1001,7 @@ begin
     if TManagedObject(FManagedObjects[i]).Selected and (TManagedObject(FManagedObjects[i]).FControl.Visible) then
     begin
       Rect := TManagedObject(FManagedObjects[i]).FControl.BoundsRect;
-      MakeRectangle(r2, Rect.Left -HANDLESIZE, Rect.Top -HANDLESIZE, Rect.Left+HANDLESIZE, Rect.Top+HANDLESIZE);
+      MakeRectangle(r2{%H-}, Rect.Left -HANDLESIZE, Rect.Top -HANDLESIZE, Rect.Left+HANDLESIZE, Rect.Top+HANDLESIZE);
       Canvas.FillRect(r2);
       MakeRectangle(r2, Rect.Right -HANDLESIZE, Rect.Top -HANDLESIZE, Rect.Right+HANDLESIZE, Rect.Top+HANDLESIZE);
       Canvas.FillRect(r2);

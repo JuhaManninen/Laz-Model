@@ -22,15 +22,9 @@ unit uRtfdComponents;
 {$MODE Delphi}
 
 interface
-{$ifdef WIN32}
-uses LCLIntf, LCLType, LMessages, Windows,
- Messages, ExtCtrls, Classes, uModel, uModelEntity, StdCtrls, Controls, uListeners,
-  uViewIntegrator, Contnrs, uDiagramFrame;
-{$endif}
-{$ifdef LINUX}
-uses QTypes, QExtCtrls, Classes, uModel, uModelEntity, QStdCtrls, QControls, uListeners,
-  uViewIntegrator, Contnrs, uDiagramFrame;
-{$endif}
+uses LCLIntf, LCLType, Windows,
+ Messages, ExtCtrls, Classes, uModel, uModelEntity, Controls, uListeners,
+  uViewIntegrator, uDiagramFrame;
 
 type
 
@@ -99,14 +93,9 @@ type
 {$endif}
   protected
     procedure Paint; override;
-{$ifdef LINUX}
-    procedure SetText(const Value: TCaption); override;
-    function GetText: TCaption; override;
-{$endif}
-{$ifdef WIN32}
+
     procedure SetText(const Value: TCaption);
     function GetText: TCaption;
-{$endif}
   public
     constructor Create(Owner: TComponent; Entity: TModelEntity); reintroduce; virtual;
     procedure Change(Sender: TModelEntity); virtual;
@@ -193,15 +182,9 @@ type
 
 implementation
 
-{$ifdef WIN32}
 uses Graphics, uError, SysUtils, essConnectPanel, uIterators,
 uConfig, uRtfdDiagramFrame, Math;
-{$endif}
 
-{$ifdef LINUX}
-uses Types, QGraphics, uError, SysUtils, essConnectPanel, uIterators,
- uConfig, uRtfdDiagramFrame, Math, QForms, Qt;
-{$endif}
 
 const
   ClassShadowWidth = 3;
@@ -212,9 +195,6 @@ const
 constructor TRtfdBox.Create(Owner: TComponent; Entity: TModelEntity; Frame: TDiagramFrame; MinVisibility : TVisibility);
 begin
   inherited Create(Owner);
-  {$ifdef LINUX}
-  QWidget_Setbackgroundmode(Handle,QWidgetBackgroundMode_NoBackground);
-  {$endif}
   Color := clWhite;
   BorderWidth := ClassShadowWidth;
   Self.Frame := Frame;
@@ -407,20 +387,8 @@ begin
 end;
 
 procedure TRtfdUnitPackage.DblClick;
-{$ifdef LINUX}
-var
-  Msg: QCustomEventH;
-{$endif}
 begin
-{$ifdef WIN32}
   PostMessage(Frame.Handle, WM_ChangePackage, 0, 0);
-{$endif}
-{$ifdef LINUX}
-  //QApplication_processEvents(Application.Handle);
-  Msg := QCustomEvent_create(WM_ChangePackage);
-  QApplication_postEvent(Frame.Handle,Msg);
-  { TODO : Fix for Linux }
-{$endif}
 end;
 
 procedure TRtfdUnitPackage.RefreshEntities;
@@ -488,14 +456,8 @@ const
 procedure TVisibilityLabel.Paint;
 var
   Rect : TRect;
-{$ifdef WIN32}
   Pic : Graphics.TBitmap;
-{$endif}
-{$ifdef LINUX}
-  Pic : QGraphics.TBitmap;
-{$endif}
 begin
-{ifdef WIN32}
   Rect := ClientRect;
 
   case Entity.Visibility of
@@ -509,7 +471,6 @@ begin
 
   Canvas.Font := Font;
   Canvas.TextOut(Rect.Left + IconW + 4, Rect.Top, Caption);
-{endif}
 end;
 
 
@@ -591,12 +552,7 @@ begin
   //Cannot inherit from TCustomLabel in Kylix because it does not have a paint-method
   inherited Create(Owner);
   Parent := Owner as TWinControl;
-  {$ifdef WIN32}
   AutoSize := False;
-  {$endif}
-  {$ifdef LINUX}
-  { TODO : Fix for Linux }
-  {$endif}
   Height := 16;
   //Top must be assigned so that all labels appears beneath each other when align=top
   Top := MaxInt shr 2;
@@ -848,7 +804,6 @@ begin
     Canvas.Brush.Style := bsClear
   else
     Canvas.Brush.Style := bsSolid;
-{$ifdef WIN32}
   Al := DT_LEFT;
   case FAlignment of
     taLeftJustify: Al := DT_LEFT;
@@ -857,16 +812,6 @@ begin
   end;
   r := ClientRect;
   DrawText(Canvas.Handle,PChar(Caption),Length(Caption),r,Al);
-{$endif}
-{$ifdef LINUX}
-  case FAlignment of
-    taLeftJustify: Al := Ord(AlignmentFlags_AlignLeft);
-    taRightJustify: Al := Ord(AlignmentFlags_AlignRight);
-    taCenter: Al := Ord(AlignmentFlags_AlignCenter);
-  end;
-
-  Canvas.TextRect(ClientRect,0,0,Caption,Ord(AlignmentFlags_AlignVCenter)+Al);
-{$endif}
   Canvas.Font := oldFont;
 end;
 
@@ -903,8 +848,6 @@ begin
 end;
 
 procedure TRtfdCustomLabel.AdjustBounds;
-const
-  WordWraps: array[Boolean] of Word = (0, DT_WORDBREAK);
 var
   DC: HDC;
   X: Integer;

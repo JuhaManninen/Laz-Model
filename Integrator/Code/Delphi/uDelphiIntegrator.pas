@@ -22,7 +22,7 @@ unit uDelphiIntegrator;
 {$MODE Delphi}
 
 interface
-uses Classes, uIntegrator, uCodeIntegrator, uModel, uDelphiParser, uCodeProvider,
+uses Classes, uIntegrator, uModel, uDelphiParser, uCodeProvider,
   uCodeParser;
 
 type
@@ -52,7 +52,7 @@ begin
   if Assigned(Str) then
   begin
     GlobalDefines := TStringList.Create;
-    {$ifdef WIN32}
+    {$ifdef WIN32}   ////FPCTODO sort this properly for fpc
     GlobalDefines.Add('MSWINDOWS');
     GlobalDefines.Add('WIN32');
     {$endif}

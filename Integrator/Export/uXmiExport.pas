@@ -65,12 +65,8 @@ type
   end;
 
 implementation
-{$ifdef WIN32}
-uses SysUtils, uIterators, Dialogs, uConst;
-{$endif}
-{$ifdef LINUX}
-uses SysUtils, uIterators, QDialogs, uConst;
-{$endif}
+
+uses SysUtils, Dialogs, uConst;
 
 const
   Core = 'Foundation.Core.';

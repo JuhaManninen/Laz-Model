@@ -23,28 +23,16 @@ unit uDiagramFrame;
 
 interface
 
-{$ifdef LINUX}
+
 uses
-  SysUtils, Classes, QGraphics, QControls, QForms, QDialogs,
-  QActnList, QMenus, uViewIntegrator, QStdCtrls, QExtCtrls, uListeners, uModelEntity,
-  uModel, QButtons, Qt, QTypes, Menus, ActnList, Controls, StdCtrls,
-  Buttons, ExtCtrls, Forms;
-{$endif}
-{$ifdef WIN32}
-uses
-  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LCLIntf, LCLType, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ActnList, Menus, uViewIntegrator, StdCtrls, ExtCtrls, uListeners, uModelEntity,
   uModel, Buttons;
-{$endif}
 
-{$ifdef WIN32}
+
 const
   WM_ChangePackage = WM_USER + 1;
-{$endif}
-{$ifdef LINUX}
-const
-  WM_ChangePackage = Ord(QEventType_ClxUser) + 1;
-{$endif}
+
 type
   TDiagramFrame = class(TFrame,IBeforeObjectModelListener,IAfterObjectModelListener)
     ActionList: TActionList;
@@ -74,9 +62,6 @@ type
     procedure IBeforeObjectModelListener.Change = ModelBeforeChange;
     procedure IAfterObjectModelListener.Change = ModelAfterChange;
   protected
-{$ifdef LINUX}
-    function EventFilter(Sender: QObjectH; Event: QEventH): Boolean; override;
-{$endif}
   public
     { Public declarations }
     procedure PackageChange(var M: TMessage); message WM_ChangePackage;
@@ -113,12 +98,8 @@ implementation
 
 uses uError, uMainModule;
 
-{$ifdef WIN32}
 {$R *.lfm}
-{$endif}
-{$ifdef LINUX}
-{$R *.lfm}
-{$endif}
+
 
 type
   TScrollBoxWithNotify = class(TScrollBox)
@@ -209,23 +190,6 @@ begin
 end;
 
 
-{$ifdef LINUX}
-function TDiagramFrame.EventFilter(Sender: QObjectH;
-  Event: QEventH): Boolean;
-var
-  Msg: TMessage;
-begin
-  Result := False;
-  Msg.Msg := WM_ChangePackage;
-  case Ord(QEvent_Type(Event)) of
-    WM_ChangePackage:
-      begin
-        PackageChange(Msg);
-        Result := True;
-      end;
-    end;
-end;
-{$endif}
 
 { TScrollBoxWithNotify }
 

@@ -42,15 +42,10 @@ type
   end;
 
 implementation
-{$ifdef WIN32}
+
 uses Forms, SysUtils, Graphics,
-  LCLIntf, LCLType, LMessages, ComObj,
-  uConfig, Classes, uIterators, Dialogs, uViewIntegrator;
-{$endif}
-{$ifdef LINUX}
-uses QForms, SysUtils, QGraphics,
-  uConfig, Classes, uIterators, QDialogs, uViewIntegrator;
-{$endif}
+  LCLIntf, LCLType, ComObj,
+  uConfig, Classes, Dialogs, uViewIntegrator;
 
 
 

@@ -50,21 +50,13 @@ type
 
 implementation
 
-{$ifdef WIN32}
 uses uIterators,
   uHtmlDocGen,
   uUseful,
   SysUtils,
   Forms,
   uConst;
-{$endif}
-{$ifdef LINUX}
-uses uIterators,
-  uHtmlDocGen,
-  uUseful,
-  SysUtils,
-  QForms;
-{$endif}
+
 
 { TDocGen }
 
@@ -93,8 +85,8 @@ begin
   Di := TBrowseForFolderDialog.Create;
   try
     Di.Path := ExtractFilePath( Model.ModelRoot.GetConfigFile );
-    if not Di.Execute then
-      Abort;
+//    if not Di.Execute then
+//      Abort;
     DestPath := Di.Path;
   finally
     Di.Free;
