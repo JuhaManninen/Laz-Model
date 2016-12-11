@@ -23,19 +23,11 @@ unit uRtfdDiagramFrame;
 
 interface
 
-{$ifdef LINUX}
-uses
-  SysUtils, Classes, QGraphics, QControls, QForms, QDialogs,
-  uDiagramFrame, QActnList, uRtfdDiagram, QMenus, QStdCtrls, QExtCtrls, uListeners,
-  QButtons, QTypes, Graphics, ExtCtrls, Menus, ActnList, Controls,
-  StdCtrls, Buttons, Forms;
-{$endif}
-{$ifdef WIN32}
+
 uses
   LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   uDiagramFrame, ActnList, uRtfdDiagram, Menus, StdCtrls, ExtCtrls, uListeners,
   Buttons;
-{$endif}
 
 type
   TRtfdDiagramFrame = class(TDiagramFrame)
@@ -55,12 +47,8 @@ implementation
 
 uses uError;
 
-{$ifdef WIN32}
 {$R *.lfm}
-{$endif}
-{$ifdef LINUX}
-{$R *.lfm}
-{$endif}
+
 
 
 { TRtfdDiagramFrame }

@@ -22,12 +22,8 @@ unit uConfig;
 {$MODE Delphi}
 
 interface
-{$ifdef WIN32}
+
 uses Classes, registry;
-{$endif}
-{$ifdef LINUX}
-uses Classes;
-{$endif}
 
 type
   //Save changed diagram layout setting
@@ -38,9 +34,7 @@ type
 {$ifdef WIN32}
     Reg : TRegistry;
 {$endif}
-{$ifdef LINUX}
-{ TODO : Fix for Linux }
-{$endif}
+
     FDiSave : TDiSaveSetting;
     FDiShowAssoc: boolean;
     FDiVisibilityFilter: integer;
@@ -70,17 +64,10 @@ var
 
 implementation
 
-{$ifdef WIN32}
 uses Forms,
    LCLIntf, LCLType, LMessages,
    uConst,
    SysUtils;
-{$endif}
-{$ifdef LINUX}
-uses QForms,
-   uConst,
-   SysUtils;
-{$endif}
 
 
 
@@ -89,11 +76,9 @@ var
   DC : integer;
 begin
   IsLimitedColors := False;
-  {$IFDEF Win32}
   DC := GetDC(0);
   IsLimitedColors := GetDeviceCaps( DC ,BITSPIXEL) <= 8;
   ReleaseDC(0,DC);
-  {$ENDIF}
 
 {$ifdef WIN32}
   Reg := TRegistry.Create;
@@ -108,9 +93,7 @@ begin
   FDiVisibilityFilter := ReadInt('DiVisibilityFilter',0);
   FEditorCommandLine := ReadStr('EditorCommandLine','');
 {$endif}
-{$ifdef LINUX}
-{ TODO : Fix for Linux }
-{$endif}
+
 end;
 
 destructor TConfig.Destroy;
@@ -118,9 +101,7 @@ begin
 {$ifdef WIN32}
   Reg.Free;
 {$endif}
-{$ifdef LINUX}
-{ TODO : Fix for Linux }
-{$endif}
+
   inherited Destroy;
 end;
 
@@ -140,9 +121,7 @@ begin
   Move(P^,Result.Memory^,Len);
   UnlockResource(R);
 {$endif}
-{$ifdef LINUX}
-{ TODO : Fix for Linux }
-{$endif}
+
 end;
 
 //Returnerar resurs som en sträng
@@ -168,10 +147,7 @@ begin
   else
     Result := Default;
 {$endif}
-{$ifdef LINUX}
-{ TODO : Fix for Linux }
-    Result := Default;
-{$endif}
+
 end;
 
 

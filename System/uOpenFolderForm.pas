@@ -4,7 +4,6 @@ unit uOpenFolderForm;
 
 interface
 
-{$WARN UNIT_PLATFORM OFF}
 
 uses
   LCLIntf, LCLType, LMessages, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,

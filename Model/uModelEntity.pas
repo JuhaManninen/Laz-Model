@@ -106,12 +106,8 @@ var
   CurrentSourceY: PInteger;
 implementation
 
-{$ifdef WIN32}
-uses Sysutils, LCLIntf, LCLType, LMessages, uListeners, uModel;
-{$endif}
-{$ifdef LINUX}
-uses Sysutils, uListeners, uModel;
-{$endif}
+uses Sysutils, LCLIntf, LCLType, uListeners ;
+
 
 { TModelEntity }
 
@@ -252,7 +248,7 @@ begin
     Result := Result.Owner;
 end;
 
-class function TModelEntity.GetAfterListener: TGUID;
+class function TModelEntity.{%H-}GetAfterListener: TGUID;
 begin
   raise Exception.Create( ClassName + '.GetAfterListener');
 end;

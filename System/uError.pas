@@ -29,12 +29,7 @@ unit uError;
 interface
 
 {$IFNDEF Release}
-{$ifdef WIN32}
 uses SysUtils, Forms, StdCtrls;
-{$endif}
-{$ifdef LINUX}
-uses SysUtils, QForms, QStdCtrls;
-{$endif}
 {$ENDIF}
 
 
@@ -62,12 +57,7 @@ var
 implementation
 
 {$IFNDEF Release}
-{$ifdef WIN32}
-uses LCLIntf, LCLType, LMessages, Controls;
-{$endif}
-{$ifdef LINUX}
-uses QControls;
-{$endif}
+uses LCLIntf, LCLType, Controls;
 {$ENDIF}
 
 

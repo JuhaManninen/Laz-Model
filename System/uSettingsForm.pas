@@ -23,16 +23,10 @@ unit uSettingsForm;
 
 interface
 
-{$ifdef WIN32}
 uses
   LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls;
-{$endif}
-{$ifdef LINUX}
-uses
-  SysUtils, Classes, QGraphics, QControls, QForms, QDialogs,
-  QStdCtrls;
-{$endif}
+
 
 type
   TSettingsForm = class(TForm)
@@ -64,12 +58,7 @@ implementation
 
 uses uRegisterExtension, uConst, uIntegrator, contnrs, uConfig;
 
-{$ifdef WIN32}
 {$R *.lfm}
-{$endif}
-{$ifdef LINUX}
-{$R *.lfm}
-{$endif}
 
 const
   MenuStr = 'View as model diagram';

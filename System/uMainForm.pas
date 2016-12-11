@@ -23,16 +23,10 @@ unit uMainForm;
 
 interface
 
-{$ifdef LINUX}
+
 uses
-  QForms, SysUtils, Classes, uMainModule, QComCtrls, uDiagramFrame, QMenus,
-  QTypes, QControls, QExtCtrls, Menus, Controls, ExtCtrls, Buttons;
-{$endif}
-{$ifdef WIN32}
-uses
-  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, StdCtrls, Menus, uMainModule, ComCtrls, uDiagramFrame, Buttons;
-{$endif}
+  LCLIntf, LCLType, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  ExtCtrls, Menus, uMainModule,  Buttons;
 
 type
   TMainForm = class(TForm)
@@ -85,12 +79,7 @@ implementation
 
 uses uConst, Math;
 
-{$ifdef WIN32}
 {$R *.lfm}
-{$endif}
-{$ifdef LINUX}
-{$R *.lfm}
-{$endif}
 
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);

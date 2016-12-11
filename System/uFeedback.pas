@@ -22,12 +22,7 @@ unit uFeedback;
 {$MODE Delphi}
 
 interface
-{$ifdef WIN32}
 uses classes, extctrls;
-{$endif}
-{$ifdef LINUX}
-uses classes, Qextctrls;
-{$endif}
 
 type
   IEldeanFeedback = interface(IUnknown)

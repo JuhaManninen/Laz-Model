@@ -654,7 +654,7 @@ end;
 
 procedure TMainModule.OpenFolderActionExecute(Sender: TObject);
 const
-  F : TOpenFolderForm = nil;
+  F : TSelectDirectoryDialog = nil;
 var
   L : TStringList;
   Ints : TClassList;
@@ -689,26 +689,26 @@ begin
   try
     if not Assigned(F) then
     begin
-      F := TOpenFolderForm.Create(MainForm);
+      F := TSelectDirectoryDialog.Create(MainForm);
       try
         //In Delphi 6 you need the patched version of TShellTreeView to be able to set path
         //  http://codecentral.borland.com/codecentral/ccweb.exe/listing?id=16739
         if (RecentOpenFolderPath<>'') and (DirectoryExists(RecentOpenFolderPath)) then
-          F.PathTreeView.Path := RecentOpenFolderPath;
+          F.InitialDir := RecentOpenFolderPath;
       except
         //Safety for invalid paths
       end;
       for I := 0 to Ints.Count - 1 do
       begin
         Exts := TImportIntegratorClass(Ints[I]).GetFileExtensions;
-        F.FileTypeCombo.Items.Add( '*' + Exts.Names[0]);
+//        F.Filter FileTypeCombo.Items.Add( '*' + Exts.Names[0]);
       end;
-      F.FileTypeCombo.ItemIndex := F.FileTypeCombo.Items.Count-1;
+  //    F.FileTypeCombo.ItemIndex := F.FileTypeCombo.Items.Count-1;
     end;
-    if F.ShowModal=mrOk then
+    if F.Execute then
     begin
-      RecentOpenFolderPath := F.PathTreeView.Path;
-      _AddFileNames(L,F.PathTreeView.Path, Copy(F.FileTypeCombo.Items[ F.FileTypeCombo.ItemIndex ],2,10) );
+      RecentOpenFolderPath := F.FileName ;
+      _AddFileNames(L,F.FileName, '.pas' );  //HACK ALERT FIX THIS
       if L.Count>0 then
         LoadProject(L)
       else

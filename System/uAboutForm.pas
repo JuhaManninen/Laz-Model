@@ -23,16 +23,10 @@ unit uAboutForm;
 
 interface
 
-{$ifdef WIN32}
 uses
   LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, StdCtrls;
-{$endif}
-{$ifdef LINUX}
-uses
-  SysUtils, Classes, QGraphics, QControls, QForms, QDialogs,
-  QExtCtrls, QStdCtrls;
-{$endif}
+
 
 type
   TAboutForm = class(TForm)
@@ -54,12 +48,7 @@ type
 
 implementation
 
-{$ifdef WIN32}
 {$R *.lfm}
-{$endif}
-{$ifdef LINUX}
-{$R *.lfm}
-{$endif}
 
 uses uConst, uConfig;
 

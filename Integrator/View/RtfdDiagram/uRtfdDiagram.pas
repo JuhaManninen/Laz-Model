@@ -22,18 +22,11 @@ unit uRtfdDiagram;
 {$MODE Delphi}
 
 interface
-{$ifdef WIN32}
+
 uses uViewIntegrator, essConnectPanel, uModelEntity, uModel, Controls, uListeners, Graphics,
   Classes, Forms, uDiagramFrame, uRtfdComponents, uFeedback,
-{$ifdef fpc}
   Windows,
-{$endif}
    Types;
-{$endif}
-{$ifdef LINUX}
-uses uViewIntegrator, essConnectPanel, uModelEntity, uModel, QControls, uListeners, QGraphics,
-  Classes, QForms, uDiagramFrame, uRtfdComponents, uFeedback;
-{$endif}
 
 
 type
@@ -96,15 +89,9 @@ type
 
 implementation
 
-{$ifdef WIN32}
-uses uRtfdDiagramFrame, Math, LCLIntf, LCLType, LMessages, uError, SysUtils,
+uses uRtfdDiagramFrame, Math, LCLIntf, LCLType, uError, SysUtils,
   uIterators, IniFiles, Dialogs, EssLayout, uConfig, contnrs, ExtCtrls,
   uIntegrator;
-{$endif}
-{$ifdef LINUX}
-uses uRtfdDiagramFrame, Math, uError, SysUtils,
-  uIterators, IniFiles, QDialogs, EssLayout, uConfig, contnrs;
-{$endif}
 
 
 { TRtfdDiagram }
@@ -255,12 +242,7 @@ end;
 
 procedure TRtfdDiagram.PaintTo(Canvas: TCanvas; X, Y: integer; SelectedOnly : boolean);
 var
-{$ifdef WIN32}
   OldBit : Graphics.TBitmap;
-{$endif}
-{$ifdef LINUX}
-  OldBit : QGraphics.TBitmap;
-{$endif}
 begin
   OldBit := Panel.BackBitmap;
   Panel.BackBitmap := nil;
@@ -274,12 +256,7 @@ begin
     //Selection-markers should not be visible in the saved picture
     Panel.ClearSelection;
 
-{$ifdef WIN32}
   Panel.PaintTo(Canvas.Handle, X, Y);
-{$endif}
-{$ifdef LINUX}
-  { TODO : Fix for Linux }
-{$endif}
   Panel.SelectedOnly := False;
   Panel.BackBitmap := OldBit;
 end;
