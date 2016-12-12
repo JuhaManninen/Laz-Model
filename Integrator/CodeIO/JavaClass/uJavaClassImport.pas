@@ -19,7 +19,7 @@
 
 unit uJavaClassImport;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -65,7 +65,7 @@ begin
   begin
     Parser := TJavaClassParser.Create;
     try
-      Parser.NeedPackage := NeedPackageHandler;
+      Parser.NeedPackage := @NeedPackageHandler;
       Parser.ParseStream(Str, Model.ModelRoot, Model);
     finally
       Parser.Free;

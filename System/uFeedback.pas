@@ -19,7 +19,7 @@
 
 unit uFeedback;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 uses classes, extctrls;
@@ -37,7 +37,7 @@ type
   private
     procedure OnTimer(Sender : TObject);
   public
-    constructor Create(P : TPanel);
+    constructor Create(APanel : TPanel);
     destructor Destroy; override;
     procedure Message(const M : string);
   end;
@@ -53,11 +53,11 @@ uses SysUtils;
 
 { TGuiFeedback }
 
-constructor TGuiFeedback.Create(P: TPanel);
+constructor TGuiFeedback.Create(APanel: TPanel);
 begin
-  Self.P := P;
+  Self.P := APanel;
   T := TTimer.Create(nil);
-  T.OnTimer := OnTimer;
+  T.OnTimer := @OnTimer;
 end;
 
 destructor TGuiFeedback.Destroy;

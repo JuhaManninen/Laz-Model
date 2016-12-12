@@ -27,7 +27,8 @@
 }
 unit uXmiExportArgoUML;
 
-{$MODE Delphi}
+{$mode delphi}
+//{$mode objfpc}{$H+}
 
 interface
 
@@ -71,7 +72,7 @@ type
                                           bolPrintNameSpace : boolean = True);
     function xmiUUID(Id: string): string;
   public
-    constructor Create(om: TObjectModel; Feedback : IEldeanFeedback = nil); reintroduce;
+    constructor Create(om: TObjectModel; AFeedback : IEldeanFeedback = nil); reintroduce;
     destructor Destroy; override;
     procedure InitFromModel; override;
     procedure ShowSaveDialog;
@@ -120,7 +121,7 @@ const
 
 { TXMIExporterArgoUML }
 
-constructor TXMIExporterArgoUML.Create(om: TObjectModel; Feedback : IEldeanFeedback = nil);
+constructor TXMIExporterArgoUML.Create(om: TObjectModel; AFeedback : IEldeanFeedback = nil);
 begin
   inherited Create(om);
   Output := TMemoryStream.Create;
@@ -129,7 +130,7 @@ begin
   Ids.Sorted := True;
   Ids.Duplicates := dupIgnore;
   NextId := 0;
-  Self.Feedback := Feedback;
+  Self.Feedback := AFeedback;
   if Feedback=nil then
     Self.Feedback := NilFeedback
 end;
@@ -181,6 +182,7 @@ begin
   if I=-1 then
   begin
     Inc(NextId);
+    ////FPCTODO this line stops forces delphi mode
     I := Ids.AddObject(S,pointer(NextId));
   end;
 //begin Fernando Montenegro

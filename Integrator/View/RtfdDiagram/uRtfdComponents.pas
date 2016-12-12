@@ -19,7 +19,7 @@
 
 unit uRtfdComponents;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 uses LCLIntf, LCLType, {Windows,}
@@ -41,7 +41,7 @@ type
     Frame: TDiagramFrame;
     Entity: TModelEntity;
   public
-    constructor Create(Owner: TComponent; Entity: TModelEntity; Frame: TDiagramFrame; MinVisibility : TVisibility); reintroduce; virtual;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; AFrame: TDiagramFrame; AMinVisibility : TVisibility); reintroduce; virtual;
     procedure RefreshEntities; virtual; abstract;
     procedure Paint; override;
     procedure Change(Sender: TModelEntity); virtual;
@@ -53,7 +53,7 @@ type
 
   TRtfdClass = class(TRtfdBox, IAfterClassListener)
   public
-    constructor Create(Owner: TComponent; Entity: TModelEntity; Frame: TDiagramFrame; MinVisibility : TVisibility); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; AFrame: TDiagramFrame; AMinVisibility : TVisibility); override;
     destructor Destroy; override;
     procedure RefreshEntities; override;
     procedure AddChild(Sender: TModelEntity; NewChild: TModelEntity); override;
@@ -61,7 +61,7 @@ type
 
   TRtfdInterface = class(TRtfdBox, IAfterInterfaceListener)
   public
-    constructor Create(Owner: TComponent; Entity: TModelEntity; Frame: TDiagramFrame; MinVisibility : TVisibility); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; AFrame: TDiagramFrame; AMinVisibility : TVisibility); override;
     destructor Destroy; override;
     procedure RefreshEntities; override;
     procedure AddChild(Sender: TModelEntity; NewChild: TModelEntity); override;
@@ -71,7 +71,7 @@ type
   public
     P: TUnitPackage;
   public
-    constructor Create(Owner: TComponent; Entity: TModelEntity; Frame: TDiagramFrame; MinVisibility : TVisibility); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; AFrame: TDiagramFrame; AMinVisibility : TVisibility); override;
     procedure RefreshEntities; override;
     procedure DblClick; override;
   end;
@@ -96,7 +96,7 @@ type
     procedure SetText(const Value: TCaption);
     function GetText: TCaption;
   public
-    constructor Create(Owner: TComponent; Entity: TModelEntity); reintroduce; virtual;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity); reintroduce; virtual;
     procedure Change(Sender: TModelEntity); virtual;
     procedure AddChild(Sender: TModelEntity; NewChild: TModelEntity); virtual;
     procedure Remove(Sender: TModelEntity); virtual;
@@ -109,14 +109,14 @@ type
 
   TRtfdClassName = class(TRtfdCustomLabel, IAfterClassListener)
   public
-    constructor Create(Owner: TComponent; Entity: TModelEntity); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity); override;
     destructor Destroy; override;
     procedure EntityChange(Sender: TModelEntity); override;
   end;
 
   TRtfdInterfaceName = class(TRtfdCustomLabel, IAfterInterfaceListener)
   public
-    constructor Create(Owner: TComponent; Entity: TModelEntity); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity); override;
     destructor Destroy; override;
     procedure EntityChange(Sender: TModelEntity); override;
   end;
@@ -131,7 +131,7 @@ type
   private
     O: TOperation;
   public
-    constructor Create(Owner: TComponent; Entity: TModelEntity); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity); override;
     destructor Destroy; override;
     procedure EntityChange(Sender: TModelEntity); override;
     procedure IAfterOperationListener.EntityChange = EntityChange;
@@ -141,7 +141,7 @@ type
   private
     A: TAttribute;
   public
-    constructor Create(Owner: TComponent; Entity: TModelEntity); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity); override;
     destructor Destroy; override;
     procedure EntityChange(Sender: TModelEntity); override;
     procedure IAfterAttributeListener.EntityChange = EntityChange;
@@ -149,20 +149,20 @@ type
 
   TRtfdSeparator = class(TGraphicControl)
   public
-    constructor Create(Owner: TComponent); override;
+    constructor Create(AOwner: TComponent); override;
     procedure Paint; override;
   end;
 
   TRtfdStereotype = class(TRtfdCustomLabel)
   public
-    constructor Create(Owner: TComponent; Entity: TModelEntity; Caption: string); reintroduce;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; ACaption: string); reintroduce;
   end;
 
   TRtfdUnitPackageName = class(TRtfdCustomLabel, IAfterUnitPackageListener)
   private
     P: TUnitPackage;
   public
-    constructor Create(Owner: TComponent; Entity: TModelEntity); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity); override;
     destructor Destroy; override;
     procedure EntityChange(Sender: TModelEntity); override;
     procedure IAfterUnitPackageListener.EntityChange = EntityChange;
@@ -173,7 +173,7 @@ type
   private
     P: TUnitPackage;
   public
-    constructor Create(Owner: TComponent; Entity: TModelEntity); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity); override;
     destructor Destroy; override;
     procedure EntityChange(Sender: TModelEntity); override;
     procedure IAfterUnitPackageListener.EntityChange = EntityChange;
@@ -191,14 +191,14 @@ const
   cDefaultHeight = 41;
 
 { TRtfdBox }
-constructor TRtfdBox.Create(Owner: TComponent; Entity: TModelEntity; Frame: TDiagramFrame; MinVisibility : TVisibility);
+constructor TRtfdBox.Create(AOwner: TComponent; AEntity: TModelEntity; AFrame: TDiagramFrame; AMinVisibility : TVisibility);
 begin
-  inherited Create(Owner);
+  inherited Create(AOwner);
   Color := clWhite;
   BorderWidth := ClassShadowWidth;
-  Self.Frame := Frame;
-  Self.Entity := Entity;
-  Self.FMinVisibility := MinVisibility;
+  Self.Frame := AFrame;
+  Self.Entity := AEntity;
+  Self.FMinVisibility := AMinVisibility;
 //  ShowHint := True;
 //  Hint := Entity.Documentation.ShortDescription;
 end;
@@ -281,7 +281,7 @@ begin
   //Owner=Self must be tested because notifications are being sent for all components
   //in the form. TRtfdLabels are created with Owner=box.
   if (Operation = opInsert) and (Acomponent.Owner = Self) and (Acomponent is TControl) then
-    TCrackControl(AComponent).OnMouseDown := OnChildMouseDown;
+    TCrackControl(AComponent).OnMouseDown := @OnChildMouseDown;
 end;
 
 procedure TRtfdBox.OnChildMouseDown(Sender: TObject; Button: TMouseButton;
@@ -301,9 +301,9 @@ end;
 
 { TRtfdClass }
 
-constructor TRtfdClass.Create(Owner: TComponent; Entity: TModelEntity; Frame: TDiagramFrame; MinVisibility : TVisibility);
+constructor TRtfdClass.Create(AOwner: TComponent; AEntity: TModelEntity; AFrame: TDiagramFrame; AMinVisibility : TVisibility);
 begin
-  inherited Create(Owner, Entity, Frame, MinVisibility);
+  inherited Create(AOwner, AEntity, AFrame, AMinVisibility);
   PopupMenu := Frame.ClassInterfacePopupMenu;
   Entity.AddListener(IAfterClassListener(Self));
   RefreshEntities;
@@ -377,9 +377,9 @@ end;
 
 { TRtfdUnitPackage }
 
-constructor TRtfdUnitPackage.Create(Owner: TComponent; Entity: TModelEntity; Frame: TDiagramFrame; MinVisibility : TVisibility);
+constructor TRtfdUnitPackage.Create(AOwner: TComponent; AEntity: TModelEntity; AFrame: TDiagramFrame; AMinVisibility : TVisibility);
 begin
-  inherited Create(Owner, Entity, Frame, MinVisibility);
+  inherited Create(AOwner, AEntity, AFrame, AMinVisibility);
   PopupMenu := Frame.PackagePopupMenu;
   P := Entity as TUnitPackage;
   RefreshEntities;
@@ -399,12 +399,11 @@ end;
 
 { TRtfdCustomLabel }
 
-constructor TRtfdCustomLabel.Create(Owner: TComponent;
-  Entity: TModelEntity);
+constructor TRtfdCustomLabel.Create(AOwner: TComponent; AEntity: TModelEntity);
 begin
-  inherited Create(Owner);
+  inherited Create(AOwner);
   Parent := Owner as TWinControl;
-  Self.Entity := Entity;
+  Self.Entity := AEntity;
   Align := alTop;
   Height := Abs(Font.Height);
   FAlignment := taLeftJustify;
@@ -480,9 +479,9 @@ end;
 
 { TRtfdClassName }
 
-constructor TRtfdClassName.Create(Owner: TComponent; Entity: TModelEntity);
+constructor TRtfdClassName.Create(AOwner: TComponent; AEntity: TModelEntity);
 begin
-  inherited Create(Owner, Entity);
+  inherited Create(AOwner, AEntity);
   Font.Style := [fsBold];
   Alignment := taCenter;
   Entity.AddListener(IAfterClassListener(Self));
@@ -517,10 +516,9 @@ end;
 
 { TRtfdInterfaceName }
 
-constructor TRtfdInterfaceName.Create(Owner: TComponent;
-  Entity: TModelEntity);
+constructor TRtfdInterfaceName.Create(AOwner: TComponent; AEntity: TModelEntity);
 begin
-  inherited Create(Owner, Entity);
+  inherited Create(AOwner, AEntity);
   Font.Style := [fsBold];
   Alignment := taCenter;
   Entity.AddListener(IAfterInterfaceListener(Self));
@@ -546,10 +544,10 @@ end;
 
 { TRtfdSeparator }
 
-constructor TRtfdSeparator.Create(Owner: TComponent);
+constructor TRtfdSeparator.Create(AOwner: TComponent);
 begin
   //Cannot inherit from TCustomLabel in Kylix because it does not have a paint-method
-  inherited Create(Owner);
+  inherited Create(AOwner);
   Parent := Owner as TWinControl;
   AutoSize := False;
   Height := 16;
@@ -571,10 +569,10 @@ end;
 
 { TRtfdPackageName }
 
-constructor TRtfdUnitPackageName.Create(Owner: TComponent;
-  Entity: TModelEntity);
+constructor TRtfdUnitPackageName.Create(AOwner: TComponent;
+  AEntity: TModelEntity);
 begin
-  inherited Create(Owner, Entity);
+  inherited Create(AOwner, AEntity);
   Font.Style := [fsBold];
   Alignment := taCenter;
   P := Entity as TUnitPackage;
@@ -597,9 +595,9 @@ end;
 
 { TRtfdOperation }
 
-constructor TRtfdOperation.Create(Owner: TComponent; Entity: TModelEntity);
+constructor TRtfdOperation.Create(AOwner: TComponent; AEntity: TModelEntity);
 begin
-  inherited Create(Owner, Entity);
+  inherited Create(AOwner, AEntity);
   O := Entity as TOperation;
   O.AddListener(IAfterOperationListener(Self));
   EntityChange(nil);
@@ -630,9 +628,9 @@ end;
 
 { TRtfdAttribute }
 
-constructor TRtfdAttribute.Create(Owner: TComponent; Entity: TModelEntity);
+constructor TRtfdAttribute.Create(AOwner: TComponent; AEntity: TModelEntity);
 begin
-  inherited Create(Owner, Entity);
+  inherited Create(AOwner, AEntity);
   A := Entity as TAttribute;
   A.AddListener(IAfterAttributeListener(Self));
   EntityChange(nil);
@@ -658,17 +656,17 @@ end;
 
 { TRtfdUnitPackageDiagram }
 
-constructor TRtfdUnitPackageDiagram.Create(Owner: TComponent;
-  Entity: TModelEntity);
+constructor TRtfdUnitPackageDiagram.Create(AOwner: TComponent;
+  AEntity: TModelEntity);
 begin
   //This class is the caption in upper left corner for a unitdiagram
-  inherited Create(Owner, Entity);
+  inherited Create(Owner, AEntity);
   Color := clBtnFace;
   Font.Name := 'Times New Roman';
   Font.Style := [fsBold];
   Font.Size := 12;
   Alignment := taLeftJustify;
-  P := Entity as TUnitPackage;
+  P := AEntity as TUnitPackage;
   P.AddListener(IAfterUnitPackageListener(Self));
   EntityChange(nil);
 end;
@@ -689,10 +687,10 @@ end;
 
 { TRtfdInterface }
 
-constructor TRtfdInterface.Create(Owner: TComponent; Entity: TModelEntity;
-  Frame: TDiagramFrame; MinVisibility : TVisibility);
+constructor TRtfdInterface.Create(AOwner: TComponent; AEntity: TModelEntity;
+  AFrame: TDiagramFrame; AMinVisibility : TVisibility);
 begin
-  inherited Create(Owner, Entity, Frame, MinVisibility);
+  inherited Create(AOwner, AEntity, AFrame, AMinVisibility);
   Entity.AddListener(IAfterInterfaceListener(Self));
   PopupMenu := Frame.ClassInterfacePopupMenu;
   RefreshEntities;
@@ -768,11 +766,11 @@ end;
 
 { TRtfdStereotype }
 
-constructor TRtfdStereotype.Create(Owner: TComponent; Entity: TModelEntity; Caption: string);
+constructor TRtfdStereotype.Create(AOwner: TComponent; AEntity: TModelEntity; ACaption: string);
 begin
-  inherited Create(Owner, Entity);
+  inherited Create(AOwner, AEntity);
   Alignment := taCenter;
-  Self.Caption := '<<' + Caption + '>>';
+  Self.Caption := '<<' + ACaption + '>>';
 end;
 
 function TRtfdCustomLabel.GetAlignment: TAlignment;
@@ -870,11 +868,11 @@ end;
 
 procedure TRtfdCustomLabel.DoDrawText(var Rect: TRect; Flags: Longint);
 var
-  Text: string;
+  Txt: string;
 begin
-  Text := Caption;
-  if (Flags and DT_CALCRECT <> 0) and ((Text = '') and
-    (Text[1] = '&') and (Text[2] = #0)) then Text := Text + ' ';
+  Txt := Caption;
+  if (Flags and DT_CALCRECT <> 0) and ((Txt = '') and
+    (Txt[1] = '&') and (Txt[2] = #0)) then Txt := Txt + ' ';
   Flags := Flags or DT_NOPREFIX;
 //  Flags := DrawTextBiDiModeFlags(Flags);
   Canvas.Font := Font;
@@ -882,13 +880,13 @@ begin
   begin
     OffsetRect(Rect, 1, 1);
     Canvas.Font.Color := clBtnHighlight;
-    DrawText(Canvas.Handle, PChar(Text), Length(Text), Rect, Flags);
+    DrawText(Canvas.Handle, PChar(Txt), Length(Txt), Rect, Flags);
     OffsetRect(Rect, -1, -1);
     Canvas.Font.Color := clBtnShadow;
-    DrawText(Canvas.Handle, PChar(Text), Length(Text), Rect, Flags);
+    DrawText(Canvas.Handle, PChar(Txt), Length(Txt), Rect, Flags);
   end
   else
-    DrawText(Canvas.Handle, PChar(Text), Length(Text), Rect, Flags);
+    DrawText(Canvas.Handle, PChar(Txt), Length(Txt), Rect, Flags);
 end;
 
 

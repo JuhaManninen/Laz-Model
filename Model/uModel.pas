@@ -19,7 +19,7 @@
 
 unit uModel;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 {
   Classes to represent the object model.
@@ -72,7 +72,7 @@ type
     function GetSourcefilename: String; override;
     procedure SetSourcefilename(const Value: String); override;
   public
-    constructor Create(Owner: TModelEntity); override;
+    constructor Create(AOwner: TModelEntity); override;
     destructor Destroy; override;
     property IsPlaceholder: boolean read FIsPlaceHolder write FIsPlaceholder;
     function GetFeatures : IModelIterator;
@@ -101,7 +101,7 @@ type
     procedure SetIsAbstract(const Value: boolean);
     procedure SetReturnValue(const Value: TClassifier);
   public
-    constructor Create(Owner: TModelEntity); override;
+    constructor Create(AOwner: TModelEntity); override;
     destructor Destroy; override;
     function AddParameter(const NewName: string): TParameter;
     property OperationType: TOperationType read FOperationType write SetOperationType;
@@ -147,7 +147,7 @@ type
     class function GetBeforeListener: TGUID; override;
     class function GetAfterListener: TGUID; override;
   public
-    constructor Create(Owner: TModelEntity); override;
+    constructor Create(AOwner: TModelEntity); override;
     destructor Destroy; override;
     function AddOperation(const NewName: string): TOperation;
     function AddAttribute(const NewName: string): TAttribute;
@@ -175,7 +175,7 @@ type
     procedure IBeforeClassListener.AddChild = AncestorAddChild;
     procedure IBeforeClassListener.Remove = AncestorRemove;
   public
-    constructor Create(Owner: TModelEntity); override;
+    constructor Create(AOwner: TModelEntity); override;
     destructor Destroy; override;
     function AddOperation(const NewName: string): TOperation;
     function AddAttribute(const NewName: string): TAttribute;
@@ -200,7 +200,7 @@ type
     function GetSourcefilename: String; override;
     procedure SetSourcefilename(const Value: String); override;
   public
-    constructor Create(Owner: TModelEntity); override;
+    constructor Create(AOwner: TModelEntity); override;
     procedure SetConfigFile(const Value : string);
     function GetConfigFile : string;
   end;
@@ -219,12 +219,12 @@ type
     FClassifiers: TObjectList;
     FUnitDependencies: TObjectList;
   public
-    constructor Create(Owner: TModelEntity); override;
+    constructor Create(AOwner: TModelEntity); override;
     destructor Destroy; override;
     function AddClass(const NewName: string): TClass;
     function AddInterface(const NewName: string): TInterface;
     function AddDatatype(const NewName: string): TDataType;
-    function AddUnitDependency(U : TUnitPackage; Visibility : TVisibility): TUnitDependency;
+    function AddUnitDependency(U : TUnitPackage; AVisibility : TVisibility): TUnitDependency;
     function FindClassifier(const CName: string; RaiseException: boolean = False; TheClass : TModelEntityClass = nil; CaseSense : boolean = False): TClassifier;
     function GetClassifiers : IModelIterator;
     function GetUnitDependencies : IModelIterator;
@@ -238,7 +238,7 @@ type
     class function GetBeforeListener: TGUID; override;
     class function GetAfterListener: TGUID; override;
   public
-    constructor Create(Owner: TModelEntity); override;
+    constructor Create(AOwner: TModelEntity); override;
     destructor Destroy; override;
     function AddUnit(const NewUnitName: string): TUnitPackage;
     //Might need a AddLogicPackage also
@@ -260,7 +260,7 @@ type
   private
     Ancestor : TClass;
   public
-    constructor Create(Ancestor : TClass);
+    constructor Create(AAncestor : TClass);
     function Accept(M : TModelEntity) : boolean; override;
   end;
 
@@ -276,7 +276,7 @@ type
   TStrCompare = function(const S1, S2: string): Integer;
 
 const
-  CompareFunc : array[boolean] of TStrCompare = (CompareText, CompareStr);
+  CompareFunc : array[boolean] of TStrCompare = (@CompareText, @CompareStr);
 
 { TObjectModel }
 
@@ -372,9 +372,9 @@ end;
 
 { TLogicPackage }
 
-constructor TLogicPackage.Create(Owner: TModelEntity);
+constructor TLogicPackage.Create(AOwner: TModelEntity);
 begin
-  inherited Create(Owner);
+  inherited Create(AOwner);
   FPackages := TObjectList.Create(True);
 end;
 
@@ -499,9 +499,9 @@ end;
 
 { TUnitPackage }
 
-constructor TUnitPackage.Create(Owner: TModelEntity);
+constructor TUnitPackage.Create(AOwner: TModelEntity);
 begin
-  inherited Create(Owner);
+  inherited Create(AOwner);
   FClassifiers := TObjectList.Create(True);
   FUnitDependencies := TObjectList.Create(True);
 end;
@@ -626,12 +626,12 @@ begin
   Result := TModelIterator.Create( FClassifiers );
 end;
 
-function TUnitPackage.AddUnitDependency(U: TUnitPackage; Visibility: TVisibility): TUnitDependency;
+function TUnitPackage.AddUnitDependency(U: TUnitPackage; AVisibility: TVisibility): TUnitDependency;
 begin
   Assert( (U<>Self) and (U<>nil) ,ClassName + '.AddUnitDependency invalid parameter');
   Result := TUnitDependency.Create( Self );
   Result.Package := U;
-  Result.Visibility := Visibility;
+  Result.Visibility := AVisibility;
   FUnitDependencies.Add( Result );
 end;
 
@@ -642,9 +642,9 @@ end;
 
 { TClass }
 
-constructor TClass.Create(Owner: TModelEntity);
+constructor TClass.Create(AOwner: TModelEntity);
 begin
-  inherited Create(Owner);
+  inherited Create(AOwner);
   FImplements := TObjectList.Create(False); //Only reference
 end;
 
@@ -838,9 +838,9 @@ end;
 { TOperation }
 
 
-constructor TOperation.Create(Owner: TModelEntity);
+constructor TOperation.Create(AOwner: TModelEntity);
 begin
-  inherited Create(Owner);
+  inherited Create(AOwner);
   FParameters := TObjectList.Create(True);
 end;
 
@@ -977,9 +977,9 @@ end;
 
 { TClassifier }
 
-constructor TClassifier.Create(Owner: TModelEntity);
+constructor TClassifier.Create(AOwner: TModelEntity);
 begin
-  inherited Create(Owner);
+  inherited Create(AOwner);
   FFeatures := TObjectList.Create(True);
   if Assigned(uModelEntity.CurrentSourcefilename) then
     FSourceFilename := uModelEntity.CurrentSourcefilename^;
@@ -1008,9 +1008,9 @@ end;
 
 { TInterface }
 
-constructor TInterface.Create(Owner: TModelEntity);
+constructor TInterface.Create(AOwner: TModelEntity);
 begin
-  inherited Create(Owner);
+  inherited Create(AOwner);
 end;
 
 destructor TInterface.Destroy;
@@ -1094,7 +1094,7 @@ end;
 
 { TAbstractPackage }
 
-constructor TAbstractPackage.Create(Owner: TModelEntity);
+constructor TAbstractPackage.Create(AOwner: TModelEntity);
 begin
   inherited;
   if Assigned(uModelEntity.CurrentSourcefilename) then
@@ -1127,10 +1127,10 @@ end;
 
 { TClassDescendantFilter }
 
-constructor TClassDescendantFilter.Create(Ancestor: TClass);
+constructor TClassDescendantFilter.Create(AAncestor: TClass);
 begin
   inherited Create;
-  Self.Ancestor := Ancestor;
+  Self.Ancestor := AAncestor;
 end;
 
 //Returns true if M inherits from ancestor

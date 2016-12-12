@@ -18,8 +18,8 @@
 }
 
 unit uJavaClass;
-
-{$MODE Delphi}
+//{$mode delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -212,7 +212,7 @@ type
   public
     classMethods : array of TMethodInfo;
   public
-    constructor Create(Input : TStream; constPoolSec : TConstPool; className : string);
+    constructor Create(Input : TStream; constPoolSec : TConstPool; AClassName : string);
     destructor Destroy; override;
   end;
 
@@ -231,6 +231,7 @@ type
     classFields : TClassFieldSec;
     classMethods : TClassMethodSec;
     classAttrs : TClassAttrSec;
+    //FPCTODO this line force delphi mode
     className : string;
   public
     constructor Create(Input : TStream);
@@ -420,7 +421,7 @@ end;
 
 { TClassMethodSec }
 
-constructor TClassMethodSec.Create(Input: TStream; constPoolSec: TConstPool; className: string);
+constructor TClassMethodSec.Create(Input: TStream; constPoolSec: TConstPool; AClassName: string);
 var
   methodCnt,I : integer;
 begin

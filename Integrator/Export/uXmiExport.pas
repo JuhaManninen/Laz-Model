@@ -23,7 +23,7 @@
 }
 unit uXmiExport;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -32,7 +32,7 @@ uses uIntegrator, uModelEntity, Classes, uModel, uFeedback;
 type
   TXMIExporter = class(TExportIntegrator)
   private
-    Ids,
+    Ids : TStringList;
     LaterList : TStringList;
     Output : TMemoryStream;
     NextId : integer;
@@ -55,7 +55,7 @@ type
     function Xml(const S : string) : string;
     procedure Write(const S : string);
   public
-    constructor Create(om: TObjectModel; Feedback : IEldeanFeedback = nil); reintroduce;
+    constructor Create(om: TObjectModel; AFeedback : IEldeanFeedback = nil); reintroduce;
     destructor Destroy; override;
     procedure InitFromModel; override;
     procedure ShowSaveDialog;
@@ -91,7 +91,7 @@ const
 
 { TXMIExporter }
 
-constructor TXMIExporter.Create(om: TObjectModel; Feedback : IEldeanFeedback = nil);
+constructor TXMIExporter.Create(om: TObjectModel; AFeedback : IEldeanFeedback = nil);
 begin
   inherited Create(om);
   Output := TMemoryStream.Create;
@@ -100,7 +100,7 @@ begin
   Ids.Sorted := True;
   Ids.Duplicates := dupIgnore;
   NextId := 0;
-  Self.Feedback := Feedback;
+  Self.Feedback := AFeedback;
   if Feedback=nil then
     Self.Feedback := NilFeedback
 end;
@@ -131,7 +131,7 @@ begin
   if I=-1 then
   begin
     Inc(NextId);
-    I := Ids.AddObject(S,pointer(NextId));
+    I := Ids.AddObject(S,TObject(pointer(NextId)));
   end;
   Result := 'xmi_' + IntToStr( integer(Ids.Objects[ I ]) );
 end;

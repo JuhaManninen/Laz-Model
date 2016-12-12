@@ -19,7 +19,7 @@
 
 unit uAboutForm;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 

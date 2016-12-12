@@ -20,8 +20,8 @@
 
 // Exporter for the "ESS-Model XML" format
 unit uEmxExport;
-
-{$MODE Delphi}
+{$mode delphi}
+//{$mode objfpc}{$H+}
 
 interface
 
@@ -39,7 +39,7 @@ type
     procedure WriteUnitPackage(U : TUnitPackage);
     procedure WriteClass(C : TClass);
     procedure WriteInterface(I : TInterface);
-    procedure WriteEntityHeader(E : TModelEntity; const Name : string);
+    procedure WriteEntityHeader(E : TModelEntity; const AName : string);
     procedure WriteFeatures(C : TClassifier);
     procedure WriteDataType(T : TDataType);
     function MakeTypeRef(C : TClassifier) : string;
@@ -49,7 +49,7 @@ type
     function Xml(const S : string) : string;
     procedure Write(const S : string);
   public
-    constructor Create(om: TObjectModel; Feedback : IEldeanFeedback = nil); reintroduce;
+    constructor Create(om: TObjectModel; AFeedback : IEldeanFeedback = nil); reintroduce;
     destructor Destroy; override;
     procedure InitFromModel; override;
     procedure ShowSaveDialog;
@@ -62,7 +62,7 @@ uses SysUtils, Dialogs;
 
 { TEmxExporter }
 
-constructor TEmxExporter.Create(om: TObjectModel; Feedback : IEldeanFeedback = nil);
+constructor TEmxExporter.Create(om: TObjectModel; AFeedback : IEldeanFeedback = nil);
 begin
   inherited Create(om);
   Output := TMemoryStream.Create;
@@ -70,7 +70,7 @@ begin
   Ids.Sorted := True;
   Ids.Duplicates := dupIgnore;
   NextId := 0;
-  Self.Feedback := Feedback;
+  Self.Feedback := AFeedback;
   if Feedback=nil then
     Self.Feedback := NilFeedback;
 end;
@@ -100,6 +100,7 @@ begin
   if I=-1 then
   begin
     Inc(NextId);
+    ////FPCTODO this line stops forces delphi mode
     I := Ids.AddObject(S,pointer(NextId));
   end;
   Result := 'emx_' + IntToStr( integer(Ids.Objects[ I ]) );
@@ -237,7 +238,7 @@ begin
 end;
 
 
-procedure TEmxExporter.WriteEntityHeader(E: TModelEntity; const Name: string);
+procedure TEmxExporter.WriteEntityHeader(E: TModelEntity; const AName: string);
 const
   VisibilityMap: array[TVisibility] of string = ('private', 'protected', 'public', 'public');
   //(viPrivate,viProtected,viPublic,viPublished);
@@ -245,7 +246,7 @@ begin
 {
   <UnitPackage id="emx_17" name="LogWriter" visibility="private">
 }
-  Write( '<' + Name + ' id="' + MakeId(E.FullName) + '" name="' + Xml(E.Name) +
+  Write( '<' + AName + ' id="' + MakeId(E.FullName) + '" name="' + Xml(E.Name) +
     '" visibility="' + VisibilityMap[E.Visibility] + '">' );
 end;
 

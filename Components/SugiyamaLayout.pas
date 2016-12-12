@@ -19,7 +19,7 @@
 
 unit SugiyamaLayout;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 {
   Layout according to the 'Sugiyama'-algoritm.
@@ -57,7 +57,7 @@ type
   private
     FromNode,ToNode : TNode;
   public
-    constructor Create(const FromNode,ToNode : TNode);
+    constructor Create(const AFromNode, AToNode : TNode);
   end;
 
   {$HINTS OFF}
@@ -509,7 +509,7 @@ begin
         raise Exception.Create('connection-cycles');
 
     //sort nodes based on their _label
-    Nodes.Sort(TopoSortProc);
+    Nodes.Sort(@TopoSortProc);
     _Labels := nil;
     //refresh node id's after sort
     for I:=0 to Nodes.Count-1 do
@@ -862,7 +862,7 @@ begin
         Node := Layer[J];
         Node.Weight := WeightPred(Node);
       end;
-      Layer.Sort( WeightSortProc );
+      Layer.Sort( @WeightSortProc );
       //Update order because nodes have switched positions
       for J := 0 to Layer.Count-1 do Layer[J].Order := J;
     end;
@@ -878,7 +878,7 @@ begin
         Node := Layer[J];
         Node.Weight := WeightSucc(Node);
       end;
-      Layer.Sort( WeightSortProc );
+      Layer.Sort( @WeightSortProc );
       //Update order because nodes have switched positions
       for J := 0 to Layer.Count-1 do Layer[J].Order := J;
     end;
@@ -891,7 +891,7 @@ begin
   for I := 0 to Nodes.Count-1 do
     Nodes[I].Order := BestO[I];
   for I := 0 to Layers.Count-1 do
-    Layers[I].Sort( OrderSortProc );
+    Layers[I].Sort( @OrderSortProc );
 end;
 
 
@@ -970,9 +970,9 @@ begin
     if Node=nil then
       Continue;
     if Odd(I) then
-      Node.OutEdges.Sort( ToNodeCOrderSortProc )
+      Node.OutEdges.Sort( @ToNodeCOrderSortProc )
     else
-      Node.InEdges.Sort( FromNodeCOrderSortProc )
+      Node.InEdges.Sort( @FromNodeCOrderSortProc )
   end;
 
   for I := 0 to CNodes.Count-1 do
@@ -1054,10 +1054,10 @@ end;
 
 { TEdge }
 
-constructor TEdge.Create(const FromNode, ToNode: TNode);
+constructor TEdge.Create(const AFromNode, AToNode: TNode);
 begin
-  Self.FromNode := FromNode;
-  Self.ToNode := ToNode;
+  Self.FromNode := AFromNode;
+  Self.ToNode := AToNode;
 end;
 
 { TNode }

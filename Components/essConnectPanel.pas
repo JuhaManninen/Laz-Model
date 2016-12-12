@@ -19,7 +19,7 @@
 
 unit essConnectPanel;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -393,11 +393,11 @@ begin
     newObj.FOnClick := crkObj.OnClick;
     newObj.FOnDblClick := crkObj.OnDblClick;
 
-    crkObj.OnMouseDown := OnManagedObjectMouseDown;
-    crkObj.OnMouseMove := OnManagedObjectMouseMove;
-    crkObj.OnMouseUp := OnManagedObjectMouseUp;
-    crkObj.OnClick := OnManagedObjectClick;
-    crkObj.OnDblClick := OnManagedObjectDblClick;
+    crkObj.OnMouseDown := @OnManagedObjectMouseDown;
+    crkObj.OnMouseMove := @OnManagedObjectMouseMove;
+    crkObj.OnMouseUp := @OnManagedObjectMouseUp;
+    crkObj.OnClick := @OnManagedObjectClick;
+    crkObj.OnDblClick := @OnManagedObjectDblClick;
     Result := AObject;
   end;
 end;
@@ -830,8 +830,6 @@ begin
   end;
 end;
 
-
-
 procedure TessConnectPanel.OnManagedObjectClick(Sender: TObject);
 var
   inst: TManagedObject;
@@ -1040,7 +1038,7 @@ begin
   for i:=0 to FManagedObjects.Count -1 do
   begin
     r1 := TCrackControl(TManagedObject(FManagedObjects[i]).FControl).BoundsRect;
-    IntersectRect(r2,SelRect,r1);
+    IntersectRect(r2{%H-},SelRect,r1);
     if EqualRect(r1,r2) and TManagedObject(FManagedObjects[i]).FControl.Visible then
       TManagedObject(FManagedObjects[i]).Selected := True;
   end;
@@ -1104,7 +1102,7 @@ begin
         if (not TManagedObject(FManagedObjects[i]).Selected) and TManagedObject(FManagedObjects[i]).FControl.Visible then
         begin
           TManagedObject(FManagedObjects[i]).FControl.Visible := False;
-          TempHidden.Add( FManagedObjects[i] );
+          TempHidden.Add( TObject(FManagedObjects[i]));
         end;
     end
     else

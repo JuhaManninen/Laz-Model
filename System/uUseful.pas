@@ -19,7 +19,7 @@
 
 unit uUseful;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 

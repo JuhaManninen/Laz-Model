@@ -19,7 +19,7 @@
 
 unit uIntegrator;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -71,7 +71,7 @@ type
 
     procedure ImportOneFile(const FileName : string); virtual; abstract;
   public
-    constructor Create(om: TObjectModel; CodeProvider: TCodeProvider); reintroduce;
+    constructor Create(om: TObjectModel; ACodeProvider: TCodeProvider); reintroduce;
     destructor Destroy; override;
     procedure BuildModelFrom(FileName : string; ResetModel : boolean = True; Lock : boolean = True); overload;
     procedure BuildModelFrom(FileNames : TStrings); overload;
@@ -194,10 +194,10 @@ begin
   end;
 end;
 
-constructor TImportIntegrator.Create(om: TObjectModel; CodeProvider: TCodeProvider);
+constructor TImportIntegrator.Create(om: TObjectModel; ACodeProvider: TCodeProvider);
 begin
   inherited Create(Om);
-  Self.CodeProvider := CodeProvider;
+  Self.CodeProvider := ACodeProvider;
 
   FilesRead := TStringList.Create;
   FilesRead.Sorted := True;

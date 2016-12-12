@@ -19,7 +19,7 @@
 
 unit uHtmlDocGen;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -49,7 +49,7 @@ uses Forms, SysUtils, Graphics,
 
 
 
-{$IFDEF Win32}
+{$IFDEF false}
 function MakeDOM : variant;
 begin
   try
@@ -94,6 +94,8 @@ end;
 
 procedure THtmlDocGen.DocStart;
 begin
+{$ifdef false}
+
   //Establish stylesheet
   with Config.GetResourceStream('css_file') do
   begin
@@ -110,12 +112,13 @@ begin
   Detail := MakeDOM;
   if not Detail.loadXML( Config.GetResourceText('p_detail_xsl_file') ) then
     raise exception.Create('nix');
+{$endif}
 end;
 
 
 procedure THtmlDocGen.DocFinished;
 begin
-  {$IFDEF Win32}
+  {$IFDEF false}
   if Assigned(Application.MainForm) then
      OpenDocument(PChar( DestPath +  'overview.html' )); { *Converted from ShellExecute* }
   {$ENDIF}
@@ -127,6 +130,8 @@ var
   S : string;
   F : TFileStream;
 begin
+  {$IFDEF false}
+
   Sheet := MakeDOM;
   Sheet.loadXML( Config.GetResourceText('p_overview_xsl_file') );
   S := Source.TransformNode(Sheet);
@@ -137,6 +142,7 @@ begin
     F.Free;
   end;
   MakeDiagram( Model.ModelRoot );
+  {$endif}
 end;
 
 procedure THtmlDocGen.WritePackageDetail(P: TUnitPackage);

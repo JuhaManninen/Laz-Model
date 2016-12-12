@@ -19,7 +19,7 @@
 
 unit uDocGen;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 

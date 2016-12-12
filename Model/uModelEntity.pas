@@ -25,7 +25,7 @@
 }
 unit uModelEntity;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -60,9 +60,9 @@ type
     function GetSourcefilename: String; virtual;
     procedure SetSourcefilename(const Value: String); virtual;
     {IUnknown, behövs för att kunna vara lyssnare}
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-    function _AddRef: Integer; stdcall;
-    function _Release: Integer; stdcall;
+    function QueryInterface(const IID: TGUID; out Obj): HResult;
+    function _AddRef: Integer;
+    function _Release: Integer;
   public
     constructor Create(Owner: TModelEntity); virtual;
     destructor Destroy; override;
@@ -143,13 +143,13 @@ end;
 
 procedure TModelEntity.AddListener(NewListener: IUnknown);
 begin
-  if Listeners.IndexOf(NewListener) = -1 then
-    Listeners.Add(NewListener);
+  if self.Listeners.IndexOf(NewListener) = -1 then
+    self.Listeners.Add(NewListener);
 end;
 
 procedure TModelEntity.RemoveListener(Listener: IUnknown);
 begin
-  Listeners.Remove(Listener);
+  self.Listeners.Remove(Listener);
 end;
 
 

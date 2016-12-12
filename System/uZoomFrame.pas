@@ -19,7 +19,7 @@
 
 unit uZoomFrame;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -44,7 +44,7 @@ type
     procedure SyncScroll(X,Y : integer);
     procedure RedrawZoom;
   public
-    constructor Create(AOwner: TComponent; Diagram : TDiagramIntegrator); reintroduce;
+    constructor Create(AOwner: TComponent; ADiagram : TDiagramIntegrator); reintroduce;
     { Public declarations }
   end;
 
@@ -55,12 +55,12 @@ implementation
 { TZoomFrame }
 
 constructor TZoomFrame.Create(AOwner: TComponent;
-  Diagram: TDiagramIntegrator);
+  ADiagram: TDiagramIntegrator);
 begin
   inherited Create(AOwner);
-  Self.Diagram := Diagram;
+  Self.Diagram := ADiagram;
   Parent := AOwner as TWinControl;
-  Diagram.OnUpdateZoom := OnUpdateZoom;
+  Diagram.OnUpdateZoom := @OnUpdateZoom;
 end;
 
 procedure TZoomFrame.OnUpdateZoom(Sender: TObject);

@@ -19,7 +19,7 @@
 
 unit uDocumentation;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 

@@ -19,7 +19,7 @@
 
 unit uDelphiIntegrator;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 uses Classes, uIntegrator, uModel, uDelphiParser, uCodeProvider,
@@ -52,6 +52,7 @@ begin
   if Assigned(Str) then
   begin
     GlobalDefines := TStringList.Create;
+
     {$ifdef WIN32}   ////FPCTODO sort this properly for fpc
     GlobalDefines.Add('MSWINDOWS');
     GlobalDefines.Add('WIN32');
@@ -63,7 +64,7 @@ begin
     Parser := TDelphiParser.Create;
     try
       Parser.Filename := FileName;
-      Parser.NeedPackage := NeedPackageHandler;
+      Parser.NeedPackage := @NeedPackageHandler;
       Parser.ParseStreamWithDefines(Str, Model.ModelRoot, Model, GlobalDefines);
     finally
       Parser.Free;

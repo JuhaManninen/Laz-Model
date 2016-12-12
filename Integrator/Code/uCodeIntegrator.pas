@@ -19,7 +19,7 @@
 
 unit uCodeIntegrator;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 uses uIntegrator, uCodeProvider;

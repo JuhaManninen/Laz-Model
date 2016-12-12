@@ -19,7 +19,7 @@
 
 unit uRtfdDiagramFrame;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -39,7 +39,7 @@ type
     { Private declarations }
   public
     { Public declarations }
-    constructor Create(Owner: TComponent; Diagram: TRtfdDiagram); reintroduce;
+    constructor Create(AOwner: TComponent; ADiagram: TRtfdDiagram); reintroduce;
   end;
 
 implementation
@@ -52,11 +52,11 @@ uses uError;
 
 { TRtfdDiagramFrame }
 
-constructor TRtfdDiagramFrame.Create(Owner: TComponent; Diagram: TRtfdDiagram);
+constructor TRtfdDiagramFrame.Create(AOwner: TComponent; ADiagram: TRtfdDiagram);
 begin
-  inherited Create(Owner,Diagram.Model);
-  Self.Diagram := Diagram;
-  Diagram.OnUpdateToolbar := OnUpdateToolbar;
+  inherited Create(AOwner, ADiagram.Model);
+  Self.Diagram := ADiagram;
+//  Diagram.OnUpdateToolbar := @OnUpdateToolbar;
 end;
 
 procedure TRtfdDiagramFrame.OpenSelectedPackageActionExecute(Sender: TObject);

@@ -19,7 +19,7 @@
 
 unit essLayout;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -30,9 +30,9 @@ type
   protected
     Panel : TEssConnectPanel;
   public
-    constructor Create(Panel : TEssConnectPanel);
+    constructor Create(APanel : TEssConnectPanel);
     procedure Execute; virtual; abstract;
-    class function CreateLayout(Panel : TEssConnectPanel) : TEssLayout;
+    class function CreateLayout(APanel : TEssConnectPanel) : TEssLayout;
   end;
 
 implementation
@@ -46,15 +46,15 @@ type
 
 { TEssLayout }
 
-constructor TEssLayout.Create(Panel: TEssConnectPanel);
+constructor TEssLayout.Create(APanel: TEssConnectPanel);
 begin
-  Self.Panel := Panel;
+  Self.Panel := APanel;
 end;
 
-class function TEssLayout.CreateLayout(Panel: TEssConnectPanel): TEssLayout;
+class function TEssLayout.CreateLayout(APanel: TEssConnectPanel): TEssLayout;
 begin
 //  Result := TSimpleLayout.Create(Panel);
-  Result := TSugiyamaLayout.Create(Panel);
+  Result := TSugiyamaLayout.Create(APanel);
 end;
 
 { TSimpleLayout }

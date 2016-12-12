@@ -19,7 +19,7 @@
 
 unit uViewIntegrator;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -38,7 +38,7 @@ type
     Feedback : IEldeanFeedback;
     procedure CurrentEntityChanged; virtual;
   public
-    constructor Create(om: TObjectModel; Parent: TWinControl; Feedback : IEldeanFeedback = nil); virtual;
+    constructor Create(om: TObjectModel; AParent: TWinControl; AFeedback : IEldeanFeedback = nil); virtual;
     destructor Destroy; override;
     //Current entity, all view integratros share the same instance
     property CurrentEntity : TModelEntity read GetCurrentEntity write SetCurrentEntity;
@@ -56,14 +56,14 @@ type
     procedure SetVisibilityFilter(const Value: TVisibility); virtual;
     procedure SetPackage(const Value: TAbstractPackage); virtual;
     procedure SetShowAssoc(const Value: boolean); virtual;
-    function GetStorage(Create : boolean = False) : TCustomIniFile; virtual;
+    function GetStorage(doCreate : boolean = False) : TCustomIniFile; virtual;
     procedure StoreDiagram; virtual; abstract;
     function FetchDiagram : integer; virtual; abstract;
     procedure DoOnUpdateToolbar;
     procedure DoOnUpdateZoom;
   public
-    class function CreateDiagram(om: TObjectModel; Parent: TWinControl; Feedback : IEldeanFeedback = nil) : TDiagramIntegrator;
-    constructor Create(om: TObjectModel; Parent: TWinControl; Feedback : IEldeanFeedback = nil); override;
+    class function CreateDiagram(om: TObjectModel; AParent: TWinControl; AFeedback : IEldeanFeedback = nil) : TDiagramIntegrator;
+    constructor Create(om: TObjectModel; AParent: TWinControl; AFeedback : IEldeanFeedback = nil); override;
     procedure GetDiagramSize(var W,H : integer); virtual; abstract;
     function GetSelectedRect : TRect; virtual; abstract;
     procedure PaintTo(Canvas: TCanvas; X, Y: integer; SelectedOnly : boolean); virtual; abstract;
@@ -99,23 +99,23 @@ var
 
 { TViewIntegrator }
 
-constructor TViewIntegrator.Create(om: TObjectModel; Parent: TWinControl; Feedback : IEldeanFeedback = nil);
+constructor TViewIntegrator.Create(om: TObjectModel; AParent: TWinControl; AFeedback : IEldeanFeedback = nil);
 begin
   inherited Create(om);
-  Self.Parent := Parent;
+  Self.Parent := AParent;
   if Feedback=nil then
     Self.Feedback := NilFeedback
   else
-    Self.Feedback := Feedback;
+    Self.Feedback := AFeedback;
   _ViewIntegrators.Add(Self);
 end;
 
 { TDiagramIntegrator }
 
 //Factoryfunction, creates an instance of TDiagramIntegrator
-class function TDiagramIntegrator.CreateDiagram(om: TObjectModel; Parent: TWinControl; Feedback : IEldeanFeedback = nil): TDiagramIntegrator;
+class function TDiagramIntegrator.CreateDiagram(om: TObjectModel; AParent: TWinControl; AFeedback : IEldeanFeedback = nil): TDiagramIntegrator;
 begin
-  Result := TRtfdDiagram.Create(om, Parent, Feedback);
+  Result := TRtfdDiagram.Create(om, AParent, AFeedback);
 end;
 
 procedure TDiagramIntegrator.SetPackage(const Value: TAbstractPackage);
@@ -124,7 +124,7 @@ begin
 end;
 
 //Creates storage space for the diagram
-function TDiagramIntegrator.GetStorage(Create: boolean): TCustomIniFile;
+function TDiagramIntegrator.GetStorage(doCreate: boolean): TCustomIniFile;
 var
   F : string;
 begin
@@ -134,7 +134,7 @@ begin
     F := FPackage.GetConfigFile;
     if F='' then
       F := ChangeFileExt(Application.ExeName,ConfigFileExt);
-    if FileExists(F) or Create then
+    if FileExists(F) or doCreate then
       Result := TMemIniFile.Create(F);
   end;
 end;
@@ -259,9 +259,9 @@ end;
 
 
 constructor TDiagramIntegrator.Create(om: TObjectModel;
-  Parent: TWinControl; Feedback: IEldeanFeedback);
+  AParent: TWinControl; AFeedback: IEldeanFeedback);
 begin
-  inherited Create(om, Parent, Feedback);
+  inherited Create(om, AParent, AFeedback);
   FShowAssoc := Config.DiShowAssoc;
   FVisibilityFilter := TVisibility( Config.DiVisibilityFilter );
 end;

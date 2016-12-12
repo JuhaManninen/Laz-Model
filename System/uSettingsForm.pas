@@ -19,7 +19,7 @@
 
 unit uSettingsForm;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -56,7 +56,7 @@ type
 
 implementation
 
-uses uRegisterExtension, uConst, uIntegrator, contnrs, uConfig;
+uses uRegisterExtension, uIntegrator, contnrs, uConfig;
 
 {$R *.lfm}
 

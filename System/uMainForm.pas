@@ -19,7 +19,7 @@
 
 unit uMainForm;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -62,7 +62,7 @@ type
     Previewdocumentation1: TMenuItem;
     OpenFolderAction1: TMenuItem;
     ExportmodeltoEMXfile1: TMenuItem;
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormClose(Sender: TObject; var aAction: TCloseAction);
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
@@ -82,7 +82,7 @@ uses uConst, Math;
 {$R *.lfm}
 
 
-procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TMainForm.FormClose(Sender: TObject; var aAction: TCloseAction);
 begin
   //Free här istället för destroy, annars visas inte savechanged-dialog för diagram
   MainModule.Free;

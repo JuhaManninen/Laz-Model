@@ -19,7 +19,7 @@
 
 unit uIterators;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -68,21 +68,27 @@ type
   end;
 
   //Filters on a class and a minimum visibilty
+
+  { TClassAndVisibilityFilter }
+
   TClassAndVisibilityFilter = class(TIteratorFilter)
   private
     OneClass : TModelEntityClass;
     MinVisibility : TVisibility;
   public
-    constructor Create(OneClass : TModelEntityClass; MinVisibility : TVisibility = Low(TVisibility));
+    constructor Create(AOneClass : TModelEntityClass; AMinVisibility : TVisibility = Low(TVisibility));
     function Accept(M : TModelEntity) : boolean; override;
   end;
 
   //Excludes an entity
+
+  { TEntitySkipFilter }
+
   TEntitySkipFilter = class(TIteratorFilter)
   private
     SkipEntity : TModelEntity;
   public
-    constructor Create(SkipEntity : TModelEntity);
+    constructor Create(ASkipEntity : TModelEntity);
     function Accept(M : TModelEntity) : boolean; override;
   end;
 
@@ -205,8 +211,8 @@ begin
   //Sort
   case Order of
     ioNone : ;
-    ioVisibility : FItems.Sort( SortVisibility );
-    ioAlpha      : FItems.Sort( SortAlpha );
+    ioVisibility : FItems.Sort( @SortVisibility );
+    ioAlpha      : FItems.Sort( @SortAlpha );
   end;
   Advance;
 end;
@@ -252,12 +258,12 @@ end;
 
 { TClassAndVisibilityFilter }
 
-constructor TClassAndVisibilityFilter.Create(OneClass: TModelEntityClass;
-  MinVisibility: TVisibility);
+constructor TClassAndVisibilityFilter.Create(AOneClass: TModelEntityClass;
+  AMinVisibility: TVisibility);
 begin
   inherited Create;
-  Self.OneClass := OneClass;
-  Self.MinVisibility := MinVisibility;
+  Self.OneClass := AOneClass;
+  Self.MinVisibility := AMinVisibility;
 end;
 
 function TClassAndVisibilityFilter.Accept(M: TModelEntity): boolean;
@@ -268,9 +274,9 @@ end;
 
 { TEntitySkipFilter }
 
-constructor TEntitySkipFilter.Create(SkipEntity: TModelEntity);
+constructor TEntitySkipFilter.Create(ASkipEntity: TModelEntity);
 begin
-  Self.SkipEntity := SkipEntity;
+  Self.SkipEntity := ASkipEntity;
 end;
 
 function TEntitySkipFilter.Accept(M: TModelEntity): boolean;

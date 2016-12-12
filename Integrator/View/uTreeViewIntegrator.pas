@@ -19,7 +19,7 @@
 
 unit uTreeViewIntegrator;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -45,7 +45,7 @@ type
     procedure tvModelAddition(Sender: TObject; Node: TTreeNode);
     procedure CurrentEntityChanged; override;
   public
-    constructor Create(om: TObjectModel; Parent: TWinControl; Feedback: IEldeanFeedback = nil); override;
+    constructor Create(om: TObjectModel; Parent: TWinControl; AFeedback: IEldeanFeedback = nil); override;
     destructor Destroy; override;
 
     procedure InitFromModel; override;
@@ -59,7 +59,7 @@ type
     procedure AfterConstruction; override;
     procedure BeforeDestruction; override;
 
-    function LocateNode(data: Pointer; IsImplState: Boolean): TViewNode;
+    function LocateNode(AData: Pointer; IsImplState: Boolean): TViewNode;
 
     property IsImplementation: Boolean read FIsImplementation;
   end;
@@ -90,14 +90,14 @@ begin
     FreeAndNil(NodesList);
 end;
 
-function TViewNode.LocateNode(data: Pointer; IsImplState: Boolean): TViewNode;
+function TViewNode.LocateNode(AData: Pointer; IsImplState: Boolean): TViewNode;
 var
   i: Integer;
 begin
   for i := 0 to NodesList.Count - 1 do
   begin
     Result := NodesList[i] as TViewNode;
-    if (Result.Data = data) and (Result.IsImplementation = IsImplState) then exit;
+    if (Result.Data = AData) and (Result.IsImplementation = IsImplState) then exit;
   end;
   Result := nil;
 end;
@@ -279,16 +279,16 @@ begin
 end;
 
 constructor TTreeViewIntegrator.Create(om: TObjectModel;
-  Parent: TWinControl; Feedback: IEldeanFeedback);
+  Parent: TWinControl; AFeedback: IEldeanFeedback);
 begin
-  inherited Create(Om, Parent, Feedback);
+  inherited Create(Om, Parent, AFeedback);
   Frame := TTreeViewFrame.Create(Parent);
   Frame.Parent := Parent;
   Model.AddListener(IAfterObjectModelListener(Self));
 
-  Frame.tvModel.OnCreateNodeClass := tvModelCreateNodeClass;
-  Frame.tvModel.OnChange := tvModelChange;
-  Frame.tvModel.OnAddition := tvModelAddition;
+  Frame.tvModel.OnCreateNodeClass := @tvModelCreateNodeClass;
+  Frame.tvModel.OnChange := @tvModelChange;
+  Frame.tvModel.OnAddition := @tvModelAddition;
 end;
 
 destructor TTreeViewIntegrator.Destroy;

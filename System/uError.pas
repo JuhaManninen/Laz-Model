@@ -19,7 +19,7 @@
 
 unit uError;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 {
   Errorhandler.

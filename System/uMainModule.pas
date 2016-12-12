@@ -19,7 +19,7 @@
 
 unit uMainModule;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -559,7 +559,7 @@ begin
   begin
     M := TMenuItem.Create(MainForm);
     M.Caption := '&' + IntToStr(I) + ' ' + RecentFiles[I];
-    M.OnClick := OnRecentFilesClicked;
+    M.OnClick := @OnRecentFilesClicked;
     M.Tag := I;
     Items[I]:= M;
   end;

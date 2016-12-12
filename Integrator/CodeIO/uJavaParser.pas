@@ -19,7 +19,7 @@
 
 unit uJavaParser;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -123,7 +123,7 @@ begin
     Parser := TJavaParser.Create;
     try
       Parser.FileName := FileName;
-      Parser.NeedPackage := NeedPackageHandler;
+      Parser.NeedPackage := @NeedPackageHandler;
       Parser.ParseStream(Str, Model.ModelRoot, Model);
     finally
       Parser.Free;
@@ -442,22 +442,22 @@ CompilationUnit:
         {TypeDeclaration}
 *)
 var
-  UnitName: string;
+  sUnitName: string;
   S : string;
 begin
   GetNextToken;
 
   if Token = 'package' then
   begin
-    UnitName := GetNextToken;
+    sUnitName := GetNextToken;
     SkipToken(';');
   end
   else
-    UnitName := 'Default';
+    sUnitName := 'Default';
 
-  FUnit := (FModel as TLogicPackage).FindUnitPackage(UnitName);
+  FUnit := (FModel as TLogicPackage).FindUnitPackage(sUnitName);
   if not Assigned(FUnit) then
-    FUnit := (FModel as TLogicPackage).AddUnit(UnitName);
+    FUnit := (FModel as TLogicPackage).AddUnit(sUnitName);
 
   while Token = 'import' do
   begin
@@ -938,17 +938,17 @@ function TJavaParser.NeedSource(const SourceName: string): boolean;
 var
   Str : TStream;
   Parser : TJavaParser;
-  FileName : string;
+  sFileName : string;
 begin
   Result := False;
   if Assigned(NeedPackage) then
   begin
-    FileName := NeedPackage(SourceName,Str{%H-});
+    sFileName := NeedPackage(SourceName,Str{%H-});
     if Assigned(Str) then
     begin
       Parser := TJavaParser.Create;
       try
-        Parser.FileName := FileName;
+        Parser.FileName := sFileName;
         Parser.NeedPackage := NeedPackage;
         Parser.ParseStream(Str, FOM.ModelRoot, FOM);
       finally

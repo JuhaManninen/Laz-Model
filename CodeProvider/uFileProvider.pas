@@ -19,7 +19,7 @@
 
 unit uFileProvider;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 uses Classes, uCodeProvider;

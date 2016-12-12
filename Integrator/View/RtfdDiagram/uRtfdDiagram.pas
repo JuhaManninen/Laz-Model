@@ -19,7 +19,7 @@
 
 unit uRtfdDiagram;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -69,7 +69,7 @@ type
     procedure CurrentEntityChanged; override;
     procedure SetShowAssoc(const Value: boolean); override;
   public
-    constructor Create(om: TObjectModel; Parent: TWinControl; Feedback : IEldeanFeedback = nil); override;
+    constructor Create(om: TObjectModel; AParent: TWinControl; AFeedback : IEldeanFeedback = nil); override;
     destructor Destroy; override;
     procedure InitFromModel; override;
     procedure PaintTo(Canvas: TCanvas; X, Y: integer; SelectedOnly : boolean); override;
@@ -96,20 +96,20 @@ uses uRtfdDiagramFrame, Math, LCLIntf, LCLType, uError, SysUtils,
 
 { TRtfdDiagram }
 
-constructor TRtfdDiagram.Create(om: TObjectModel; Parent: TWinControl; Feedback : IEldeanFeedback = nil);
+constructor TRtfdDiagram.Create(om: TObjectModel; AParent: TWinControl; AFeedback : IEldeanFeedback = nil);
 begin
-  inherited Create(Om, Parent, Feedback);
-  Frame := TRtfdDiagramFrame.Create(Parent, Self);
-  Frame.Parent := Parent;
+  inherited Create(Om, AParent, AFeedback);
+  Frame := TRtfdDiagramFrame.Create(AParent, Self);
+  Frame.Parent := AParent;
 
-  Panel := TessConnectPanel.Create(Parent);
+  Panel := TessConnectPanel.Create(AParent);
   if not Config.IsLimitedColors then
     Panel.BackBitmap := TRtfdDiagramFrame(Frame).DiaBackImage.Picture.Bitmap;
   Panel.Parent := Frame.ScrollBox;
 
   //Both these events triggers refresh of zoomimage
-  Panel.OnContentChanged := OnNeedZoomUpdate;
-  Frame.ScrollBox.OnResize := OnNeedZoomUpdate;
+  Panel.OnContentChanged := @OnNeedZoomUpdate;
+  Frame.ScrollBox.OnResize := @OnNeedZoomUpdate;
 
   BoxNames := TStringList.Create;
   BoxNames.CaseSensitive := True;
@@ -541,9 +541,6 @@ begin
         Ini.WriteBool(S,'ShowAssoc', ShowAssoc);
 
         //Commit
-        {$IFDEF Win32}
-        OldMode:=SetErrorMode(SEM_FAILCRITICALERRORS);
-        {$ENDIF}
         try
           try
             Ini.UpdateFile;
@@ -551,9 +548,6 @@ begin
             ErrorHandler.Trace('Could not write layout to disk');
           end;
         finally
-          {$IFDEF Win32}
-          SetErrorMode(OldMode);
-          {$ENDIF}
         end;
 
       finally

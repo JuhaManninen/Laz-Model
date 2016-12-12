@@ -19,7 +19,7 @@
 
 unit uDiagramFrame;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -152,7 +152,7 @@ end;
 {
 procedure TDiagramFrame.PackageChange(var M: TMessage);
 begin
-//  OpenSelectedPackageAction.Execute;
+  OpenSelectedPackageAction.Execute;
 end;
 }
 procedure TDiagramFrame.VisibilityComboChange(Sender: TObject);

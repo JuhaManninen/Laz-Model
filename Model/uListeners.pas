@@ -19,7 +19,7 @@
 
 unit uListeners;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 {
   Listener interface for the objectmodel

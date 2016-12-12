@@ -19,7 +19,7 @@
 
 unit uTreeViewFrame;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 

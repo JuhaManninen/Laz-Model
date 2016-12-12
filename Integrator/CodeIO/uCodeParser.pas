@@ -19,7 +19,7 @@
 
 unit uCodeParser;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 uses Classes, uModel, Sysutils;

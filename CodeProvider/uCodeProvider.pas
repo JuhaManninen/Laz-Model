@@ -19,7 +19,7 @@
 
 unit uCodeProvider;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -48,7 +48,7 @@ type
     procedure UnhookChanges; virtual; abstract;
     procedure AddChangeWatch(AName: string);
   public
-    constructor Create(Feedback : IEldeanFeedback = nil);
+    constructor Create(AFeedback : IEldeanFeedback = nil);
     destructor Destroy; override;
 
     function LoadStream(const AName: string): TStream; virtual; abstract;
@@ -96,7 +96,7 @@ begin
   end;
 end;
 
-constructor TCodeProvider.Create(Feedback : IEldeanFeedback = nil);
+constructor TCodeProvider.Create(AFeedback : IEldeanFeedback = nil);
 begin
   inherited Create;
   FSearchPath := TStringList.Create;
@@ -104,7 +104,7 @@ begin
   if Feedback=nil then
     Self.Feedback := NilFeedback
   else
-    Self.Feedback := Feedback;
+    Self.Feedback := AFeedback;
 end;
 
 destructor TCodeProvider.Destroy;

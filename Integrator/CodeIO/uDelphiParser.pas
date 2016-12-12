@@ -43,7 +43,7 @@
 }
 unit uDelphiParser;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 uses Classes, uCodeParser, uModel, uModelEntity, Types;
@@ -915,7 +915,7 @@ begin
 
       if Assigned(NeedPackage) and (FOM.ModelRoot.FindUnitPackage(uName) = nil) then
       begin
-        fullName := NeedPackage(fName, str, not Recurse);
+        fullName := NeedPackage(fName, str{%H-}, not Recurse);
         if Assigned(str) and Recurse then
         begin
           prs := TDelphiParser.Create;

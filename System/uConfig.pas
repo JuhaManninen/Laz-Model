@@ -19,7 +19,7 @@
 
 unit uConfig;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 interface
 
