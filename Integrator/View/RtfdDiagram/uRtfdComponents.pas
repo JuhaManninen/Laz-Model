@@ -22,7 +22,7 @@ unit uRtfdComponents;
 {$MODE Delphi}
 
 interface
-uses LCLIntf, LCLType, Windows,
+uses LCLIntf, LCLType, {Windows,}
  Messages, ExtCtrls, Classes, uModel, uModelEntity, Controls, uListeners,
   uViewIntegrator, uDiagramFrame;
 
@@ -86,11 +86,10 @@ type
     function GetAlignment: TAlignment;
     procedure SetAlignment(const Value: TAlignment);
     procedure SetTransparent(const Value: Boolean);
-{$ifdef WIN32}
     procedure CMTextChanged(var Message: TMessage); message CM_TEXTCHANGED;
     procedure AdjustBounds;
     procedure DoDrawText(var Rect: TRect; Flags: Integer);
-{$endif}
+
   protected
     procedure Paint; override;
 
@@ -388,7 +387,7 @@ end;
 
 procedure TRtfdUnitPackage.DblClick;
 begin
-  PostMessage(Frame.Handle, WM_ChangePackage, 0, 0);
+//  PostMessage(Frame.Handle, WM_ChangePackage, 0, 0);
 end;
 
 procedure TRtfdUnitPackage.RefreshEntities;
@@ -840,7 +839,6 @@ begin
   end;
 end;
 
-{$ifdef WIN32}
 procedure TRtfdCustomLabel.CMTextChanged(var Message: TMessage);
 begin
   Invalidate;
@@ -892,7 +890,6 @@ begin
   else
     DrawText(Canvas.Handle, PChar(Text), Length(Text), Rect, Flags);
 end;
-{$endif}
 
 
 end.

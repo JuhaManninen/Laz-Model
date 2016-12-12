@@ -23,11 +23,6 @@
 
 program EssModel;
 
-{$MODE Delphi}
-
-{$R 'Res\files\essModelFiles.res' 'Res\files\essModelFiles.rc'}
-{%File 'EssModelReadme.txt'}
-
 uses
   Forms, Interfaces,
   uMainForm in 'System\uMainForm.pas' {MainForm},

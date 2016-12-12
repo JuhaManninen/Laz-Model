@@ -30,8 +30,8 @@ uses
   uModel, Buttons;
 
 
-const
-  WM_ChangePackage = WM_USER + 1;
+//const
+//  WM_ChangePackage = WM_USER + 1;
 
 type
   TDiagramFrame = class(TFrame,IBeforeObjectModelListener,IAfterObjectModelListener)
@@ -64,7 +64,7 @@ type
   protected
   public
     { Public declarations }
-    procedure PackageChange(var M: TMessage); message WM_ChangePackage;
+//    procedure PackageChange(var M: TMessage); message WM_ChangePackage;
 
     constructor Create(AOwner: TComponent; Model : TObjectModel); reintroduce;
     destructor Destroy; override;
@@ -149,11 +149,12 @@ end;
 
 //Message för att en gui-komponent skall kunna begära packagechange
 //utan att riskera krash p.g.a. komponenten blir destroyed.
+{
 procedure TDiagramFrame.PackageChange(var M: TMessage);
 begin
-  OpenSelectedPackageAction.Execute;
+//  OpenSelectedPackageAction.Execute;
 end;
-
+}
 procedure TDiagramFrame.VisibilityComboChange(Sender: TObject);
 var
   I : integer;

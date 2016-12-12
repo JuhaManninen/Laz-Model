@@ -25,7 +25,7 @@ interface
 
 uses
 
-  LCLIntf, LCLType, windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  LCLIntf, LCLType, {windows,} Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls,Contnrs;
 
 
@@ -73,6 +73,9 @@ type
 
     Further it manages the layout of the contained controls.
   }
+
+  { TessConnectPanel }
+
   TessConnectPanel = class(TCustomPanel)
   private
     FIsModified, FIsMoving, FIsRectSelecting, FSelectedOnly: Boolean;
@@ -86,9 +89,7 @@ type
     FManagedObjects: TList;
     FConnections: TObjectList;
 
-{$ifdef WIN32}
     procedure CreateParams(var Params: TCreateParams); override;
-{$endif}
 
     procedure Click; override;
     procedure DblClick; override;
@@ -96,15 +97,10 @@ type
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
 
-{$ifdef WIN32}
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
     procedure WMEraseBkgnd(var Message: TWmEraseBkgnd); message WM_ERASEBKGND;
-{$endif}
-{$ifdef LINUX}
-    procedure MouseEnter(AControl: TControl); override;
-    procedure MouseLeave(AControl: TControl); override;
-{$endif}
+
     function FindManagedControl( AControl: TControl ): TManagedObject;
     procedure SelectObjectsInRect(SelRect: TRect);
 
@@ -170,7 +166,6 @@ type
     property BevelInner;
     property BevelOuter;
     property BevelWidth;
-{$ifdef WIN32}
 {$ifndef fpc}
     property Ctl3D;
     property Locked;
@@ -190,7 +185,6 @@ type
     property OnGetSiteInfo;
     property OnStartDock;
     property OnUnDock;
-{$endif}
     property BorderWidth;
     property BorderStyle;
     property Caption;
@@ -449,7 +443,6 @@ begin
    child := Application.GetControlAtMouse;
   {$ifdef WIN32}
     if (GetAsyncKeyState(VK_CONTROL) and $F000) = 0 then
-  {$endif}
     begin
       if ((GetAsyncKeyState(VK_SHIFT) and $F000) <> 0) and (child is TRtfdCustomLabel) then
       begin
@@ -459,14 +452,13 @@ begin
           editorExecuteString := StringReplace(editorExecuteString,'%f',TRtfdCustomLabel(child).ModelEntity.Sourcefilename,[rfReplaceAll,rfIgnoreCase]);
           editorExecuteString := StringReplace(editorExecuteString,'%l',IntToStr(TRtfdCustomLabel(child).ModelEntity.SourceY+1),[rfReplaceAll,rfIgnoreCase]);
           editorExecuteString := StringReplace(editorExecuteString,'%c',IntToStr(TRtfdCustomLabel(child).ModelEntity.SourceX),[rfReplaceAll,rfIgnoreCase]);
-          {$ifdef WIN32}
           WinExec(PChar(editorExecuteString),SW_SHOWNORMAL);
-          {$endif}
         end;
         TRtfdCustomLabel(child).ModelEntity.Sourcefilename;
       end else
         ClearSelection;
     end;
+  {$endif}
 
     if Assigned(mcont) then
       mcont.Selected := True;
@@ -527,13 +519,11 @@ begin
   UseDockManager := True;
 end;
 
-{$ifdef WIN32}
 procedure TessConnectPanel.CreateParams(var Params: TCreateParams);
 begin
   inherited CreateParams(Params);
 //  Params.Style := Params.Style and (not WS_CLIPCHILDREN);
 end;
-{$endif}
 
 procedure TessConnectPanel.DblClick;
 var
@@ -844,6 +834,8 @@ begin
   end;
 end;
 
+
+
 procedure TessConnectPanel.OnManagedObjectClick(Sender: TObject);
 var
   inst: TManagedObject;
@@ -1080,7 +1072,7 @@ begin
   if GetCaptureControl <> Self then SetCaptureControl(Self);
 end;
 
-{$ifdef WIN32}
+
 procedure TessConnectPanel.WMEraseBkgnd(var Message: TWmEraseBkgnd);
 var
   can : Tcanvas;
@@ -1098,7 +1090,7 @@ begin
   end;
   Message.Result := 1;
 end;
-{$endif}
+
 
 
 procedure TessConnectPanel.SetSelectedOnly(const Value : boolean);

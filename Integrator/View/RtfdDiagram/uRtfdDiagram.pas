@@ -25,7 +25,7 @@ interface
 
 uses uViewIntegrator, essConnectPanel, uModelEntity, uModel, Controls, uListeners, Graphics,
   Classes, Forms, uDiagramFrame, uRtfdComponents, uFeedback,
-  Windows,
+ { Windows, }
    Types;
 
 

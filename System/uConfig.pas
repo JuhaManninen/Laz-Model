@@ -165,16 +165,20 @@ procedure TConfig.WriteStr(const Key, Value: string);
 begin
 {$ifdef WIN32}
   Reg.WriteString(Key,Value)
-{$endif}
+ {$endif}
 end;
 
 procedure TConfig.StoreSettings;
 begin
+{$ifdef WIN32}
   Reg.WriteInteger('DiSave',Integer(FDiSave));
   Reg.WriteBool('DiShowAssoc',FDiShowAssoc);
   Reg.WriteInteger('DiVisibilityFilter',FDiVisibilityFilter);
   Reg.WriteString('EditorCommandLine',FEditorCommandLine);
+{$endif}
 end;
+
+
 
 initialization
   Config := TConfig.Create;

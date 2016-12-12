@@ -114,7 +114,7 @@ uses uMainForm,
   uAboutForm,
   uSettingsForm,
   uZoomFrame,
-  uOpenFolderForm,
+{  uOpenFolderForm,}
   uEmxExport;
 
 {$R *.lfm}
@@ -253,13 +253,8 @@ end;
 procedure TMainModule.CopyDiagramClipboardActionExecute(Sender: TObject);
 var
 
-{$ifndef WIN32}
-  Wmf, Wmf1: TMetaFile;
-  WmfCanvas, WmfCanvas1: TMetaFileCanvas;
-{$endif}
-{$ifdef LINUX}
-  Bitmap : QGraphics.TBitmap;
-{$endif}
+
+  Bitmap : TBitmap;
   W,H : integer;
   SrcRect: TRect;
 begin
@@ -269,60 +264,18 @@ begin
 
   SrcRect := Diagram.GetSelectedRect;
 
-  {$ifndef WIN32}
-  Wmf := TMetafile.Create;
-  Wmf1 := TMetafile.Create;
-  try
-    if (SrcRect.Right - SrcRect.Left) <> 0 then
-    begin
-      Wmf1.Width := SrcRect.Right - SrcRect.Left;
-      Wmf1.Height := SrcRect.Bottom - SrcRect.Top;
-    end;
 
-    Wmf.Width := W;
-    Wmf.Height := H;
-    WmfCanvas := TMetafileCanvas.Create(Wmf, 0);
-    try
-      //**This works in w2k since we have fixed controls.pas
-      Diagram.PaintTo(WmfCanvas, 0, 0, True);
-    finally
-      WmfCanvas.Free;
-    end;
-
-    if (SrcRect.Right - SrcRect.Left) <> 0 then
-    begin
-      WmfCanvas1 := TMetafileCanvas.Create(Wmf1, 0);
-      try
-        WmfCanvas1.Draw(-SrcRect.Left,-SrcRect.Top,Wmf);
-      finally
-        WmfCanvas1.Free;
-      end;
-    end else
-    begin
-      FreeAndNil(Wmf1);
-      Wmf1 := Wmf;
-      Wmf := nil;
-    end;
-
-    Clipboard.Assign(Wmf1);
-  finally
-    if Assigned(Wmf) then FreeAndNil(Wmf);
-    if Assigned(Wmf1) then FreeAndNil(Wmf1);
-  end;
-  {$endif}
-
-  {$ifdef LINUX}
-  Bitmap := QGraphics.TBitmap.Create;
+  Bitmap := TBitmap.Create;
   try
     Bitmap.Width := W;
     Bitmap.Height := H;
-    Diagram.PaintTo(Bitmap.Canvas,0,0);
+    Diagram.PaintTo(Bitmap.Canvas,0,0, true);
     Bitmap.PixelFormat := pf8bit;
     Clipboard.Assign(Bitmap);
   finally
     Bitmap.Free;
   end;
-  {$endif}
+
 end;
 
 procedure TMainModule.DocGenActionExecute(Sender: TObject);
@@ -665,17 +618,17 @@ var
   var
     Sr : TSearchRec;
   begin
-    {$WARN SYMBOL_PLATFORM OFF}
-    if FindFirst(Path + '\*.*', faReadOnly or faDirectory, Sr)=0 then
+
+    if FindFirst(Path + DirectorySeparator + '*.*', faReadOnly or faDirectory, Sr)=0 then
     begin
       repeat
         if (Sr.Name<>'.') and (Sr.Name<>'..') then
         begin
           if (Sr.Attr and faDirectory=faDirectory) then
-            _AddFileNames(Files,Path + '\' + Sr.Name,Ext)
+            _AddFileNames(Files,Path + DirectorySeparator + Sr.Name,Ext)
           else
             if CompareText(ExtractFileExt(Sr.Name),Ext)=0 then
-              Files.Add(Path + '\' + Sr.Name);
+              Files.Add(Path + DirectorySeparator + Sr.Name);
         end;
       until FindNext(sr) <> 0;
       FindClose(sr);

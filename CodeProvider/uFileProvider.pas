@@ -86,23 +86,24 @@ end;
 function TFileProvider.LocateFile(const AName: string): string;
 var
   i: Integer;
-  p: string;
+  p, adjName: string;
 begin
   Result := '';
+  adjName := SetDirSeparators(AName);
   if ( Pos(Copy(AName,1,1),'\/')>0 ) or (Copy(AName,2,1)=':') then
   begin
     //Filename with an absolute path
-    if FileExists(AName) then
-      Result := AName;
+    if FileExists(adjName) then
+      Result := adjName;
   end
   else
   begin
     //Filename without a path, use searchpath to locate it.
     for I := 0 to SearchPath.Count - 1 do
     begin
-      if FileExists(SearchPath[I] + AName) then
+      if FileExists(SearchPath[I] + adjName) then
       begin
-        Result := SearchPath[I] + AName;
+        Result := SearchPath[I] + adjName;
         Break;
       end;
     end;

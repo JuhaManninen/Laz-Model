@@ -44,7 +44,7 @@ type
 implementation
 
 uses Forms, SysUtils, Graphics,
-  LCLIntf, LCLType, ComObj,
+  LCLIntf, LCLType, {ComObj,}
   uConfig, Classes, Dialogs, uViewIntegrator;
 
 
