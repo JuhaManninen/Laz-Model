@@ -22,8 +22,8 @@
   See UML-specen page 591 for a description of XMI mapping of UML
 }
 unit uXmiExport;
-
-{$mode objfpc}{$H+}
+{$mode delphi}
+//{$mode objfpc}{$H+}
 
 interface
 

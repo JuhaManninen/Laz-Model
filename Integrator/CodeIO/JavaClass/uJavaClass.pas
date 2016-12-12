@@ -18,8 +18,8 @@
 }
 
 unit uJavaClass;
-//{$mode delphi}
-{$mode objfpc}{$H+}
+{$mode delphi}
+//{$mode objfpc}{$H+}
 
 interface
 
