@@ -35,12 +35,7 @@ function DelphiIsToolRegistered( Title: String ): Boolean;
 function DelphiUnregisterTool( Title: String ): Boolean;
 
 implementation
-{$ifdef WIN32}
-uses SysUtils, LCLIntf, LCLType, LMessages, classes, registry;
-{$endif}
-{$ifdef LINUX}
-uses SysUtils, classes;
-{$endif}
+uses SysUtils, LCLIntf, LCLType, classes, registry;
 
 {$ifdef WIN32}
 function OpenDocEntry(ext:String; reg:TRegistry; Force: Boolean=False): Boolean;

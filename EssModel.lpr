@@ -59,14 +59,12 @@ uses
   SugiyamaLayout in 'Components\SugiyamaLayout.pas',
   uConst in 'System\uConst.pas',
   uAboutForm in 'System\uAboutForm.pas' {AboutForm},
-  uRegisterExtension in 'Components\uRegisterExtension.pas',
   uSettingsForm in 'System\uSettingsForm.pas' {SettingsForm},
   uFeedback in 'System\uFeedback.pas',
   uTreeViewFrame in 'Integrator\View\uTreeViewFrame.pas' {TreeViewFrame: TFrame},
   uTreeViewIntegrator in 'Integrator\View\uTreeViewIntegrator.pas',
   uXmiExportArgoUML in 'Integrator\Export\uXmiExportArgoUML.pas',
   uZoomFrame in 'System\uZoomFrame.pas' {ZoomFrame: TFrame},
-  uOpenFolderForm in 'System\uOpenFolderForm.pas' {OpenFolderForm},
   uEmxExport in 'Integrator\Export\uEmxExport.pas';
 
 {$R *.res}

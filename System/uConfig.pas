@@ -65,9 +65,7 @@ var
 implementation
 
 uses Forms,
-   LCLIntf, LCLType, LMessages,
-   uConst,
-   SysUtils;
+   LCLIntf, LCLType, uConst, SysUtils;
 
 
 
@@ -165,7 +163,7 @@ procedure TConfig.WriteStr(const Key, Value: string);
 begin
 {$ifdef WIN32}
   Reg.WriteString(Key,Value)
- {$endif}
+{$endif}
 end;
 
 procedure TConfig.StoreSettings;
@@ -177,8 +175,6 @@ begin
   Reg.WriteString('EditorCommandLine',FEditorCommandLine);
 {$endif}
 end;
-
-
 
 initialization
   Config := TConfig.Create;

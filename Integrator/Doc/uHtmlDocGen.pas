@@ -186,7 +186,7 @@ begin
   try
     Di.Package := P;
     Di.InitFromModel;
-    Di.GetDiagramSize(W,H);
+    Di.GetDiagramSize(W{%H-},H{%H-});
     Clicks := Di.GetClickAreas;
 
     TempForm.Height:=0;

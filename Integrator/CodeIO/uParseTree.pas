@@ -22,7 +22,7 @@ unit uParseTree;
 {$MODE Delphi}
 
 interface
-uses uModel, uModelEntity, Contnrs;
+uses  uModelEntity, Contnrs;
 
 type
 

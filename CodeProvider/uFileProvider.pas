@@ -41,7 +41,7 @@ type
 
 implementation
 
-uses SysUtils, uConfig, uConst;
+uses SysUtils, uConfig;
 
 { TFileProvider }
 

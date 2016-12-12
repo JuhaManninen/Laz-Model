@@ -96,7 +96,7 @@ diagramframe
 
 implementation
 
-uses uError, uMainModule;
+uses uError;
 
 {$R *.lfm}
 

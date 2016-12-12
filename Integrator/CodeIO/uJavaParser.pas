@@ -943,7 +943,7 @@ begin
   Result := False;
   if Assigned(NeedPackage) then
   begin
-    FileName := NeedPackage(SourceName,Str);
+    FileName := NeedPackage(SourceName,Str{%H-});
     if Assigned(Str) then
     begin
       Parser := TJavaParser.Create;

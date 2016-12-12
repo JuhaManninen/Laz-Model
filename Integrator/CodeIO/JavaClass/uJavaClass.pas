@@ -290,7 +290,7 @@ var
   tmp : array[0..3] of byte;
 begin
   // $BEBAFECA
-  Input.Read(tmp,4);
+  Input.Read(tmp{%H-},4);
   Result := (tmp[0] shl 24) or (tmp[1] shl 16) or (tmp[2] shl 8) or tmp[3];
 end;
 

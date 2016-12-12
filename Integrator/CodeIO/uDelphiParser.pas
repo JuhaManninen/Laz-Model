@@ -304,7 +304,7 @@ var
   begin
     if Assigned(NeedPackage) then
     begin
-      NeedPackage(IncludeFile, IncStr);
+      NeedPackage(IncludeFile, IncStr{%H-});
       if Assigned(IncStr) then
       begin
         Buf := TMemoryStream.Create;

@@ -114,7 +114,6 @@ uses uMainForm,
   uAboutForm,
   uSettingsForm,
   uZoomFrame,
-{  uOpenFolderForm,}
   uEmxExport;
 
 {$R *.lfm}

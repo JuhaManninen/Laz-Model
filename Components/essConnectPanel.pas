@@ -73,9 +73,6 @@ type
 
     Further it manages the layout of the contained controls.
   }
-
-  { TessConnectPanel }
-
   TessConnectPanel = class(TCustomPanel)
   private
     FIsModified, FIsMoving, FIsRectSelecting, FSelectedOnly: Boolean;
@@ -441,7 +438,7 @@ begin
     mcont := FindManagedControl(found);
 //    child := found.ControlAtPos(found.ScreenToClient(Mouse.CursorPos), False);
    child := Application.GetControlAtMouse;
-  {$ifdef WIN32}
+  {$ifdef false}
     if (GetAsyncKeyState(VK_CONTROL) and $F000) = 0 then
     begin
       if ((GetAsyncKeyState(VK_SHIFT) and $F000) <> 0) and (child is TRtfdCustomLabel) then
@@ -459,7 +456,6 @@ begin
         ClearSelection;
     end;
   {$endif}
-
     if Assigned(mcont) then
       mcont.Selected := True;
     if found <> Self then TCrackControl(found).Click;
