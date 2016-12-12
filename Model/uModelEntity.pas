@@ -64,7 +64,7 @@ type
     function _AddRef: Integer;
     function _Release: Integer;
   public
-    constructor Create(Owner: TModelEntity); virtual;
+    constructor Create(AOwner: TModelEntity); virtual;
     destructor Destroy; override;
     procedure AddListener(NewListener: IUnknown);
     procedure RemoveListener(Listener: IUnknown);
@@ -111,10 +111,10 @@ uses Sysutils, LCLIntf, LCLType, uListeners ;
 
 { TModelEntity }
 
-constructor TModelEntity.Create(Owner: TModelEntity);
+constructor TModelEntity.Create(AOwner: TModelEntity);
 begin
   inherited Create;
-  Self.Owner := Owner;
+  Self.Owner := AOwner;
   Listeners := TInterfaceList.Create;
   FDocumentation := TDocumentation.Create;
   if Assigned(CurrentSourceX) then SourceX := CurrentSourceX^;

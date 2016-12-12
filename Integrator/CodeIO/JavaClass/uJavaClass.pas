@@ -27,19 +27,23 @@ uses Classes;
 
 
 type
+
+  TConstBase = class;
+  TConstArray = array of TConstBase;
+
   TConstBase = class
   private
     tag : integer;
   public
     procedure Read(Input : TStream); virtual; abstract;
-    procedure set_ref(const objAry : array of TConstBase); virtual;
+    procedure set_ref(const objAry : TConstArray); virtual;
     function getString : string; virtual;
   end;
 
   TConstPool = class
   private
     constPoolCnt : integer;
-    constPool : array of TConstBase;
+    constPool : TConstArray;
   public
     constructor Create(Input : TStream);
     destructor Destroy; override;
@@ -64,7 +68,7 @@ type
     Utf8 : TConstUtf8;
   public
     procedure Read(Input : TStream); override;
-    procedure set_ref(const objAry : array of TConstBase); override;
+    procedure set_ref(const objAry : TConstArray); override;
     function GetString : string; override;
   end;
 
@@ -109,7 +113,7 @@ type
     descriptor_Utf8 : TConstUtf8;
   public
     procedure Read(Input : TStream); override;
-    procedure set_ref(const objAry : array of TConstBase); override;
+    procedure set_ref(const objAry : TConstArray); override;
   end;
 
   TConstRef = class(TConstBase)
@@ -119,7 +123,7 @@ type
     name_ref : TConstName_and_Type_info;
   public
     procedure Read(Input : TStream); override;
-    procedure set_ref(const objAry : array of TConstBase); override;
+    procedure set_ref(const objAry : TConstArray); override;
   end;
 
   TAccData = class
@@ -533,7 +537,7 @@ begin
   Result := '**noname';
 end;
 
-procedure TConstBase.set_ref(const objAry: array of TConstBase);
+procedure TConstBase.set_ref(const objAry: TConstArray);
 begin
   //nothing
 end;
@@ -647,7 +651,7 @@ begin
   index := readU2( Input );
 end;
 
-procedure TConstClass_or_String.set_ref(const objAry: array of TConstBase);
+procedure TConstClass_or_String.set_ref(const objAry: TConstArray);
 var
   tmp : TConstBase;
 begin
@@ -722,7 +726,7 @@ begin
   descriptor_index := readU2(Input);
 end;
 
-procedure TConstName_and_Type_info.set_ref(const objAry: array of TConstBase);
+procedure TConstName_and_Type_info.set_ref(const objAry: TConstArray);
 var
   tmp : TConstBase;
 begin
@@ -742,7 +746,7 @@ begin
   name_and_type_index := readU2( Input );
 end;
 
-procedure TConstRef.set_ref(const objAry: array of TConstBase);
+procedure TConstRef.set_ref(const objAry: TConstArray);
 var
   tmp : TConstBase;
 begin

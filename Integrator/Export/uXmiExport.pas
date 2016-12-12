@@ -131,7 +131,8 @@ begin
   if I=-1 then
   begin
     Inc(NextId);
-    I := Ids.AddObject(S,TObject(pointer(NextId)));
+    ////FPCTODO this line stops forces delphi mode
+    I := Ids.AddObject(S,pointer(NextId));
   end;
   Result := 'xmi_' + IntToStr( integer(Ids.Objects[ I ]) );
 end;
