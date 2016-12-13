@@ -431,16 +431,18 @@ var
 
 begin
   inherited;
-//  found := FindVCLWindow(Mouse.CursorPos);
   found := Application.GetControlAtMouse;;
   if Assigned(found) and (not FIsMoving)then
   begin
     mcont := FindManagedControl(found);
-//    child := found.ControlAtPos(found.ScreenToClient(Mouse.CursorPos), False);
-   child := Application.GetControlAtMouse;
+  // child :=  mcont.ControlAtPos(found.ScreenToClient(Mouse.CursorPos), False);
+//   child := Application.GetControlAtMouse;
   {$ifdef false}
+    // FPCTODO find a way to get cntrl key in a click event.
     if (GetAsyncKeyState(VK_CONTROL) and $F000) = 0 then
     begin
+      // this is a delphi integration routine
+
       if ((GetAsyncKeyState(VK_SHIFT) and $F000) <> 0) and (child is TRtfdCustomLabel) then
       begin
         if TRtfdCustomLabel(child).ModelEntity.Sourcefilename <> '' then
@@ -453,9 +455,10 @@ begin
         end;
         TRtfdCustomLabel(child).ModelEntity.Sourcefilename;
       end else
-        ClearSelection;
     end;
+
   {$endif}
+    ClearSelection;
     if Assigned(mcont) then
       mcont.Selected := True;
     if found <> Self then TCrackControl(found).Click;
@@ -607,7 +610,7 @@ end;
 procedure TessConnectPanel.MouseDown(Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
-  found: TControl;
+  found, found1: TControl;
   mcont: TManagedObject;
   p2: TPoint;
 begin
@@ -626,10 +629,12 @@ begin
 ////TODO  found := FindVCLWindow(Mouse.CursorPos);
   found := Application.GetControlAtMouse;
 
+
   if found = Self then found := nil;
   if Assigned(found) then
   begin
-    mcont := FindManagedControl(found);
+      found1 := TControl(found.Owner);
+    mcont := FindManagedControl(found1);
     if Assigned(mcont) then
     begin
 

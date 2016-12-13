@@ -27,8 +27,7 @@
 }
 unit uXmiExportArgoUML;
 
-{$mode delphi}
-//{$mode objfpc}{$H+}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -40,7 +39,7 @@ type
 
   TXMIExporterArgoUML = class(TExportIntegrator)
   private
-    Ids,
+    Ids : TStringList;
     LaterList : TStringList;
     IdModel : string;
     Output : TMemoryStream;
@@ -181,12 +180,10 @@ begin
   I := Ids.IndexOf(S);
   if I=-1 then
   begin
-    Inc(NextId);
-    ////FPCTODO this line stops forces delphi mode
-    I := Ids.AddObject(S,pointer(NextId));
+    I := Ids.Add(S);
   end;
 //begin Fernando Montenegro
-  Result := 'xmi.' + IntToStr( integer(Ids.Objects[ I ]) );
+  Result := 'xmi.' + IntToStr(I);
 //  Result := 'xmi_' + IntToStr( integer(Ids.Objects[ I ]) );
 //end Fernando Montenegro
 end;

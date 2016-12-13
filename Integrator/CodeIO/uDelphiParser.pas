@@ -696,7 +696,7 @@ begin
   except
     on E : EParseError do
     begin
-      DebugLog.SaveToFile( 'c:\essModelDump.txt' );
+      DebugLog.SaveToFile( '/home/peter/essModelDump.txt' );
       raise;
     end;
   end;
@@ -990,7 +990,6 @@ begin
     tName := Token;
     GetNextToken; GetNextToken;
     if lToken = 'packed' then GetNextToken; { TODO : Add packed to teh model? }
-
     if lToken = 'class' then // Handle a class declaration
     begin
       if LowerCase(NextToken) <> 'of' then
@@ -1042,6 +1041,11 @@ begin
       while GetNextToken and (Token <> ';') do ;
       GetNextToken;
     end
+    else if lToken = 'array' then
+    begin
+       while GetNextToken and (Token <> ';') do ;
+      GetNextToken;
+    end
     else if NextToken = '..' then
     begin
       ex := FUnit.FindClassifier(tName);
@@ -1051,7 +1055,7 @@ begin
       while GetNextToken and (Token <> ';') do ;
       GetNextToken;
     end
-    else if (lToken = 'procedure') or (lToken = 'function') then
+    else if (lToken = 'procedure') or (lToken = 'function') or (lToken = 'array') then
     begin // Procedural type
       ParseFunction(nil); // Ignore for now
       if lToken = 'of' then

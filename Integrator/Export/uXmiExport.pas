@@ -22,8 +22,8 @@
   See UML-specen page 591 for a description of XMI mapping of UML
 }
 unit uXmiExport;
-{$mode delphi}
-//{$mode objfpc}{$H+}
+
+{$mode objfpc}{$H+}
 
 interface
 
@@ -131,10 +131,9 @@ begin
   if I=-1 then
   begin
     Inc(NextId);
-    ////FPCTODO this line stops forces delphi mode
-    I := Ids.AddObject(S,pointer(NextId));
+    I := Ids.Add(S);
   end;
-  Result := 'xmi_' + IntToStr( integer(Ids.Objects[ I ]) );
+  Result := 'xmi_' + IntToStr(I);
 end;
 
 

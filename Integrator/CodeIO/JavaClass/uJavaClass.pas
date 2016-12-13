@@ -18,8 +18,8 @@
 }
 
 unit uJavaClass;
-{$mode delphi}
-//{$mode objfpc}{$H+}
+
+{$mode objfpc}{$H+}
 
 interface
 
@@ -157,6 +157,8 @@ type
     function GetName : string;
   end;
 
+  TAttrInfoArray = array of TAttrInfo;
+
   TAttrFactory = class
   private
     class procedure Skip_data(len : integer; Input : TStream);
@@ -178,7 +180,7 @@ type
     accessFlags : integer;
     thisClass : TConstBase;
     superClass : TConstBase;
-    interfaces : array of TConstBase;
+    interfaces : TConstArray;
   public
     constructor Create(Input : TStream; ConstPoolSec : TConstPool);
     function GetClassName : string;
@@ -189,14 +191,16 @@ type
     access_flags : integer;
     name : TConstUtf8;
     descriptor : TConstUtf8 ;
-    attributes : array of TAttrInfo;
+    attributes : TAttrInfoArray;
   public
     constructor Create(Input : TStream; constPoolSec : TConstPool);
   end;
 
+  TFieldInfoArray = array of TFieldInfo;
+
   TClassFieldSec = class
   public
-    classFields : array of TFieldInfo;
+    classFields : TFieldInfoArray;
   public
     constructor Create(Input : TStream; constPoolSec : TConstPool);
   end;
@@ -206,15 +210,17 @@ type
     access_flags : integer;
     name : TConstUtf8 ;
     descriptor : TConstUtf8 ;
-    attributes : array of TAttrInfo;
+    attributes : TAttrInfoArray;
   public
     constructor Create(Input : TStream; constPoolSec : TConstPool);
     function isConstructor : boolean;
   end;
 
+  TMethodInfoArray = array of TMethodInfo;
+
   TClassMethodSec = class
   public
-    classMethods : array of TMethodInfo;
+    classMethods : TMethodInfoArray;
   public
     constructor Create(Input : TStream; constPoolSec : TConstPool; AClassName : string);
     destructor Destroy; override;
@@ -222,7 +228,7 @@ type
 
   TClassAttrSec = class
   private
-    classAttrTab : array of TAttrInfo;
+    classAttrTab : TAttrInfoArray;
   public
     constructor Create(Input : TStream; constPoolSec : TConstPool);
   end;
@@ -236,7 +242,7 @@ type
     classMethods : TClassMethodSec;
     classAttrs : TClassAttrSec;
     //FPCTODO this line force delphi mode
-    className : string;
+    clsName : string;
   public
     constructor Create(Input : TStream);
     destructor Destroy; override;
@@ -469,8 +475,8 @@ begin
     classConstPool := TConstPool.Create( Input );
     classDecl := TClassDeclSec.Create( Input, classConstPool );
     classFields := TClassFieldSec.Create(Input, classConstPool);
-    className := classDecl.getClassName;
-    classMethods := TClassMethodSec.Create(Input, classConstPool, className );
+    clsName := classDecl.getClassName;
+    classMethods := TClassMethodSec.Create(Input, classConstPool, clsName );
     classAttrs := TClassAttrSec.Create(Input, classConstPool);
   finally
     Input.Free;

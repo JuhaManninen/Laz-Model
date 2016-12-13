@@ -151,14 +151,14 @@ begin
 
   JC := TClassFile.Create(AStream);
   try
-    PName := ExtractPackageName( JC.ClassName );
+    PName := ExtractPackageName( JC.clsName );
     U := OM.ModelRoot.FindUnitPackage(PName);
     if not Assigned(U) then
       U := (FModel as TLogicPackage).AddUnit( PName );
     if TAccData.isInterface( JC.classDecl.accessFlags ) then
     begin
       //interface
-      Int := U.AddInterface( ExtractClassName(JC.ClassName) );
+      Int := U.AddInterface( ExtractClassName(JC.clsName) );
       Int.Visibility := GetVisibility( JC.classDecl.accessFlags );
 
       for I:=0 to Length(JC.classFields.classFields)-1 do
@@ -179,7 +179,7 @@ begin
     else
     begin
       //class
-      C := U.AddClass( ExtractClassName(JC.ClassName) );
+      C := U.AddClass( ExtractClassName(JC.clsName) );
       //ancestor
       if Assigned(JC.classDecl.superClass) then
       begin

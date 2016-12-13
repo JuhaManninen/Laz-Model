@@ -253,7 +253,7 @@ begin
   raise Exception.Create( ClassName + '.GetAfterListener');
 end;
 
-class function TModelEntity.GetBeforeListener: TGUID;
+class function TModelEntity.{%H-}GetBeforeListener: TGUID;
 begin
   raise Exception.Create( ClassName + '.GetBeforeListener');
 end;
