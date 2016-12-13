@@ -696,7 +696,7 @@ begin
   except
     on E : EParseError do
     begin
-      DebugLog.SaveToFile( '/home/peter/essModelDump.txt' );
+      DebugLog.SaveToFile( './essModelDump.txt' );
       raise;
     end;
   end;

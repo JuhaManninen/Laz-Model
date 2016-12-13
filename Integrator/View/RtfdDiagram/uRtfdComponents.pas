@@ -578,12 +578,12 @@ end;
 constructor TRtfdSeparator.Create(AOwner: TComponent; Tp: integer);
 begin
   inherited Create(AOwner, nil, Tp);
-  Parent := Owner as TWinControl;
+
 
   Height := 16;
-{  //Top must be assigned so that all labels appears beneath each other when align=top
-  Top := MaxInt shr 2;
-  Align := alBottom;}
+
+
+
 end;
 
 procedure TRtfdSeparator.Paint;

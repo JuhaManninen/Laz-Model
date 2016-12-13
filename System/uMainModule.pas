@@ -429,7 +429,7 @@ const
   D : TOpenDialog = nil;
 var
   Ints : TClassList;
-  Exts : TStringList;
+  fl, Exts : TStringList;
   I,J : integer;
   AnyFilter,
   Filter : string;
@@ -466,7 +466,15 @@ begin
     D.Filter := Filter;
   end;
   if D.Execute then
-    LoadProject(D.Files);
+  begin
+    // PLATFORM ISSUE
+    // Files stringlist is not populated in QT or Gnome for
+    // a single file. LoadProject must be passed a string list,
+    // so have to use new stringlist instead of TOpenDialog.Files
+    fl :=  TStringList.Create;
+    fl.Add(D.Filename);
+    LoadProject(fl);
+  end;
 end;
 
 
@@ -639,8 +647,9 @@ begin
       end;
       for I := 0 to Ints.Count - 1 do
       begin
-        Exts := TImportIntegratorClass(Ints[I]).GetFileExtensions;
+       Exts := TImportIntegratorClass(Ints[I]).GetFileExtensions;
 //        F.Filter FileTypeCombo.Items.Add( '*' + Exts.Names[0]);
+       FreeAndNil(Exts);
       end;
   //    F.FileTypeCombo.ItemIndex := F.FileTypeCombo.Items.Count-1;
     end;
@@ -654,8 +663,8 @@ begin
         ShowMessage('No files found');
     end;
   finally
-    L.Free;
-    Ints.Free;
+    FreeAndNil(L);
+    FreeAndNil(Ints);
   end;
 end;
 

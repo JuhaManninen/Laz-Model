@@ -425,43 +425,22 @@ end;
 procedure TessConnectPanel.Click;
 var
   found: TControl;
-  child: TControl;
-  editorExecuteString: String;
   mcont: TManagedObject;
-
 begin
   inherited;
+  // find the TRtfdCustomLabel at this site if there is one
   found := Application.GetControlAtMouse;;
   if Assigned(found) and (not FIsMoving)then
   begin
+    // get class box which is the owner of this label
     mcont := FindManagedControl(TControl(found.Owner));
-  // child :=  mcont.ControlAtPos(found.ScreenToClient(Mouse.CursorPos), False);
-//   child := Application.GetControlAtMouse;
-  {$ifdef false}
-    // FPCTODO find a way to get cntrl key in a click event.
-    if (GetAsyncKeyState(VK_CONTROL) and $F000) = 0 then
-    begin
-      // this is a delphi integration routine
 
-      if ((GetAsyncKeyState(VK_SHIFT) and $F000) <> 0) and (child is TRtfdCustomLabel) then
-      begin
-        if TRtfdCustomLabel(child).ModelEntity.Sourcefilename <> '' then
-        begin
-          editorExecuteString := Config.EditorCommandLine;
-          editorExecuteString := StringReplace(editorExecuteString,'%f',TRtfdCustomLabel(child).ModelEntity.Sourcefilename,[rfReplaceAll,rfIgnoreCase]);
-          editorExecuteString := StringReplace(editorExecuteString,'%l',IntToStr(TRtfdCustomLabel(child).ModelEntity.SourceY+1),[rfReplaceAll,rfIgnoreCase]);
-          editorExecuteString := StringReplace(editorExecuteString,'%c',IntToStr(TRtfdCustomLabel(child).ModelEntity.SourceX),[rfReplaceAll,rfIgnoreCase]);
-          WinExec(PChar(editorExecuteString),SW_SHOWNORMAL);
-        end;
-        TRtfdCustomLabel(child).ModelEntity.Sourcefilename;
-      end else
-    end;
-
-  {$endif}
     if Assigned(mcont) then
+      // possibly reinforce already selected?
       mcont.Selected := True
-    else  ClearSelection;
+    else  ClearSelection; // or if not clear all selections
 
+    // unsure on the usefulness of this??
     if found <> Self then TCrackControl(found).Click;
   end;
 end;
@@ -880,11 +859,20 @@ end;
 procedure TessConnectPanel.OnManagedObjectMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 var
-  inst: TManagedObject;
+  pt: TPoint;
 begin
-  inst := FindManagedControl(Sender as TControl);
-  if Assigned(inst) then
-    if Assigned(inst.FOnMouseMove) then inst.FOnMouseMove(Sender,Shift,X,Y);
+
+  {$ifdef LINUX}
+  // This is required in Linux both for QT and Gnome
+  // otherwise no dragging occurs. Causes problems in
+  // Windows.
+  // Call the essConnectpanel MouseMove instead.
+  pt.x := X;
+  pt.y := Y;
+  pt := (Sender as TControl).ClientToScreen(pt);
+  pt := ScreenToClient(pt);
+  MouseMove(Shift,pt.x,pt.y);
+  {$endif}
 end;
 
 procedure TessConnectPanel.OnManagedObjectMouseUp(Sender: TObject;
