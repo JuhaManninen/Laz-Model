@@ -169,11 +169,9 @@ var
 
   procedure InToPng;
   var
-    Bitmap : Graphics.TBitmap;
     Png : TPortableNetworkGraphic;
     OldColors,UseMono : boolean;
   begin
-    Bitmap := Graphics.TBitmap.Create;
     Png := TPortableNetworkGraphic.Create;
     try
       //Use b/w for large pictures to reduce memory consumption
@@ -181,28 +179,23 @@ var
       OldColors := Config.IsLimitedColors;
       if UseMono then
       begin
-        Bitmap.Monochrome := True;
+        Png.Monochrome := True;
         Config.IsLimitedColors := True;
       end else if ((W*H*4) div 1024>32000) then
         //Else if memory takes more than 32mb, use 8-bit (poor colors)
-        Bitmap.PixelFormat := pf8bit;
+        Png.PixelFormat := pf8bit;
 
-      Bitmap.Width := W;
-      Bitmap.Height := H;
+      Png.SetSize(W, H);
+      //Othervise noething was drawn
+      Png.Canvas.Rectangle(0, 0, W, H);
 
-      PaintTo(Bitmap.Canvas,0,0,False);
+      PaintTo(Png.Canvas,0,0,False);
 
       if UseMono then
         Config.IsLimitedColors := OldColors;
 
-      //Change to 8-bit so that gifimage don't have to do a colorreduction (takes forever)
-      if Bitmap.PixelFormat<>pf8bit then
-        Bitmap.PixelFormat := pf8bit;
-
-      Png.Assign(Bitmap);
       Png.SaveToFile( FileName );
     finally
-      Bitmap.Free;
       Png.Free;
     end;
   end;

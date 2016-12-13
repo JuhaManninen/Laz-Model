@@ -167,7 +167,7 @@ begin
   //Create boxes
   if FPackage is TUnitPackage then
   begin
-    TRtfdUnitPackageDiagram.Create(Panel, FPackage);
+    TRtfdUnitPackageDiagram.Create(Panel, FPackage, 50);
     InAddUnit(FPackage as TUnitPackage);
   end
   else

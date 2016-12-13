@@ -20,8 +20,7 @@
 
 // Exporter for the "ESS-Model XML" format
 unit uEmxExport;
-{$mode delphi}
-//{$mode objfpc}{$H+}
+{$mode objfpc}{$H+}
 
 interface
 
@@ -100,10 +99,9 @@ begin
   if I=-1 then
   begin
     Inc(NextId);
-    ////FPCTODO this line stops forces delphi mode
-    I := Ids.AddObject(S,pointer(NextId));
+    I := Ids.Add(S);
   end;
-  Result := 'emx_' + IntToStr( integer(Ids.Objects[ I ]) );
+  Result := 'emx_' + IntToStr(I);
 end;
 
 

@@ -56,7 +56,7 @@ constructor TRtfdDiagramFrame.Create(AOwner: TComponent; ADiagram: TRtfdDiagram)
 begin
   inherited Create(AOwner, ADiagram.Model);
   Self.Diagram := ADiagram;
-//  Diagram.OnUpdateToolbar := @OnUpdateToolbar;
+  Diagram.OnUpdateToolbar := @OnUpdateToolbar;
 end;
 
 procedure TRtfdDiagramFrame.OpenSelectedPackageActionExecute(Sender: TObject);

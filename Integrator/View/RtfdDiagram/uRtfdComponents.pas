@@ -96,7 +96,7 @@ type
     procedure SetText(const Value: TCaption);
     function GetText: TCaption;
   public
-    constructor Create(AOwner: TComponent; AEntity: TModelEntity); reintroduce; virtual;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); reintroduce; virtual;
     procedure Change(Sender: TModelEntity); virtual;
     procedure AddChild(Sender: TModelEntity; NewChild: TModelEntity); virtual;
     procedure Remove(Sender: TModelEntity); virtual;
@@ -107,16 +107,20 @@ type
     property Transparent: Boolean read FTransparent write SetTransparent;
   end;
 
+  { TRtfdClassName }
+
   TRtfdClassName = class(TRtfdCustomLabel, IAfterClassListener)
   public
-    constructor Create(AOwner: TComponent; AEntity: TModelEntity); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); override;
     destructor Destroy; override;
     procedure EntityChange(Sender: TModelEntity); override;
   end;
 
+  { TRtfdInterfaceName }
+
   TRtfdInterfaceName = class(TRtfdCustomLabel, IAfterInterfaceListener)
   public
-    constructor Create(AOwner: TComponent; AEntity: TModelEntity); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); override;
     destructor Destroy; override;
     procedure EntityChange(Sender: TModelEntity); override;
   end;
@@ -127,29 +131,36 @@ type
     function WidthNeeded : integer; override;
   end;
 
+  { TRtfdOperation }
+
   TRtfdOperation = class(TVisibilityLabel, IAfterOperationListener)
   private
     O: TOperation;
   public
-    constructor Create(AOwner: TComponent; AEntity: TModelEntity); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); override;
     destructor Destroy; override;
     procedure EntityChange(Sender: TModelEntity); override;
     procedure IAfterOperationListener.EntityChange = EntityChange;
   end;
 
+  { TRtfdAttribute }
+
   TRtfdAttribute = class(TVisibilityLabel, IAfterAttributeListener)
   private
     A: TAttribute;
   public
-    constructor Create(AOwner: TComponent; AEntity: TModelEntity); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); override;
     destructor Destroy; override;
     procedure EntityChange(Sender: TModelEntity); override;
     procedure IAfterAttributeListener.EntityChange = EntityChange;
   end;
 
-  TRtfdSeparator = class(TGraphicControl)
+  { TRtfdSeparator }
+
+  TRtfdSeparator = class(TRtfdCustomLabel)
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); override;
+    constructor Create(AOwner: TComponent; Tp: integer);
     procedure Paint; override;
   end;
 
@@ -158,22 +169,27 @@ type
     constructor Create(AOwner: TComponent; AEntity: TModelEntity; ACaption: string); reintroduce;
   end;
 
+  { TRtfdUnitPackageName }
+
   TRtfdUnitPackageName = class(TRtfdCustomLabel, IAfterUnitPackageListener)
   private
     P: TUnitPackage;
   public
-    constructor Create(AOwner: TComponent; AEntity: TModelEntity); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); override;
     destructor Destroy; override;
     procedure EntityChange(Sender: TModelEntity); override;
     procedure IAfterUnitPackageListener.EntityChange = EntityChange;
   end;
 
   //Class to display mame of package at upper-left corner in a unitpackage diagram
+
+  { TRtfdUnitPackageDiagram }
+
   TRtfdUnitPackageDiagram = class(TRtfdCustomLabel, IAfterUnitPackageListener)
   private
     P: TUnitPackage;
   public
-    constructor Create(AOwner: TComponent; AEntity: TModelEntity); override;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); override;
     destructor Destroy; override;
     procedure EntityChange(Sender: TModelEntity); override;
     procedure IAfterUnitPackageListener.EntityChange = EntityChange;
@@ -335,7 +351,7 @@ begin
 
   NeedW := 0;
   NeedH := (ClassShadowWidth * 2) + 4;
-  Inc(NeedH, TRtfdClassName.Create(Self, Entity).Height);
+  Inc(NeedH, TRtfdClassName.Create(Self, Entity, 16).Height);
 
   //Get names in visibility order
   if FMinVisibility > Low(TVisibility) then
@@ -351,25 +367,25 @@ begin
 
   //Separator
   if (Ami.Count>0) or (Omi.Count>0) then
-    Inc(NeedH, TRtfdSeparator.Create(Self).Height);
+    Inc(NeedH, TRtfdSeparator.Create(Self, NeedH).Height);
 
   //Attributes
   while Ami.HasNext do
-    Inc(NeedH, TRtfdAttribute.Create(Self,Ami.Next).Height);
+    Inc(NeedH, TRtfdAttribute.Create(Self,Ami.Next, NeedH).Height);
 
   //Separator
   if (Ami.Count>0) and (Omi.Count>0) then
-    Inc(NeedH, TRtfdSeparator.Create(Self).Height);
+    Inc(NeedH, TRtfdSeparator.Create(Self, NeedH).Height);
 
   //Operations
   while Omi.HasNext do
-    Inc(NeedH, TRtfdOperation.Create(Self,Omi.Next).Height);
+    Inc(NeedH, TRtfdOperation.Create(Self,Omi.Next, NeedH).Height);
 
   for I := 0 to ControlCount-1 do
     if Controls[I] is TRtfdCustomLabel then
       NeedW := Max( TRtfdCustomLabel(Controls[I]).WidthNeeded,NeedW);
 
-  Height :=  Max(NeedH,cDefaultHeight);
+  Height :=  Max(NeedH,cDefaultHeight) + 10;
   Width  :=  Max(NeedW,cDefaultWidth);
 
   Visible := WasVisible;
@@ -393,23 +409,28 @@ end;
 procedure TRtfdUnitPackage.RefreshEntities;
 begin
   DestroyComponents;
-  TRtfdUnitPackageName.Create(Self, P);
+  TRtfdUnitPackageName.Create(Self, P, 50);
   Height := 45;
 end;
 
 { TRtfdCustomLabel }
 
-constructor TRtfdCustomLabel.Create(AOwner: TComponent; AEntity: TModelEntity);
+constructor TRtfdCustomLabel.Create(AOwner: TComponent; AEntity: TModelEntity;
+  Tp: integer);
 begin
   inherited Create(AOwner);
   Parent := Owner as TWinControl;
   Self.Entity := AEntity;
-  Align := alTop;
+  AutoSize := False;
   Height := Abs(Font.Height);
   FAlignment := taLeftJustify;
   FTransparent := True;
+  Top := Tp;
+  Width := cDefaultWidth;
+  Left := 4;
   //Top must be assigned so that all labels appears beneath each other when align=top
-  Top := MaxInt shr 2;
+//  Top := MaxInt shr 2;
+//  Align := alTop;
 end;
 
 procedure TRtfdCustomLabel.EntityChange(Sender: TModelEntity);
@@ -430,7 +451,8 @@ begin
   //Stub
 end;
 
-procedure TRtfdCustomLabel.AddChild(Sender, NewChild: TModelEntity);
+procedure TRtfdCustomLabel.AddChild(Sender: TModelEntity; NewChild: TModelEntity
+  );
 begin
   //Stub
 end;
@@ -479,9 +501,10 @@ end;
 
 { TRtfdClassName }
 
-constructor TRtfdClassName.Create(AOwner: TComponent; AEntity: TModelEntity);
+constructor TRtfdClassName.Create(AOwner: TComponent; AEntity: TModelEntity;
+  Tp: integer);
 begin
-  inherited Create(AOwner, AEntity);
+  inherited Create(AOwner, AEntity, Tp);
   Font.Style := [fsBold];
   Alignment := taCenter;
   Entity.AddListener(IAfterClassListener(Self));
@@ -516,9 +539,10 @@ end;
 
 { TRtfdInterfaceName }
 
-constructor TRtfdInterfaceName.Create(AOwner: TComponent; AEntity: TModelEntity);
+constructor TRtfdInterfaceName.Create(AOwner: TComponent;
+  AEntity: TModelEntity; Tp: integer);
 begin
-  inherited Create(AOwner, AEntity);
+  inherited Create(AOwner, AEntity, Tp);
   Font.Style := [fsBold];
   Alignment := taCenter;
   Entity.AddListener(IAfterInterfaceListener(Self));
@@ -544,16 +568,22 @@ end;
 
 { TRtfdSeparator }
 
-constructor TRtfdSeparator.Create(AOwner: TComponent);
+constructor TRtfdSeparator.Create(AOwner: TComponent; AEntity: TModelEntity;
+  Tp: integer);
 begin
-  //Cannot inherit from TCustomLabel in Kylix because it does not have a paint-method
-  inherited Create(AOwner);
+  Create(AOwner, Tp);
+
+end;
+
+constructor TRtfdSeparator.Create(AOwner: TComponent; Tp: integer);
+begin
+  inherited Create(AOwner, nil, Tp);
   Parent := Owner as TWinControl;
-  AutoSize := False;
+
   Height := 16;
-  //Top must be assigned so that all labels appears beneath each other when align=top
+{  //Top must be assigned so that all labels appears beneath each other when align=top
   Top := MaxInt shr 2;
-  Align := alTop;
+  Align := alBottom;}
 end;
 
 procedure TRtfdSeparator.Paint;
@@ -570,9 +600,9 @@ end;
 { TRtfdPackageName }
 
 constructor TRtfdUnitPackageName.Create(AOwner: TComponent;
-  AEntity: TModelEntity);
+  AEntity: TModelEntity; Tp: integer);
 begin
-  inherited Create(AOwner, AEntity);
+  inherited Create(AOwner, AEntity, 0);
   Font.Style := [fsBold];
   Alignment := taCenter;
   P := Entity as TUnitPackage;
@@ -595,9 +625,10 @@ end;
 
 { TRtfdOperation }
 
-constructor TRtfdOperation.Create(AOwner: TComponent; AEntity: TModelEntity);
+constructor TRtfdOperation.Create(AOwner: TComponent; AEntity: TModelEntity;
+  Tp: integer);
 begin
-  inherited Create(AOwner, AEntity);
+  inherited Create(AOwner, AEntity, Tp);
   O := Entity as TOperation;
   O.AddListener(IAfterOperationListener(Self));
   EntityChange(nil);
@@ -628,9 +659,10 @@ end;
 
 { TRtfdAttribute }
 
-constructor TRtfdAttribute.Create(AOwner: TComponent; AEntity: TModelEntity);
+constructor TRtfdAttribute.Create(AOwner: TComponent; AEntity: TModelEntity;
+  Tp: integer);
 begin
-  inherited Create(AOwner, AEntity);
+  inherited Create(AOwner, AEntity, Tp);
   A := Entity as TAttribute;
   A.AddListener(IAfterAttributeListener(Self));
   EntityChange(nil);
@@ -657,10 +689,10 @@ end;
 { TRtfdUnitPackageDiagram }
 
 constructor TRtfdUnitPackageDiagram.Create(AOwner: TComponent;
-  AEntity: TModelEntity);
+  AEntity: TModelEntity; Tp: integer);
 begin
   //This class is the caption in upper left corner for a unitdiagram
-  inherited Create(Owner, AEntity);
+  inherited Create(Owner, AEntity, Tp);
   Color := clBtnFace;
   Font.Name := 'Times New Roman';
   Font.Style := [fsBold];
@@ -719,7 +751,7 @@ begin
   NeedH := (ClassShadowWidth * 2) + 4;
 
   Inc(NeedH, TRtfdStereotype.Create(Self, Entity, 'interface').Height);
-  Inc(NeedH, TRtfdInterfaceName.Create(Self, Entity).Height);
+  Inc(NeedH, TRtfdInterfaceName.Create(Self, Entity, 16).Height);
 
   //Get names in visibility order
   if FMinVisibility > Low(TVisibility) then
@@ -735,25 +767,25 @@ begin
 
   //Separator
   if (Ami.Count>0) or (Omi.Count>0) then
-    Inc(NeedH, TRtfdSeparator.Create(Self).Height);
+    Inc(NeedH, TRtfdSeparator.Create(Self, NeedH).Height);
 
   //Attributes
   while Ami.HasNext do
-    Inc(NeedH, TRtfdAttribute.Create(Self,Ami.Next).Height);
+    Inc(NeedH, TRtfdAttribute.Create(Self,Ami.Next, NeedH).Height);
 
   //Separator
   if (Ami.Count>0) and (Omi.Count>0) then
-    Inc(NeedH, TRtfdSeparator.Create(Self).Height);
+    Inc(NeedH, TRtfdSeparator.Create(Self, NeedH).Height);
 
   //Operations
   while Omi.HasNext do
-    Inc(NeedH, TRtfdOperation.Create(Self,Omi.Next).Height);
+    Inc(NeedH, TRtfdOperation.Create(Self,Omi.Next, NeedH).Height);
 
   for I := 0 to ControlCount-1 do
     if Controls[I] is TRtfdCustomLabel then
       NeedW := Max( TRtfdCustomLabel(Controls[I]).WidthNeeded,NeedW);
 
-  Height :=  Max(NeedH,cDefaultHeight);
+  Height :=  Max(NeedH,cDefaultHeight) + 10;
   Width  :=  Max(NeedW,cDefaultWidth);
 
   Visible := WasVisible;
@@ -768,7 +800,7 @@ end;
 
 constructor TRtfdStereotype.Create(AOwner: TComponent; AEntity: TModelEntity; ACaption: string);
 begin
-  inherited Create(AOwner, AEntity);
+  inherited Create(AOwner, AEntity, 2);
   Alignment := taCenter;
   Self.Caption := '<<' + ACaption + '>>';
 end;
@@ -862,11 +894,11 @@ begin
     AAlignment := FAlignment;
     if UseRightToLeftAlignment then ChangeBiDiModeAlignment(AAlignment);
     if AAlignment = taRightJustify then Inc(X, Width - Rect.Right);
-    SetBounds(X, Top, Rect.Right, Rect.Bottom);
+    SetBounds(X, Top, cDefaultWidth, Rect.Bottom);
   end;
 end;
 
-procedure TRtfdCustomLabel.DoDrawText(var Rect: TRect; Flags: Longint);
+procedure TRtfdCustomLabel.DoDrawText(var Rect: TRect; Flags: Integer);
 var
   Txt: string;
 begin

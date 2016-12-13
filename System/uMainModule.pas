@@ -251,30 +251,21 @@ end;
 
 procedure TMainModule.CopyDiagramClipboardActionExecute(Sender: TObject);
 var
-
-
   Bitmap : TBitmap;
   W,H : integer;
-  SrcRect: TRect;
 begin
-
 
   Diagram.GetDiagramSize(W{%H-},H{%H-});
 
-  SrcRect := Diagram.GetSelectedRect;
-
-
   Bitmap := TBitmap.Create;
   try
-    Bitmap.Width := W;
-    Bitmap.Height := H;
-    Diagram.PaintTo(Bitmap.Canvas,0,0, true);
-    Bitmap.PixelFormat := pf8bit;
+    Bitmap.SetSize(W,H);
+    Bitmap.Canvas.Rectangle(0, 0, W, H);
+    Diagram.PaintTo(Bitmap.Canvas, 0, 0, True);
     Clipboard.Assign(Bitmap);
   finally
     Bitmap.Free;
   end;
-
 end;
 
 procedure TMainModule.DocGenActionExecute(Sender: TObject);
@@ -473,7 +464,6 @@ begin
   begin
     D := TOpenDialog.Create(MainForm);
     D.Filter := Filter;
-    D.Options := D.Options + [ofAllowMultiSelect];
   end;
   if D.Execute then
     LoadProject(D.Files);
@@ -579,16 +569,13 @@ begin
   begin
     D := TSaveDialog.Create(MainForm);
     D.InitialDir := ExtractFilePath( Model.ModelRoot.GetConfigFile );
-    D.Filter := 'PNG files (*.png)|*.png|WMF files (*.wmf)|*.wmf|All files (*.*)|*.*';
-    D.Options := D.Options + [ofOverwritePrompt];
+    D.Filter := 'PNG files (*.png)|All files (*.*)|*.*';
   end;
   if D.Execute then
   begin
     if ExtractFileExt(D.FileName)='' then
     begin
-      if D.FilterIndex=1 then
         D.FileName := ChangeFileExt(D.FileName,'.png')
-      else D.FileName := ChangeFileExt(D.FileName,'.wmf');
     end;
     Diagram.SaveAsPicture( D.FileName );
   end;
