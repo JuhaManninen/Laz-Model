@@ -23,40 +23,44 @@ unit uConfig;
 
 interface
 
-uses Classes, registry;
+uses
+  Classes, IniFiles;
 
 type
   //Save changed diagram layout setting
   TDiSaveSetting = (dsAlways,dsAsk,dsNever);
 
+  { TConfig }
+
   TConfig = class
   private
-{$ifdef WIN32}
-    Reg : TRegistry;
-{$endif}
-
+    FIni: TMemIniFile;
     FDiSave : TDiSaveSetting;
     FDiShowAssoc: boolean;
     FDiVisibilityFilter: integer;
     FEditorCommandLine: String;
-    function ReadInt(const Key : string; const Default : integer) : integer;
   public
     constructor Create;
     destructor Destroy; override;
-    function GetResourceStream(const Name : string) : TMemoryStream;
-    function GetResourceText(const Name : string) : string;
+    function GetResource(AName: String; AType: String): String;
   public
     IsLimitedColors : boolean;
     IsTerminating : boolean;
-    property DiSave : TDiSaveSetting read FDiSave write FDiSave;
-    property DiShowAssoc : boolean read FDiShowAssoc write FDiShowAssoc;
-    property DiVisibilityFilter : integer read FDiVisibilityFilter write FDiVisibilityFilter;
 
     property EditorCommandLine: String read FEditorCommandLine write FEditorCommandLine;
 
     procedure WriteStr(const Key : string; const Value : string);
     function ReadStr(const Key : string; const Default : string) : string;
+    procedure WriteInt(const Key : string; const Value : Integer);
+    function ReadInt(const Key : string; const Default : Integer) : Integer;
+    procedure WriteBool(const Key : string; const Value : Boolean);
+    function ReadBool(const Key : string; const Default : Boolean) : Boolean;
+
     procedure StoreSettings;
+  published
+    property DiSave : TDiSaveSetting read FDiSave write FDiSave;
+    property DiShowAssoc : boolean read FDiShowAssoc write FDiShowAssoc;
+    property DiVisibilityFilter : integer read FDiVisibilityFilter write FDiVisibilityFilter;
   end;
 
 var
@@ -64,116 +68,89 @@ var
 
 implementation
 
-uses Forms,
-   LCLIntf, LCLType, uConst, SysUtils;
+uses
+  Forms, uConst, SysUtils, LResources;
 
-
+const
+  cSettings = 'Settings';
 
 constructor TConfig.Create;
 var
   DC : integer;
+  FDir: String;
 begin
   IsLimitedColors := False;
-  DC := GetDC(0);
-  IsLimitedColors := GetDeviceCaps( DC ,BITSPIXEL) <= 8;
-  ReleaseDC(0,DC);
 
-{$ifdef WIN32}
-  Reg := TRegistry.Create;
-  Reg.RootKey:=HKEY_CURRENT_USER;
-  Reg.OpenKey(uConst.RegKey,True);
+  FDir := GetUserDir + '.essmodel';
+  if not DirectoryExists(FDir) then
+  begin
+    ForceDirectories(FDir);
+    FileSetAttr(FDir, faHidden);
+  end;
 
-  FDiSave := TDiSaveSetting(ReadInt('DiSave',Integer(dsAsk)));
-  if FDiSave>High(TDiSaveSetting) then
-    FDiSave := High(TDiSaveSetting);
+  FIni := TMemIniFile.Create(FDir + DirectorySeparator + 'config.ini');
 
   FDiShowAssoc := ReadInt('DiShowAssoc',0)<>0;
   FDiVisibilityFilter := ReadInt('DiVisibilityFilter',0);
   FEditorCommandLine := ReadStr('EditorCommandLine','');
-{$endif}
-
 end;
 
 destructor TConfig.Destroy;
 begin
-{$ifdef WIN32}
-  Reg.Free;
-{$endif}
-
+  FIni.UpdateFile;
+  FIni.Free;
   inherited Destroy;
 end;
 
-function TConfig.GetResourceStream(const Name: string): TMemoryStream;
+function TConfig.GetResource(AName: String; AType: String): String;
 var
-  R,Len : integer;
-  P : Pointer;
+  FRes: TLazarusResourceStream;
 begin
-{$ifdef WIN32}
-  R := FindResource(HInstance,PChar(Name),RT_RCDATA);
-  Assert(R<>0,'GetResource: ' + Name);
-  Len := SizeOfResource(HInstance,R);
-  R := LoadResource(HInstance,R);
-  P := LockResource(R);
-  Result := TMemoryStream.Create;
-  Result.SetSize(Len);
-  Move(P^,Result.Memory^,Len);
-  UnlockResource(R);
-{$endif}
-
-end;
-
-//Returnerar resurs som en sträng
-function TConfig.GetResourceText(const Name: string): string;
-var
-  Str : TMemoryStream;
-begin
-  Str := GetResourceStream(Name);
+  FRes := TLazarusResourceStream.Create(AName, PChar(AType));
   try
-    SetLength(Result,Str.Size);
-    Move(Str.Memory^,Result[1],Str.Size);
+    Result := FRes.Res.Value;
   finally
-    Str.Free;
+    FRes.Free;
   end;
 end;
 
 function TConfig.ReadInt(const Key: string;
   const Default: integer): integer;
 begin
-{$ifdef WIN32}
-  if Reg.GetDataType(Key)=rdInteger then
-    Result := Reg.ReadInteger(Key)
-  else
-    Result := Default;
-{$endif}
-
+  Result := FIni.ReadInteger(cSettings, Key, Default);
 end;
 
-
-function TConfig.ReadStr(const Key, Default: string): string;
+procedure TConfig.WriteBool(const Key: string; const Value: Boolean);
 begin
-{$ifdef WIN32}
-  if Reg.GetDataType(Key)=rdString then
-    Result := Reg.ReadString(Key)
-  else
-    Result := Default;
-{$endif}
+  FIni.WriteBool(cSettings, Key, Value);
 end;
 
-procedure TConfig.WriteStr(const Key, Value: string);
+function TConfig.ReadBool(const Key: string; const Default: Boolean): Boolean;
 begin
-{$ifdef WIN32}
-  Reg.WriteString(Key,Value)
-{$endif}
+  Result := FIni.ReadBool(cSettings, Key, Default);
+end;
+
+function TConfig.ReadStr(const Key: string; const Default: string): string;
+begin
+  Result := FIni.ReadString(cSettings, Key, Default);
+end;
+
+procedure TConfig.WriteInt(const Key: string; const Value: Integer);
+begin
+  FIni.WriteInteger(cSettings, Key, Value);
+end;
+
+procedure TConfig.WriteStr(const Key: string; const Value: string);
+begin
+  FIni.WriteString(cSettings, Key, Value)
 end;
 
 procedure TConfig.StoreSettings;
 begin
-{$ifdef WIN32}
-  Reg.WriteInteger('DiSave',Integer(FDiSave));
-  Reg.WriteBool('DiShowAssoc',FDiShowAssoc);
-  Reg.WriteInteger('DiVisibilityFilter',FDiVisibilityFilter);
-  Reg.WriteString('EditorCommandLine',FEditorCommandLine);
-{$endif}
+  WriteInt('DiSave',Integer(FDiSave));
+  WriteBool('DiShowAssoc',FDiShowAssoc);
+  WriteInt('DiVisibilityFilter',FDiVisibilityFilter);
+  WriteStr('EditorCommandLine',FEditorCommandLine);
 end;
 
 initialization

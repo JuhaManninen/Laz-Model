@@ -118,9 +118,9 @@ type
     procedure ParseInterfaceSection;
     procedure ParseImplementation;
 
-    procedure ParseUses(Visibility: TVisibility = viPublic; Recurse: Boolean = True);
+    procedure ParseUses(AVisibility: TVisibility = viPublic; Recurse: Boolean = True);
     procedure ParseLabelSection;
-    procedure ParseTypeSection(Visibility: TVisibility = viPublic);
+    procedure ParseTypeSection(AVisibility: TVisibility = viPublic);
     procedure ParseConstSection;
     procedure ParseVarSection;
     procedure ParseResourcestringSection;
@@ -129,12 +129,12 @@ type
     procedure ParseInterface(AClass: TInterface);
     procedure ParseRecord(ARecord: TDataType; DoSkip : boolean = True);
 
-    procedure ParseFunction(AOperation: TOperation; Visibility: TVisibility = viPublic);
+    procedure ParseFunction(AOperation: TOperation; AVisibility: TVisibility = viPublic);
     procedure ParseFunctionImplementation;
     procedure ParseParamList(AOperation: TOperation);
     procedure ParseReturnType(AOperation: TOperation);
-    procedure ParseAttribute(AAttribute: TAttribute; Visibility: TVisibility = viPublic);
-    procedure ParseProperty(AProperty: TProperty; Visibility: TVisibility = viPublic);
+    procedure ParseAttribute(AAttribute: TAttribute; AVisibility: TVisibility = viPublic);
+    procedure ParseProperty(AProperty: TProperty; AVisibility: TVisibility = viPublic);
 
     function ParseType: TClassifier;
 
@@ -892,7 +892,7 @@ begin
   end;
 end;
 
-procedure TDelphiParser.ParseUses(Visibility: TVisibility = viPublic; Recurse: Boolean = True);
+procedure TDelphiParser.ParseUses(AVisibility: TVisibility = viPublic; Recurse: Boolean = True);
 var
   str: TStream;
   prs: TDelphiParser;
@@ -936,7 +936,7 @@ begin
         end;
       end;
       if (FOM.ModelRoot.FindUnitPackage(uName) <> nil) and Recurse then
-        FUnit.AddUnitDependency(FOM.ModelRoot.FindUnitPackage(uName),Visibility);
+        FUnit.AddUnitDependency(FOM.ModelRoot.FindUnitPackage(uName),AVisibility);
       SkipToken(',');
     end;
     GetNextToken;
@@ -979,7 +979,7 @@ begin
 end;
 
 
-procedure TDelphiParser.ParseTypeSection(Visibility: TVisibility);
+procedure TDelphiParser.ParseTypeSection(AVisibility: TVisibility);
 var
   tName: string;
   ex: TClassifier;
@@ -990,6 +990,7 @@ begin
     tName := Token;
     GetNextToken; GetNextToken;
     if lToken = 'packed' then GetNextToken; { TODO : Add packed to teh model? }
+
     if lToken = 'class' then // Handle a class declaration
     begin
       if LowerCase(NextToken) <> 'of' then
@@ -999,7 +1000,7 @@ begin
         // same name as an existing class
         if (not Assigned(ex)) or (ex.Owner<>FUnit) then
           ex := FUnit.AddClass(tName);
-        ex.Visibility := Visibility;
+        ex.Visibility := AVisibility;
         ParseClass(ex as TClass);
       end
       else
@@ -1014,7 +1015,7 @@ begin
       ex := FUnit.FindClassifier(tName,False,TInterface);
       if (not Assigned(ex)) or (ex.Owner<>FUnit)  then
         ex := FUnit.AddInterface(tName);
-      ex.Visibility := Visibility;
+      ex.Visibility := AVisibility;
       ParseInterface(ex as TInterface)
     end
     else if Token = '(' then // Enum
@@ -1055,7 +1056,7 @@ begin
       while GetNextToken and (Token <> ';') do ;
       GetNextToken;
     end
-    else if (lToken = 'procedure') or (lToken = 'function') or (lToken = 'array') then
+    else if (lToken = 'procedure') or (lToken = 'function') then
     begin // Procedural type
       ParseFunction(nil); // Ignore for now
       if lToken = 'of' then
@@ -1270,7 +1271,7 @@ begin
   // Depending on DoSkip current is either after ';' or on ';'
 end;
 
-procedure TDelphiParser.ParseFunction(AOperation: TOperation; Visibility: TVisibility);
+procedure TDelphiParser.ParseFunction(AOperation: TOperation; AVisibility: TVisibility);
 begin // Token = function|procedure|constructor|destructor
   if Assigned(AOperation) then
   begin
@@ -1284,7 +1285,7 @@ begin // Token = function|procedure|constructor|destructor
       AOperation.OperationType := otConstructor
     else if lToken = 'destructor' then
       AOperation.OperationType := otDestructor;
-    AOperation.Visibility := Visibility;
+    AOperation.Visibility := AVisibility;
   end;
 
   if (NextToken <> '(') and (NextToken <> ';') then GetNextToken;
@@ -1420,14 +1421,14 @@ begin // Token = procedure|function|constructor|destructor
 end;
 
 
-procedure TDelphiParser.ParseAttribute(AAttribute: TAttribute; Visibility: TVisibility);
+procedure TDelphiParser.ParseAttribute(AAttribute: TAttribute; AVisibility: TVisibility);
 var
   attribs: TList;
   i: Integer;
   classifier: TClassifier;
   attrib: TAttribute;
 begin // Token = Attributename
-  AAttribute.Visibility := Visibility;
+  AAttribute.Visibility := AVisibility;
   attribs := TList.Create;
   AAttribute.Documentation.Description := FComment;
   FComment := '';
@@ -1540,9 +1541,9 @@ begin
 end;}
 
 procedure TDelphiParser.ParseProperty(AProperty: TProperty;
-  Visibility: TVisibility);
+  AVisibility: TVisibility);
 begin // Token = Propertyname
-  AProperty.Visibility := Visibility;
+  AProperty.Visibility := AVisibility;
 
   AProperty.Documentation.Description := FComment;
   FComment := '';

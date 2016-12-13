@@ -434,7 +434,7 @@ begin
   found := Application.GetControlAtMouse;;
   if Assigned(found) and (not FIsMoving)then
   begin
-    mcont := FindManagedControl(found);
+    mcont := FindManagedControl(TControl(found.Owner));
   // child :=  mcont.ControlAtPos(found.ScreenToClient(Mouse.CursorPos), False);
 //   child := Application.GetControlAtMouse;
   {$ifdef false}
@@ -458,9 +458,10 @@ begin
     end;
 
   {$endif}
-    ClearSelection;
     if Assigned(mcont) then
-      mcont.Selected := True;
+      mcont.Selected := True
+    else  ClearSelection;
+
     if found <> Self then TCrackControl(found).Click;
   end;
 end;
@@ -785,7 +786,7 @@ procedure TessConnectPanel.MouseUp(Button: TMouseButton; Shift: TShiftState; X, 
 var
   pt: TPoint;
   r: TRect;
-  found: TControl;
+  found, found1: TControl;
   p2: TPoint;
 begin
   inherited;
@@ -824,12 +825,15 @@ begin
       begin
         if Assigned(TCrackControl(found).PopupMenu) and (Button = mbRight) then
           TCrackControl(found).PopupMenu.Popup(Mouse.CursorPos.X,Mouse.CursorPos.Y);
-
-        if Assigned(TCrackControl(found).OnMouseUp) then
+        found1 := TControl(found.Owner);
+        if Assigned(TCrackControl(found1).OnMouseUp) then
         begin
-          p2 := found.ScreenToClient(Mouse.CursorPos);
-          TCrackControl(found).OnMouseUp(found,Button,Shift,p2.x,p2.y);
-        end;
+          p2 := found1.ScreenToClient(Mouse.CursorPos);
+          TCrackControl(found1).OnMouseUp(found1,Button,Shift,p2.x,p2.y);
+        end
+
+        else
+         ClearSelection
       end;
     end;
   end;
