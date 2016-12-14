@@ -1,4 +1,59 @@
-"ESS-Model is a powerful, reverse engine, UML-tool for 
+This is a first cut to port ESS-Model to Lazarus and fpc.
+
+
+Primary goals met on this iteration.
+
+1: Produces Diagrams on screen with common mouse handling across Windows
+Gnome and QT.
+2: Has no other package dependancies than LCL.
+3: Has no code which requires {$mode delphi} all files have {$mode objfpc}{$H+}
+   to have a common a base as possible for cross platform.
+4: Capable of parsing itself.
+   ( parser is old, not expected to parse later dialects in first port)
+
+Casualties .. functionality removed
+
+html generation (violates 2: requires other units/libraries )
+Delphi integration module ( not required )
+WMF generation  (violates 2: requires other units/libraries )
+
+Casualties ..
+
+The Good:
+1: Still as fast as delphi binary (at least on windows.)
+2: Runs in Linux (only one {$ifdef LINUX} was required.)
+3: Internal workings would suit event emitting style parser.
+4: Code position is stored with model elements.
+5: Suited to single file parsing.
+6: It has scratched my itch. (To have something to view large packages,
+   primarily GLScene)
+7: Does not crash parsing modern pascal variants
+   (throws lots of errors but does not crash)
+8: Nothing else added at this point so a base for possibilities.
+9: Reads .lpr for project (use read directory for packages).
+10: Does what the windows binary does ( casualaties excepted ).
+11: Does not leak mem.
+
+The Bad.
+1: Parser is old.
+2: xmi is old, not found anything modern that will see the xmi as valid.
+3: Missing key model features (Enums, Aggregation, Composition to name a few)
+4: Crashes through dangling pointers to badly parsed entities.
+   (Solution FIX THE PARSER don't add exception handling)
+5: Mouse handling may not be optimal in Gnome as lots of calls to get parents
+   of control under mouse, original program relied on mouse events not being
+   caputured by owner drawn labels but used windows specific mechanisms which
+   are not portable. I run my Linux test boxes in VMs so may be ok on bare
+   metal.
+6: Dragging when view is scrolled, original suffered this also.
+
+
+
+
+
+ORIGINAL README BELOW
+
+"ESS-Model is a powerful, reverse engine, UML-tool for
 Delphi/Kylix and Java-files."
 
 

@@ -1,6 +1,7 @@
 {
   ESS-Model
   Copyright (C) 2002  Eldean AB, Peter Söderman, Ville Krumlinde
+  Portions (C) 2016 Peter Dyson. Initial Lazarus port
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -474,6 +475,7 @@ begin
     fl :=  TStringList.Create;
     fl.Add(D.Filename);
     LoadProject(fl);
+    fl.free;
   end;
 end;
 

@@ -167,10 +167,12 @@ object MainForm: TMainForm
         Action = MainModule.PrintDiagramAction
       end
       object Generatedocumentation1: TMenuItem
-        Action = MainModule.DocGenAction
+        Caption = 'Generate documentation'
+        Enabled = False
       end
       object Previewdocumentation1: TMenuItem
-        Action = MainModule.DocGenPreviewAction
+        Caption = 'Preview documentation'
+        Enabled = False
       end
       object ExportXmiAction1: TMenuItem
         Action = MainModule.ExportXmiAction

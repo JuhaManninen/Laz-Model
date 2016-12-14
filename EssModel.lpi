@@ -67,7 +67,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="42">
+    <Units Count="43">
       <Unit0>
         <Filename Value="EssModel.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -258,6 +258,10 @@
         <Filename Value="Integrator\Export\uEmxExport.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit41>
+      <Unit42>
+        <Filename Value="EssModelReadme.txt"/>
+        <IsPartOfProject Value="True"/>
+      </Unit42>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

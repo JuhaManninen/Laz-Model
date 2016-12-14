@@ -1,6 +1,7 @@
 {
   ESS-Model
   Copyright (C) 2002  Eldean AB, Peter Söderman, Ville Krumlinde
+  Portions (C) 2016 Peter Dyson. Initial Lazarus port
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -253,6 +254,12 @@ type
 implementation
 
 uses SysUtils, uError;
+
+
+Var
+
+_AllClassesPackage : TAbstractPackage = nil;
+
 
 type
   //Used by Class.GetDescendant
@@ -1156,13 +1163,14 @@ end;
 
 //Unique Flag-instance, if Integrator.CurrentEntity=AllClassesPackage then show all classes
 function AllClassesPackage : TAbstractPackage;
-const
-  _AllClassesPackage : TAbstractPackage = nil;
 begin
   if _AllClassesPackage=nil then
     _AllClassesPackage := TAbstractPackage.Create(nil);
   Result := _AllClassesPackage;
 end;
+
+finalization
+FreeAndNil(_AllClassesPackage);
 
 end.
 

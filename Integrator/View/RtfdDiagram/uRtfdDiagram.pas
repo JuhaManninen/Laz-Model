@@ -1,6 +1,7 @@
 {
   ESS-Model
   Copyright (C) 2002  Eldean AB, Peter Söderman, Ville Krumlinde
+  Portions (C) 2016 Peter Dyson. Initial Lazarus port
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -167,8 +168,17 @@ begin
   //Create boxes
   if FPackage is TUnitPackage then
   begin
-    TRtfdUnitPackageDiagram.Create(Panel, FPackage, 50);
     InAddUnit(FPackage as TUnitPackage);
+    { FPCTODO   This should draw the unit name on the diagram.
+     As coded this causes a memory leak. It does not show anyway
+     in current implinentation. It should not leak by design as it
+     is a control which is added to the panel, and ClearDiagram
+     has a call to DestroyComponents on the panel, but it does.
+     Perhaps it would be better to code this is as a descendant of Box
+     with paint override so it is added to the managed components and
+     can also be repositioned via the box dragging mechanism.
+    }
+//    TRtfdUnitPackageDiagram.Create(Panel, FPackage, 50);
   end
   else
   begin
