@@ -50,24 +50,6 @@ object SettingsForm: TSettingsForm
     OnClick = OkButtonClick
     TabOrder = 0
   end
-  object ShellCheck: TCheckBox
-    Left = 13
-    Height = 17
-    Top = 16
-    Width = 207
-    Caption = 'Shortcut on contextmenu for sourcefiles'
-    OnClick = ShellCheckClick
-    TabOrder = 1
-  end
-  object DelphiIDECheck: TCheckBox
-    Left = 13
-    Height = 17
-    Top = 41
-    Width = 198
-    Caption = 'Shortcut on Tools menu in Delphi IDE'
-    OnClick = DelphiIDECheckClick
-    TabOrder = 2
-  end
   object DiSaveCombo: TComboBox
     Left = 163
     Height = 21
@@ -80,7 +62,7 @@ object SettingsForm: TSettingsForm
       'never'
     )
     Style = csDropDownList
-    TabOrder = 3
+    TabOrder = 1
   end
   object Button2: TButton
     Left = 257
@@ -90,7 +72,7 @@ object SettingsForm: TSettingsForm
     Anchors = [akRight, akBottom]
     Caption = 'Cancel'
     ModalResult = 2
-    TabOrder = 4
+    TabOrder = 2
   end
   object ShowAssocCheck: TCheckBox
     Left = 13
@@ -98,7 +80,7 @@ object SettingsForm: TSettingsForm
     Top = 120
     Width = 213
     Caption = 'Show associations in diagrams as default'
-    TabOrder = 5
+    TabOrder = 3
   end
   object VisibilityCombo: TComboBox
     Left = 156
@@ -113,7 +95,7 @@ object SettingsForm: TSettingsForm
       'Hide all members'
     )
     Style = csDropDownList
-    TabOrder = 6
+    TabOrder = 4
     TabStop = False
   end
   object eEditorCommandLine: TEdit
@@ -121,7 +103,7 @@ object SettingsForm: TSettingsForm
     Height = 21
     Top = 192
     Width = 284
-    TabOrder = 7
+    TabOrder = 5
     Text = 'eEditorCommandLine'
   end
 end

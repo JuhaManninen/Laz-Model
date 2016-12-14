@@ -32,8 +32,6 @@ uses
 type
   TSettingsForm = class(TForm)
     OkButton: TButton;
-    ShellCheck: TCheckBox;
-    DelphiIDECheck: TCheckBox;
     DiSaveCombo: TComboBox;
     Label1: TLabel;
     Button2: TButton;
@@ -57,12 +55,10 @@ type
 
 implementation
 
-uses uRegisterExtension, uIntegrator, contnrs, uConfig;
+uses uIntegrator, uConfig;
 
 {$R *.lfm}
 
-const
-  MenuStr = 'View as model diagram';
 
 procedure TSettingsForm.FormCreate(Sender: TObject);
 begin
@@ -90,8 +86,6 @@ end;
 
 procedure TSettingsForm.ReadSettings;
 begin
-  ShellCheck.Checked := ShellIsExtensionRegistered('.pas', MenuStr);
-  DelphiIDECheck.Checked := DelphiIsToolRegistered(MenuStr);
   DiSaveCombo.ItemIndex := integer(Config.DiSave);
   ShowAssocCheck.Checked := Config.DiShowAssoc;
   VisibilityCombo.ItemIndex := Config.DiVisibilityFilter;
@@ -99,49 +93,7 @@ begin
 end;
 
 procedure TSettingsForm.SaveSettings;
-var
-  Ints : TClassList;
-  I,J : integer;
-  Exts : TStringList;
 begin
-  //Delphi IDE
-  if IDEChanged then
-  begin
-    if DelphiIDECheck.Checked then
-    begin
-      if not DelphiIsToolRegistered(MenuStr) then
-        DelphiRegisterTool(MenuStr,Application.ExeName,'','$EDNAME')
-    end
-    else
-    begin
-      if DelphiIsToolRegistered(MenuStr) then
-        DelphiUnRegisterTool(MenuStr)
-    end;
-  end;
-
-  //Shell
-  if ShellChanged then
-  begin
-    Ints := Integrators.Get(TImportIntegrator);
-    try
-      for I := 0 to Ints.Count - 1 do
-      begin
-        Exts := TImportIntegratorClass(Ints[I]).GetFileExtensions;
-        try
-          for J := 0 to Exts.Count - 1 do
-            if ShellCheck.Checked then
-              ShellRegisterExtension( Exts.Names[J] , MenuStr ,'"' + Application.ExeName + '" "%L"')
-            else
-              ShellUnRegisterExtension( Exts.Names[J] , MenuStr);
-        finally
-          Exts.Free;
-        end;
-      end;
-    finally
-      Ints.Free;
-    end;
-  end;
-
   Config.DiSave := TDiSaveSetting(DiSaveCombo.ItemIndex);
   Config.DiShowAssoc := ShowAssocCheck.Checked;
   Config.DiVisibilityFilter := VisibilityCombo.ItemIndex;
