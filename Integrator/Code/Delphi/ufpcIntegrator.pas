@@ -1,7 +1,7 @@
 {
   ESS-Model
-  Copyright (C) 2002  Eldean AB, Peter Söderman, Ville Krumlinde
-  Portions (C) 2016 Peter Dyson. Initial Lazarus port
+  Copyright (C) 2016 Peter Dyson. Initial Lazarus port
+  Portions (C) 2002  Eldean AB, Peter SÃ¶derman, Ville Krumlinde
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -17,22 +17,24 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 }
-
-unit uDelphiIntegrator;
+unit ufpcIntegrator;
 
 {$mode objfpc}{$H+}
 
 interface
-uses Classes, uIntegrator, uModel, uDelphiParser, uCodeProvider,
+uses Classes, uIntegrator, uModel, ufpcParser, uCodeProvider,
   uCodeParser;
 
 type
 
   // Ordinary import of delphi code, until we have two-way integration.
-  TDelphiImporter = class(TImportIntegrator)
+
+  { TfpciImporter }
+
+  TfpciImporter = class(TImportIntegrator)
   private
     // Implementation of parser callback to retrieve a named package
-    function NeedPackageHandler(const AName: string; var AStream: TStream; OnlyLookUp: Boolean = False):String;
+    function NeedPackageHandler(const AName: string; var AStream: TStream; OnlyLookUp: Boolean = True):String;
   public
     procedure ImportOneFile(const FileName : string); override;
     class function GetFileExtensions : TStringList; override;
@@ -41,17 +43,13 @@ type
 
 implementation
 uses SysUtils, uError;
-{ TDelphiImporter }
+{ TfpcImporter }
 
-procedure TDelphiImporter.ImportOneFile(const FileName : string);
+procedure TfpciImporter.ImportOneFile(const FileName : string);
 var
-  Str: TStream;
-  Parser: TDelphiParser;
+  Parser: TfpcParser;
   GlobalDefines : TStringList;
 begin
-  Str := CodeProvider.LoadStream(FileName);
-  if Assigned(Str) then
-  begin
     GlobalDefines := TStringList.Create;
 
     {$ifdef WIN32}   ////FPCTODO sort this properly for fpc
@@ -62,28 +60,31 @@ begin
     GlobalDefines.Add('LINUX');
     {$endif}
 
-    Parser := TDelphiParser.Create;
+    Parser := TfpcParser.Create;
     try
       Parser.Filename := FileName;
       Parser.NeedPackage := @NeedPackageHandler;
-      Parser.ParseStreamWithDefines(Str, Model.ModelRoot, Model, GlobalDefines);
+      //      Parser.ParseStreamWithDefines(Str, Model.ModelRoot, Model, GlobalDefines);
+      Parser.ParseFileWithDefines(Model.ModelRoot, Model, GlobalDefines);
     finally
       Parser.Free;
       GlobalDefines.Free;
     end;
-  end;
+
 end;
 
 
-class function TDelphiImporter.GetFileExtensions: TStringList;
+class function TfpciImporter.GetFileExtensions: TStringList;
 begin
   Result := TStringList.Create;
   Result.Values['.pas'] := 'code';
+  Result.Values['.pp'] := 'code';
+  Result.Values['.inc'] := 'include';
   Result.Values['.lpr'] := 'Lazarus project';
   Result.Values['.lpk'] := 'Lazarus package';
 end;
 
-function TDelphiImporter.NeedPackageHandler(const AName: string; var AStream: TStream; OnlyLookUp: Boolean = False):String;
+function TfpciImporter.NeedPackageHandler(const AName: string; var AStream: TStream; OnlyLookUp: Boolean = True):String;
 var
   FileName: string;
 begin
@@ -94,15 +95,16 @@ begin
     FileName := AName;
   FileName := CodeProvider.LocateFile(FileName);
   Result := FileName;
-  if (not OnlyLookUp) and (FileName<>'') and (FilesRead.IndexOf(FileName)=-1) then
+  if (FilesRead.IndexOf(FileName)>-1) then Result := '';
+  if {(not OnlyLookUp) and }(FileName<>'') and (FilesRead.IndexOf(FileName)=-1) then
   begin
-    AStream := CodeProvider.LoadStream(FileName);
+//    AStream := CodeProvider.LoadStream(FileName);
     FilesRead.Add(FileName);
   end;
 end;
 
 initialization
 
-  Integrators.Register(TDelphiImporter);
+  Integrators.Register(TfpciImporter);
 
 end.

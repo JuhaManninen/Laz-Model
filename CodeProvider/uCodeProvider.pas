@@ -58,13 +58,13 @@ type
     { Add a path to the search path list.}
     procedure AddSearchPath(APath: string);
 
-    { Locate a unit ans return the full path to it. }
+    { Locate a unit and return the full path to it. }
     function LocateFile(const AName: string): string; virtual; abstract;
 
     property Active: Boolean read FActive write SetActive;
 
     {
-      Stringlist specifying the serachpath to be used when searching for included
+      Stringlist specifying the searchpath to be used when searching for included
       units.
     }
     property SearchPath: TStringList read FSearchPath;
@@ -126,7 +126,7 @@ begin
   end
   else if Active and (not Value) then
   begin
-      // Deactivate soruce change hook
+      // Deactivate source change hook
     UnhookChanges;
     FActive := Value;
   end;

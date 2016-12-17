@@ -464,7 +464,9 @@ begin
   r.BottomRight := Parent.ClientToScreen(r.BottomRight);
 
   if (not PtInRect(r,pt)) and (not FIsRectSelecting) then
-    ReleaseCapture;
+    ReleaseCapture
+  else  if (PtInRect(r,pt)) then
+    SetCaptureControl(Self);
 end;
 
 function TessConnectPanel.ConnectObjects(Src, Dst: TControl;
@@ -624,11 +626,13 @@ begin
 
       mcont.Selected := True;
     end;
+{$ifndef LINUX}
     if Assigned(TCrackControl(found).OnMouseDown) then
     begin
       p2 := found.ScreenToClient(Mouse.CursorPos);
       TCrackControl(found).OnMouseDown(found,Button,Shift,p2.x,p2.y);
     end;
+{$endif}
   end else
   begin if not Assigned(found) and (Button = mbLeft) then
     FIsRectSelecting := True;
@@ -751,6 +755,7 @@ begin
 //        RecalcSize;
         Invalidate;
       end;
+ {$ifndef LINUX}
     end else if Assigned(found) then
     begin
       if Assigned(TCrackControl(found).OnMouseMove) then
@@ -758,6 +763,7 @@ begin
         p2 := found.ScreenToClient(pt);
         TCrackControl(found).OnMouseMove(found,Shift,p2.x,p2.y);
       end;
+ {$endif}
     end;
   end;
 end;
@@ -846,6 +852,7 @@ procedure TessConnectPanel.OnManagedObjectMouseDown(Sender: TObject;
 var
   pt: TPoint;
 begin
+   {$ifdef LINUX}
   if (not Focused) or (GetCaptureControl<>Self) then
   begin
     // Call the essConnectpanel MouseDown instead.
@@ -855,6 +862,7 @@ begin
     pt := ScreenToClient(pt);
     MouseDown(Button,Shift,pt.x,pt.y);
   end;
+  {$endif}
 end;
 
 procedure TessConnectPanel.OnManagedObjectMouseMove(Sender: TObject;
