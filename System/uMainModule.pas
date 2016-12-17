@@ -27,7 +27,7 @@ interface
 
 uses
   LCLIntf, LCLType,  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  uModel, uIntegrator, uDelphiIntegrator, ActnList, uViewIntegrator,
+  uModel, uIntegrator, ufpcIntegrator, ActnList, uViewIntegrator,
   {$IFDEF DRAG_SUPPORT}DropSource, DropTarget, {$ENDIF}Menus, uFeedback, uTreeViewIntegrator,ExtCtrls;
 
 type
