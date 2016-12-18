@@ -32,6 +32,8 @@ type
   { TSimpleEngine }
 
   TSimpleEngine = class(TPasTreeContainer)
+  private
+    fIsProgram: boolean;
   public
     constructor Create;
     function CreateElement(AClass: TPTreeElement; const AName: String;
@@ -39,6 +41,8 @@ type
       const ASourceFilename: String; ASourceLinenumber: Integer): TPasElement;
       override;
     function FindElement(const AName: String): TPasElement; override;
+    function FindModule(const AName: String): TPasModule; override;
+    property IsProgram: boolean read fIsProgram write fIsProgram;
   end;
 
 
@@ -55,7 +59,7 @@ type
       function getProcType(pt: TProcType): TOperationType;
       function getClassifier(s: String): TClassifier;
 
-      procedure ParseProject(M: TPasModule);
+      procedure ParseProject(M: TPasProgram);
       procedure ParseUnit(M: TPasModule);
       procedure GetUnits(u: TFPList; AVisibility: TVisibility = viPublic; Recurse: Boolean = True);
       procedure GetClasses(c: TFPList; AVisibility: TVisibility = viPublic; Recurse: Boolean = True);
@@ -80,6 +84,22 @@ implementation
 
 uses
   Dialogs;
+
+function DelQuot(s:String):String;
+   var i:integer;
+   const s1=#39;
+  begin
+   Result:='';
+   i:=pos(s1,s);
+   while i > 0 do
+    begin
+     if i > 0 then delete(s,i,1);
+     i:=pos(s1,s);
+    end;
+   //if i > 0 then delete(s,i,2);
+   Result:=s;
+  end;
+
   { TSimpleEngine }
 
 constructor TSimpleEngine.Create;
@@ -102,6 +122,14 @@ end;
 function TSimpleEngine.FindElement(const AName: String): TPasElement;
 begin
   Result := nil;
+end;
+
+function TSimpleEngine.FindModule(const AName: String): TPasModule;
+begin
+  if fIsProgram then
+     Result := TPasModule.Create(AName, nil)
+  else
+     Result := nil;
 end;
 
 
@@ -133,8 +161,13 @@ end;
 
 
 
-procedure TfpcParser.ParseProject(M: TPasModule);
+procedure TfpcParser.ParseProject(M: TPasProgram);
+var
+  intf: TInterfaceSection;
 begin
+  FUnit := (FModel as TLogicPackage).AddUnit(M.Name);
+  FUnit.Sourcefilename := Filename;
+  GetUnits(M.ProgramSection.UsesList);
 
 end;
 
@@ -157,11 +190,16 @@ var
   prs: TfpcParser;
   str: TStream;
   fullName, uName: string;
+  ref: TPasElement;
 begin
   If Assigned(u) and (u.Count > 0) then
      for i := 0 to u.Count- 1 do
      begin
-       uName := TPasElement(u.Items[i]).Name;
+       ref := TPasElement(u.Items[i]);
+       if (ref is TPasModule) and (TPasModule(ref).Filename <> '') then
+          uname := DelQuot(TPasModule(ref).FileName)
+        else
+          uName := ref.Name;
        if Assigned(NeedPackage) and (FOM.ModelRoot.FindUnitPackage(uName) = nil) then
        begin
          fullName := NeedPackage(uName, str{%H-}, Recurse);
@@ -453,20 +491,29 @@ procedure TfpcParser.ParseFileWithDefines(AModel: TAbstractPackage;
 var
   M: TPasModule;
   E: TPasTreeContainer;
+  s: string;
+  pp: TPasProgram;
 begin
   FGlobalDefines := GlobalDefines;
   FModel := AModel;
   FOM := AOM;
 
   E := TSimpleEngine.Create;
-  M := ParseSource(E, self.Filename ,'WINDOWS' ,'i386', True);
-  if M is TPasProgram then
-     ParseProject (M)
+  s:=  ExtractFileExt(fFilename);
+  if ( s = '.lpr') then
+  begin
+     E.InterfaceOnly := false;
+     TSImpleEngine(E).IsProgram := True;
+     pp:= ParseSource(E, self.Filename ,'WINDOWS' ,'i386', True) as TPasProgram;
+     ParseProject (pp);
+     FreeAndNil(E);
+  end
   else
+  begin
+     M := ParseSource(E, self.Filename ,'WINDOWS' ,'i386', True);
      ParseUnit(M);
-
-  FreeAndNil(M);
-  FreeAndNil(E);
+     FreeAndNil(M);
+  end;
 end;
 
 end.
