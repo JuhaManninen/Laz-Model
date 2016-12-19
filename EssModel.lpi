@@ -67,7 +67,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="43">
+    <Units Count="44">
       <Unit0>
         <Filename Value="EssModel.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -262,6 +262,10 @@
         <Filename Value="Integrator\Code\Delphi\ufpcIntegrator.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit42>
+      <Unit43>
+        <Filename Value="Integrator\View\RtfdDiagram\uRtfdLabel.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit43>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

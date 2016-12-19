@@ -74,6 +74,9 @@ type
 
     Further it manages the layout of the contained controls.
   }
+
+  { TessConnectPanel }
+
   TessConnectPanel = class(TCustomPanel)
   private
     FIsModified, FIsMoving, FIsRectSelecting, FSelectedOnly: Boolean;
@@ -81,6 +84,7 @@ type
     FSelectRect: TRect;
     FBackBitmap: TBitmap;
     TempHidden : TObjectList;
+    ClientDragging: Boolean;
     procedure SetSelectedOnly(const Value : boolean);
   protected
     { Protected declarations }
@@ -90,13 +94,10 @@ type
     procedure CreateParams(var Params: TCreateParams); override;
 
     procedure Click; override;
-    procedure DblClick; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
 
-    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
-    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
     procedure WMEraseBkgnd(var Message: TWmEraseBkgnd); message WM_ERASEBKGND;
 
     function FindManagedControl( AControl: TControl ): TManagedObject;
@@ -107,6 +108,8 @@ type
     procedure OnManagedObjectMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure OnManagedObjectClick(Sender: TObject);
     procedure OnManagedObjectDblClick(Sender: TObject);
+
+    procedure ChildMouseDrag(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 
     procedure Paint; override;
   public
@@ -164,12 +167,6 @@ type
     property BevelInner;
     property BevelOuter;
     property BevelWidth;
-{$ifndef fpc}
-    property Ctl3D;
-    property Locked;
-    property ParentCtl3D;
-    property OnCanResize;
-{$endif}
     property BiDiMode;
     property UseDockManager default True;
     property DockSite;
@@ -424,49 +421,9 @@ begin
 end;
 
 procedure TessConnectPanel.Click;
-var
-  found: TControl;
-  mcont: TManagedObject;
 begin
   inherited;
-  // find the TRtfdCustomLabel at this site if there is one
-  found := Application.GetControlAtMouse;;
-  if Assigned(found) and (not FIsMoving)then
-  begin
-    // get class box which is the owner of this label
-    mcont := FindManagedControl(TControl(found.Owner));
-
-    if Assigned(mcont) then
-      // possibly reinforce already selected?
-      mcont.Selected := True
-    else  ClearSelection; // or if not clear all selections
-
-    // unsure on the usefulness of this??
-    if found <> Self then TCrackControl(found).Click;
-  end;
-end;
-
-procedure TessConnectPanel.CMMouseEnter(var Message: TMessage);
-begin
-  if Focused and Application.Active and (GetCaptureControl <> Self)then
-    SetCaptureControl(Self);
-end;
-
-procedure TessConnectPanel.CMMouseLeave(var Message: TMessage);
-var
-  pt: TPoint;
-  r: TRect;
-begin
-  pt := Mouse.CursorPos;
-
-  IntersectRect(r{%H-},Parent.ClientRect,BoundsRect);
-  r.TopLeft := Parent.ClientToScreen(r.TopLeft);
-  r.BottomRight := Parent.ClientToScreen(r.BottomRight);
-
-  if (not PtInRect(r,pt)) and (not FIsRectSelecting) then
-    ReleaseCapture
-  else  if (PtInRect(r,pt)) then
-    SetCaptureControl(Self);
+  ClearSelection;
 end;
 
 function TessConnectPanel.ConnectObjects(Src, Dst: TControl;
@@ -507,19 +464,7 @@ begin
 //  Params.Style := Params.Style and (not WS_CLIPCHILDREN);
 end;
 
-procedure TessConnectPanel.DblClick;
-var
-  found: TControl;
-begin
-  inherited;
-////  found := FindVCLWindow(Mouse.CursorPos);
-   found := Application.GetControlAtMouse;
-  if Assigned(found) then
-  begin
-    FindManagedControl(found);
-    if found <> Self then TCrackControl(found).DblClick;
-  end;
-end;
+
 
 destructor TessConnectPanel.Destroy;
 begin
@@ -566,7 +511,6 @@ begin
     Result.Add(TManagedObject(FManagedObjects[i]).FControl);
 end;
 
-
 function TessConnectPanel.GetFirstSelected: TControl;
 var
   Tmp : TObjectList;
@@ -577,7 +521,6 @@ begin
     Result := Tmp[0] as TControl;
   Tmp.Free;
 end;
-
 
 function TessConnectPanel.GetSelectedControls: TObjectList;
 var
@@ -593,48 +536,17 @@ end;
 procedure TessConnectPanel.MouseDown(Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
-  found, found1: TControl;
-  mcont: TManagedObject;
-  p2: TPoint;
+  pt: TPoint;
 begin
   inherited;
+  pt.x:=x;
+  pt.y:=y;
 
-  if not Focused then SetFocus;
+  FMemMousePos.x := pt.x;
+  FMemMousePos.y := pt.y;
 
-  if GetCaptureControl<>Self then
-    SetCaptureControl(Self);
-
-  FIsRectSelecting := False;
-  FIsMoving := False;
-  FMemMousePos.x := X;
-  FMemMousePos.y := Y;
-
-////TODO  found := FindVCLWindow(Mouse.CursorPos);
-  found := Application.GetControlAtMouse;
-
-
-  if found = Self then found := nil;
-  if Assigned(found) then
+  if (Button = mbLeft) then
   begin
-      found1 := TControl(found.Owner);
-    mcont := FindManagedControl(found1);
-    if Assigned(mcont) then
-    begin
-
-      if (not mcont.Selected) and not(ssCtrl in Shift) then
-        ClearSelection;
-
-      mcont.Selected := True;
-    end;
-{$ifndef LINUX}
-    if Assigned(TCrackControl(found).OnMouseDown) then
-    begin
-      p2 := found.ScreenToClient(Mouse.CursorPos);
-      TCrackControl(found).OnMouseDown(found,Button,Shift,p2.x,p2.y);
-    end;
-{$endif}
-  end else
-  begin if not Assigned(found) and (Button = mbLeft) then
     FIsRectSelecting := True;
     FSelectRect.TopLeft := FMemMousePos;
     FSelectRect.BottomRight := FMemMousePos;
@@ -648,6 +560,69 @@ begin
 end;
 
 procedure TessConnectPanel.MouseMove(Shift: TShiftState; X, Y: Integer);
+var
+  pt: TPoint;
+begin
+  inherited;
+
+    pt.x:=x;
+    pt.y:=y;
+    if FIsRectSelecting then
+    begin
+      FMemMousePos := pt;
+      Canvas.Brush.Style := bsClear;
+      Canvas.Pen.Color := clSilver;
+      Canvas.Pen.Mode := pmXor;
+      Canvas.Pen.Width := 0;
+      Canvas.Rectangle(FSelectRect);
+      FSelectRect.BottomRight := FMemMousePos;
+      Canvas.Rectangle(FSelectRect);
+    end;
+end;
+
+procedure TessConnectPanel.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  inherited;
+
+  if FIsRectSelecting then
+  begin
+    Canvas.Brush.Style := bsClear;
+    Canvas.Pen.Mode := pmXor;
+    Canvas.Pen.Width := 0;
+    Canvas.Rectangle(FSelectRect);
+    FIsRectSelecting := False;
+    // Do Select everything inside the rect.
+    SelectObjectsInRect(FSelectRect);
+  end;
+end;
+
+procedure TessConnectPanel.OnManagedObjectClick(Sender: TObject);
+var
+  inst: TManagedObject;
+begin
+  inst := FindManagedControl(Sender as TControl);
+
+
+
+//  if Assigned(inst) then
+//  begin
+//    if Assigned(inst.FOnClick) then inst.FOnClick(Sender);
+//  end;
+end;
+
+procedure TessConnectPanel.OnManagedObjectDblClick(Sender: TObject);
+var
+  inst: TManagedObject;
+begin
+//  inst := FindManagedControl(Sender as TControl);
+//  if Assigned(inst) then
+//  begin
+//    if Assigned(inst.FOnDblClick) then inst.FOnDblClick(Sender);
+//  end;
+end;
+
+procedure TessConnectPanel.ChildMouseDrag(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
 var
   pt,pt1: TPoint;
   r: TRect;
@@ -686,13 +661,12 @@ var
       Mouse.CursorPos := p2;
     end;
   end;
-
 begin
-  inherited;
+
   pt1 := Mouse.CursorPos;
 
-  pt.x := X;
-  pt.Y := Y;
+  pt.x := pt1.x;
+  pt.Y := pt1.y;
   dx := pt.x - FMemMousePos.x;
   dy := pt.y - FMemMousePos.y;
 
@@ -700,150 +674,39 @@ begin
   r.TopLeft := Parent.ClientToScreen(r.TopLeft);
   r.BottomRight := Parent.ClientToScreen(r.BottomRight);
 
-
-  if (not PtInRect(r,pt1)) and (not (FIsRectSelecting or FIsMoving)) then
-    ReleaseCapture
-  else
+  if (Abs(Abs(dx)+Abs(dy)) > 5) or (FIsMoving) then
   begin
-////TODO    found := FindVCLWindow(pt1);
-     found := Application.GetControlAtMouse;
-
-    if FIsRectSelecting then
+    FMemMousePos := pt;
+    FIsMoving := True;
+    MovedRect:=Rect(MaxInt,0,0,0);
+    for i:=0 to FManagedObjects.Count -1 do
     begin
-      FMemMousePos := pt;
-      Canvas.Brush.Style := bsClear;
-      Canvas.Pen.Color := clSilver;
-      Canvas.Pen.Mode := pmXor;
-      Canvas.Pen.Width := 0;
-      Canvas.Rectangle(FSelectRect);
-      FSelectRect.BottomRight := FMemMousePos;
-      Canvas.Rectangle(FSelectRect);
-    end else if (ssLeft in Shift) then
-    begin
-      //  Move the selected boxes
-      if (Abs(Abs(dx)+Abs(dy)) > 5) or (FIsMoving) then
+      if TManagedObject(FManagedObjects[i]).Selected then
       begin
-        FMemMousePos := pt;
-        FIsMoving := True;
-        MovedRect:=Rect(MaxInt,0,0,0);
-        for i:=0 to FManagedObjects.Count -1 do
-        begin
-          if TManagedObject(FManagedObjects[i]).Selected then
-          begin
-            mcont := TManagedObject(FManagedObjects[i]);
-            curr := TCrackControl(mcont.FControl);
-            if curr.Left+dx >= 0 then
-              curr.Left := curr.Left + dx;
-            if curr.Top+dy >= 0 then
-              curr.Top := curr.Top + dy;
-            if (curr.Left + curr.Width + 50) > Width then
-              Width := (curr.Left + curr.Width + 50);
-            if (curr.Top + curr.Height + 50) > Height then
-              Height := (curr.Top + curr.Height + 50);
-            if MovedRect.Left=MaxInt then
-              MovedRect := curr.BoundsRect
-            else
-              UnionRect(MovedRect,curr.BoundsRect,MovedRect);
-            curr.Repaint;
-            IsModified := True;
-          end;
-        end;
-
-        if MovedRect.Left <> MaxInt then
-          InMakeVisible(MovedRect);
-
-//        RecalcSize;
-        Invalidate;
-      end;
- {$ifndef LINUX}
-    end else if Assigned(found) then
-    begin
-      if Assigned(TCrackControl(found).OnMouseMove) then
-      begin
-        p2 := found.ScreenToClient(pt);
-        TCrackControl(found).OnMouseMove(found,Shift,p2.x,p2.y);
-      end;
- {$endif}
-    end;
-  end;
-end;
-
-procedure TessConnectPanel.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-var
-  pt: TPoint;
-  r: TRect;
-  found, found1: TControl;
-  p2: TPoint;
-begin
-  inherited;
-  // If we are leaving the moving state then recalc the size of the diagram.
-  if FIsMoving then RecalcSize;
-  FIsMoving := False;
-  pt.X := X;
-  pt.Y := Y;
-  IntersectRect(r{%H-},Parent.ClientRect,BoundsRect);
-  r.TopLeft := Parent.ClientToScreen(r.TopLeft);
-  r.BottomRight := Parent.ClientToScreen(r.BottomRight);
-
-  r.TopLeft := ScreenToClient(r.TopLeft);
-  r.BottomRight := ScreenToClient(r.BottomRight);
-
-  if FIsRectSelecting then
-  begin
-    Canvas.Brush.Style := bsClear;
-    Canvas.Pen.Mode := pmXor;
-    Canvas.Pen.Width := 0;
-    Canvas.Rectangle(FSelectRect);
-    FIsRectSelecting := False;
-    // Do Select everything inside the rect.
-    SelectObjectsInRect(FSelectRect);
-  end else
-  begin
-    if (PtInRect(r,pt)) then
-    begin
-      if GetCaptureControl <> Self then SetCaptureControl(Self);
-
-
-      //found := FindVCLWindow(Mouse.CursorPos);
-      found := Application.GetControlAtMouse;
-
-      if Assigned(found) then
-      begin
-        if Assigned(TCrackControl(found).PopupMenu) and (Button = mbRight) then
-          TCrackControl(found).PopupMenu.Popup(Mouse.CursorPos.X,Mouse.CursorPos.Y);
-        found1 := TControl(found.Owner);
-        if Assigned(TCrackControl(found1).OnMouseUp) then
-        begin
-          p2 := found1.ScreenToClient(Mouse.CursorPos);
-          TCrackControl(found1).OnMouseUp(found1,Button,Shift,p2.x,p2.y);
-        end
-
+        mcont := TManagedObject(FManagedObjects[i]);
+        curr := TCrackControl(mcont.FControl);
+        if curr.Left+dx >= 0 then
+          curr.Left := curr.Left + dx;
+        if curr.Top+dy >= 0 then
+          curr.Top := curr.Top + dy;
+        if (curr.Left + curr.Width + 50) > Width then
+          Width := (curr.Left + curr.Width + 50);
+        if (curr.Top + curr.Height + 50) > Height then
+          Height := (curr.Top + curr.Height + 50);
+        if MovedRect.Left=MaxInt then
+          MovedRect := curr.BoundsRect
         else
-         ClearSelection
+          UnionRect(MovedRect,curr.BoundsRect,MovedRect);
+        curr.Invalidate;
+        IsModified := True;
       end;
+      invalidate;
     end;
-  end;
-end;
 
-procedure TessConnectPanel.OnManagedObjectClick(Sender: TObject);
-var
-  inst: TManagedObject;
-begin
-  inst := FindManagedControl(Sender as TControl);
-  if Assigned(inst) then
-  begin
-    if Assigned(inst.FOnClick) then inst.FOnClick(Sender);
-  end;
-end;
+    if MovedRect.Left <> MaxInt then
+      InMakeVisible(MovedRect);
 
-procedure TessConnectPanel.OnManagedObjectDblClick(Sender: TObject);
-var
-  inst: TManagedObject;
-begin
-  inst := FindManagedControl(Sender as TControl);
-  if Assigned(inst) then
-  begin
-    if Assigned(inst.FOnDblClick) then inst.FOnDblClick(Sender);
+
   end;
 end;
 
@@ -851,47 +714,42 @@ procedure TessConnectPanel.OnManagedObjectMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   pt: TPoint;
+  inst: TManagedObject;
 begin
-   {$ifdef LINUX}
-  if (not Focused) or (GetCaptureControl<>Self) then
-  begin
-    // Call the essConnectpanel MouseDown instead.
-    pt.x := X;
-    pt.y := Y;
-    pt := (Sender as TControl).ClientToScreen(pt);
-    pt := ScreenToClient(pt);
-    MouseDown(Button,Shift,pt.x,pt.y);
-  end;
-  {$endif}
+  if not(ssCtrl in shift) then
+        ClearSelection;
+  inst := FindManagedControl(Sender as TControl);
+  inst.SetSelected(true);
+
+  ClientDragging := True;
+
+  pt := Mouse.CursorPos;
+  FMemMousePos.x := pt.x;
+  FMemMousePos.y := pt.y;
+
 end;
 
 procedure TessConnectPanel.OnManagedObjectMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
-var
-  pt: TPoint;
-begin
 
-  {$ifdef LINUX}
-  // This is required in Linux both for QT and Gnome
-  // otherwise no dragging occurs. Causes problems in
-  // Windows.
-  // Call the essConnectpanel MouseMove instead.
-  pt.x := X;
-  pt.y := Y;
-  pt := (Sender as TControl).ClientToScreen(pt);
-  pt := ScreenToClient(pt);
-  MouseMove(Shift,pt.x,pt.y);
-  {$endif}
+begin
+  if ClientDragging then
+    ChildMouseDrag(Sender,Shift,x,y);
+
 end;
 
 procedure TessConnectPanel.OnManagedObjectMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
-  inst: TManagedObject;
+    inst: TManagedObject;
 begin
+  ClientDragging := False;
   inst := FindManagedControl(Sender as TControl);
-  if Assigned(inst) then
-    if Assigned(inst.FOnMouseUp) then inst.FOnMouseUp(Sender,Button,Shift,X,Y);
+   if not(ssCtrl in shift) then
+        ClearSelection;
+
+   inst.SetSelected(true);
+
 end;
 
 procedure TessConnectPanel.Paint;
@@ -988,6 +846,7 @@ begin
   Canvas.Brush.Color := clBlack;
 
   //Grab-handles
+  if not ClientDragging then
   if not FSelectedOnly then for i:=0 to FManagedObjects.Count -1 do
   begin
     if TManagedObject(FManagedObjects[i]).Selected and (TManagedObject(FManagedObjects[i]).FControl.Visible) then
@@ -1022,7 +881,6 @@ begin
   if Assigned(OnContentChanged) then
     OnContentChanged(nil);
 end;
-
 
 procedure TessConnectPanel.SelectObjectsInRect(SelRect: TRect);
 var
@@ -1069,9 +927,8 @@ begin
     (Parent as TScrollBox).VertScrollBar.Position := Y;
   end;
 
-  if GetCaptureControl <> Self then SetCaptureControl(Self);
+//  if GetCaptureControl <> Self then SetCaptureControl(Self);
 end;
-
 
 procedure TessConnectPanel.WMEraseBkgnd(var Message: TWmEraseBkgnd);
 var
@@ -1090,8 +947,6 @@ begin
   end;
   Message.Result := 1;
 end;
-
-
 
 procedure TessConnectPanel.SetSelectedOnly(const Value : boolean);
 var

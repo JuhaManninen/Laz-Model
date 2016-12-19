@@ -23,14 +23,17 @@ unit uRtfdComponents;
 {$mode objfpc}{$H+}
 
 interface
-uses LCLIntf, LCLType, {Windows,}
+uses LCLIntf, LCLType,
  Messages, ExtCtrls, Classes, uModel, uModelEntity, Controls, uListeners,
-  uViewIntegrator, uDiagramFrame;
+  uViewIntegrator, uDiagramFrame, uRtfdLabel;
 
 type
 
   //Baseclass for a diagram-panel
   TRtfdBoxClass = class of TRtfdBox;
+
+  { TRtfdBox }
+
   TRtfdBox = class(TPanel, IModelEntityListener)
   private
     FMinVisibility : TVisibility;
@@ -78,35 +81,12 @@ type
   end;
 
 //  TRtfdCustomLabel = class(TCustomLabel, IModelEntityListener)
-  TRtfdCustomLabel = class(TGraphicControl, IModelEntityListener)
-  private
-    FCaption: TCaption;
-    FAlignment: TAlignment;
-    FTransparent: Boolean;
-    Entity: TModelEntity;
-    function GetAlignment: TAlignment;
-    procedure SetAlignment(const Value: TAlignment);
-    procedure SetTransparent(const Value: Boolean);
-    procedure CMTextChanged(var Message: TMessage); message CM_TEXTCHANGED;
-    procedure AdjustBounds;
-    procedure DoDrawText(var Rect: TRect; Flags: Integer);
-
-  protected
-    procedure Paint; override;
-
-    procedure SetText(const Value: TCaption);
-    function GetText: TCaption;
+  TRtfdCustomLabel = class(TRtfdODLabel)
   public
-    constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); reintroduce; virtual;
-    procedure Change(Sender: TModelEntity); virtual;
-    procedure AddChild(Sender: TModelEntity; NewChild: TModelEntity); virtual;
-    procedure Remove(Sender: TModelEntity); virtual;
-    procedure EntityChange(Sender: TModelEntity); virtual;
-    function WidthNeeded : integer; virtual;
-    property ModelEntity: TModelEntity read Entity;
-    property Alignment: TAlignment read GetAlignment write SetAlignment default taLeftJustify;
-    property Transparent: Boolean read FTransparent write SetTransparent;
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); override;
+
   end;
+
 
   { TRtfdClassName }
 
@@ -127,8 +107,11 @@ type
   end;
 
   //Left-justified label with visibility-icon
+
+  { TVisibilityLabel }
+
   TVisibilityLabel = class(TRtfdCustomLabel)
-    procedure Paint; override;
+    procedure Paint(width: integer); override;
     function WidthNeeded : integer; override;
   end;
 
@@ -202,12 +185,19 @@ uses Graphics, uError, SysUtils, essConnectPanel, uIterators,
 uConfig, uRtfdDiagramFrame, Math;
 
 
-const
-  ClassShadowWidth = 3;
-  cDefaultWidth = 185;
-  cDefaultHeight = 41;
+
+
+{ TRtfdCustomLabel }
+
+constructor TRtfdCustomLabel.Create(AOwner: TComponent; AEntity: TModelEntity;
+  Tp: integer);
+begin
+  inherited Create(AOwner, AEntity, Tp);
+
+end;
 
 { TRtfdBox }
+
 constructor TRtfdBox.Create(AOwner: TComponent; AEntity: TModelEntity; AFrame: TDiagramFrame; AMinVisibility : TVisibility);
 begin
   inherited Create(AOwner);
@@ -216,17 +206,16 @@ begin
   Self.Frame := AFrame;
   Self.Entity := AEntity;
   Self.FMinVisibility := AMinVisibility;
-//  ShowHint := True;
-//  Hint := Entity.Documentation.ShortDescription;
 end;
+
 
 procedure TRtfdBox.Paint;
 const
   TopH = 39;
-  TopColor : array[boolean] of TColor = ($EAF4F8, clWhite);
 var
   R: TRect;
   Sw: integer;
+  i: integer;
 begin
   Sw := ClassShadowWidth;
   R := GetClientRect;
@@ -253,12 +242,15 @@ begin
     Rectangle(R.Left, R.Top + TopH - 8, R.Right - Sw, R.Bottom - Sw);
     FillRect( Rect(R.Left+1,R.Top + TopH - 8, R.Right - Sw - 1, R.Top + TopH + 1 - 8) );
   end;
+  for i:= 0 to ComponentCount - 1 do
+    TRtfdODLabel(Components[i]).paint(ClientWidth);
 end;
 
-procedure TRtfdBox.AddChild(Sender, NewChild: TModelEntity);
+procedure TRtfdBox.AddChild(Sender: TModelEntity; NewChild: TModelEntity);
 begin
   //Stub
 end;
+
 
 procedure TRtfdBox.Change(Sender: TModelEntity);
 begin
@@ -297,9 +289,10 @@ begin
   inherited;
   //Owner=Self must be tested because notifications are being sent for all components
   //in the form. TRtfdLabels are created with Owner=box.
-  if (Operation = opInsert) and (Acomponent.Owner = Self) and (Acomponent is TControl) then
-    TCrackControl(AComponent).OnMouseDown := @OnChildMouseDown;
+ // if (Operation = opInsert) and (Acomponent.Owner = Self) and (Acomponent is TControl) then
+ //   TCrackControl(AComponent).OnMouseDown := @OnChildMouseDown;
 end;
+
 
 procedure TRtfdBox.OnChildMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
@@ -313,7 +306,6 @@ begin
   pt := ScreenToClient(pt);
   MouseDown(Button,Shift,pt.X,pt.Y);
 end;
-
 
 
 { TRtfdClass }
@@ -382,9 +374,9 @@ begin
   while Omi.HasNext do
     Inc(NeedH, TRtfdOperation.Create(Self,Omi.Next, NeedH).Height);
 
-  for I := 0 to ControlCount-1 do
-    if Controls[I] is TRtfdCustomLabel then
-      NeedW := Max( TRtfdCustomLabel(Controls[I]).WidthNeeded,NeedW);
+  for i:= 0 to ComponentCount - 1 do
+    if (TComponent(Components[I]) is TRtfdODLabel) then
+      NeedW := Max( TRtfdODLabel(Components[I]).WidthNeeded,NeedW);
 
   Height :=  Max(NeedH,cDefaultHeight) + 10;
   Width  :=  Max(NeedW,cDefaultWidth);
@@ -415,11 +407,11 @@ begin
 end;
 
 { TRtfdCustomLabel }
-
+{
 constructor TRtfdCustomLabel.Create(AOwner: TComponent; AEntity: TModelEntity;
   Tp: integer);
 begin
-  inherited Create(AOwner);
+//  inherited Create(AOwner);
   Parent := Owner as TWinControl;
   Self.Entity := AEntity;
   AutoSize := False;
@@ -467,19 +459,23 @@ function TRtfdCustomLabel.WidthNeeded: integer;
 begin
   Result := Width + 4 + (2 * ClassShadowWidth);
 end;
-
+}
 
 { TVisibilityLabel }
 
-const
-  IconW = 10;
 
-procedure TVisibilityLabel.Paint;
+
+procedure TVisibilityLabel.Paint(width: integer);
 var
-  Rect : TRect;
+  Al: integer;
   Pic : Graphics.TBitmap;
+  tmpBox: TRect;
+  oldFont: TFont;
 begin
-  Rect := ClientRect;
+  fbox.Right := width;
+  oldFont := Canvas.Font;
+  Canvas.Font := Font;
+  tmpBox := FBox;
 
   case Entity.Visibility of
     viPrivate : Pic := ((Parent as TRtfdBox).Frame as TRtfdDiagramFrame).VisPrivateImage.Picture.Bitmap;
@@ -488,16 +484,27 @@ begin
   else
     Pic := ((Parent as TRtfdBox).Frame as TRtfdDiagramFrame).VisPublicImage.Picture.Bitmap;
   end;
-  Canvas.Draw(Rect.Left,Rect.Top + 1, Pic );
+  Canvas.Draw(tmpBox.Left,tmpBox.Top + 1, Pic );
+  tmpBox.Left := tmpBox.Left + cIconW + Margin;
 
-  Canvas.Font := Font;
-  Canvas.TextOut(Rect.Left + IconW + 4, Rect.Top, Caption);
+  Al := DT_LEFT;
+  case Alignment of
+    taLeftJustify: Al := DT_LEFT;
+    taRightJustify: Al := DT_RIGHT;
+    taCenter: Al := DT_CENTER;
+  end;
+
+  DrawText(Canvas.Handle,PChar(Caption),Length(Caption),tmpBox,Al);
+
+  Canvas.Font := oldFont;
+
 end;
 
 
 function TVisibilityLabel.WidthNeeded: integer;
 begin
-  Result := Width + IconW;
+  Result := inherited;
+  Result := Result + cIconW;
 end;
 
 { TRtfdClassName }
@@ -507,6 +514,7 @@ constructor TRtfdClassName.Create(AOwner: TComponent; AEntity: TModelEntity;
 begin
   inherited Create(AOwner, AEntity, Tp);
   Font.Style := [fsBold];
+  Transparent := True;
   Alignment := taCenter;
   Entity.AddListener(IAfterClassListener(Self));
   EntityChange(nil);
@@ -529,7 +537,7 @@ begin
       Font.Style := Font.Style + [fsItalic];
       Break;
     end;
-  if ((Owner as TRtfdBox).Frame as TDiagramFrame).Diagram.Package<>Entity.Owner then
+  if ((Parent as TRtfdBox).Frame as TDiagramFrame).Diagram.Package<>Entity.Owner then
     Caption := Entity.FullName
   else
     Caption := Entity.Name;
@@ -545,6 +553,7 @@ constructor TRtfdInterfaceName.Create(AOwner: TComponent;
 begin
   inherited Create(AOwner, AEntity, Tp);
   Font.Style := [fsBold];
+  Transparent := True;
   Alignment := taCenter;
   Entity.AddListener(IAfterInterfaceListener(Self));
   EntityChange(nil);
@@ -558,7 +567,7 @@ end;
 
 procedure TRtfdInterfaceName.EntityChange(Sender: TModelEntity);
 begin
-  if ((Owner as TRtfdBox).Frame as TDiagramFrame).Diagram.Package<>Entity.Owner then
+  if ((Parent as TRtfdBox).Frame as TDiagramFrame).Diagram.Package<>Entity.Owner then
     Caption := Entity.FullName
   else
     Caption := Entity.Name;
@@ -573,17 +582,13 @@ constructor TRtfdSeparator.Create(AOwner: TComponent; AEntity: TModelEntity;
   Tp: integer);
 begin
   Create(AOwner, Tp);
-
 end;
 
 constructor TRtfdSeparator.Create(AOwner: TComponent; Tp: integer);
 begin
   inherited Create(AOwner, nil, Tp);
-
-
-  Height := 16;
-
-
+  FBox.Left := 0;
+  FBox.Right := cDefaultWidth - ClassShadowWidth ;
 
 end;
 
@@ -591,21 +596,26 @@ procedure TRtfdSeparator.Paint;
 var
   R: TRect;
 begin
-  R := ClientRect;
-  //Canvas.FillRect(R);
+
   Canvas.Pen.Color := clBlack;
-  Canvas.MoveTo(R.Left, R.Top + (Height div 2));
-  Canvas.LineTo(R.Right, R.Top + (Height div 2));
+  Canvas.MoveTo(FBox.Left, FBox.Top + (Height div 2));
+  Canvas.LineTo(FBox.Right, FBox.Top + (Height div 2));
 end;
 
 { TRtfdPackageName }
 
 constructor TRtfdUnitPackageName.Create(AOwner: TComponent;
   AEntity: TModelEntity; Tp: integer);
+var
+  th: integer;
 begin
   inherited Create(AOwner, AEntity, 0);
   Font.Style := [fsBold];
   Alignment := taCenter;
+  Transparent := True;
+  th:=Height div 2;
+  FBox.Top := FBox.Top + th;
+  FBox.Bottom := FBox.Bottom + th;
   P := Entity as TUnitPackage;
   P.AddListener(IAfterUnitPackageListener(Self));
   EntityChange(nil);
@@ -632,7 +642,7 @@ begin
   inherited Create(AOwner, AEntity, Tp);
   O := Entity as TOperation;
   O.AddListener(IAfterOperationListener(Self));
-  EntityChange(nil);
+  Self.EntityChange(nil);
 end;
 
 destructor TRtfdOperation.Destroy;
@@ -693,8 +703,8 @@ constructor TRtfdUnitPackageDiagram.Create(AOwner: TComponent;
   AEntity: TModelEntity; Tp: integer);
 begin
   //This class is the caption in upper left corner for a unitdiagram
-  inherited Create(Owner, AEntity, Tp);
-  Color := clBtnFace;
+  inherited Create(AOwner, AEntity, Tp);
+//  Color := clBtnFace;
   Font.Name := 'Times New Roman';
   Font.Style := [fsBold];
   Font.Size := 12;
@@ -748,6 +758,7 @@ begin
   Hide;
   DestroyComponents;
 
+
   NeedW := 0;
   NeedH := (ClassShadowWidth * 2) + 4;
 
@@ -782,12 +793,12 @@ begin
   while Omi.HasNext do
     Inc(NeedH, TRtfdOperation.Create(Self,Omi.Next, NeedH).Height);
 
-  for I := 0 to ControlCount-1 do
-    if Controls[I] is TRtfdCustomLabel then
-      NeedW := Max( TRtfdCustomLabel(Controls[I]).WidthNeeded,NeedW);
+  for i:= 0 to ComponentCount - 1 do
+    if (TComponent(Components[I]) is TRtfdCustomLabel) then
+      NeedW := Max( TRtfdCustomLabel(Components[I]).WidthNeeded,NeedW);
 
-  Height :=  Max(NeedH,cDefaultHeight) + 10;
-  Width  :=  Max(NeedW,cDefaultWidth);
+  self.Height :=  Max(NeedH,cDefaultHeight) + 10;
+  self.Width  :=  Max(NeedW,cDefaultWidth);
 
   Visible := WasVisible;
 end;
@@ -803,9 +814,12 @@ constructor TRtfdStereotype.Create(AOwner: TComponent; AEntity: TModelEntity; AC
 begin
   inherited Create(AOwner, AEntity, 2);
   Alignment := taCenter;
+  Transparent := True;
   Self.Caption := '<<' + ACaption + '>>';
 end;
 
+
+{
 function TRtfdCustomLabel.GetAlignment: TAlignment;
 begin
   Result := FAlignment;
@@ -921,6 +935,6 @@ begin
   else
     DrawText(Canvas.Handle, PChar(Txt), Length(Txt), Rect, Flags);
 end;
-
+}
 
 end.

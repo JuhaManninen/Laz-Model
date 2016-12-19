@@ -205,10 +205,10 @@ begin
          fullName := NeedPackage(uName, str{%H-}, Recurse);
          if Fullname <> '' then
          begin
-           prs := TfpcParser.Create;
-           prs.FileName := fullName;
-           prs.NeedPackage := NeedPackage;
            try
+             prs := TfpcParser.Create;
+             prs.FileName := fullName;
+             prs.NeedPackage := NeedPackage;
              try
                prs.ParseFileWithDefines(FModel, FOM, FGlobalDefines);
              except
@@ -514,6 +514,7 @@ begin
      ParseUnit(M);
      FreeAndNil(M);
   end;
+  E.Free;
 end;
 
 end.
