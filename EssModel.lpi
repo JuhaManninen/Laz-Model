@@ -296,7 +296,6 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <UseHeaptrc Value="False"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>

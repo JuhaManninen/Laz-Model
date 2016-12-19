@@ -15,9 +15,9 @@ const
   cDefaultHeight = 41;
   cDefaultLeft = 4;
   cDefaultRight = cDefaultWidth-cDefaultLeft-ClassShadowWidth;
-  cDefaultlblHeight = 14;
+  cDefaultlblHeight = 15;
   cIconW = 10;
-  Margin = 4;
+  cMargin = 4;
 
 var
   TopColor : array[boolean] of TColor = ($EAF4F8, clWhite);
@@ -116,7 +116,7 @@ var
 begin
 
   Rect := FBox;
-  txt := FCaption + ' ';
+  txt := FCaption + '   ';
   case FAlignment of
     taLeftJustify: Al := DT_LEFT;
     taRightJustify: Al := DT_RIGHT;

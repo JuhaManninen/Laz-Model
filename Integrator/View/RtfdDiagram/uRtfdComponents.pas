@@ -485,7 +485,7 @@ begin
     Pic := ((Parent as TRtfdBox).Frame as TRtfdDiagramFrame).VisPublicImage.Picture.Bitmap;
   end;
   Canvas.Draw(tmpBox.Left,tmpBox.Top + 1, Pic );
-  tmpBox.Left := tmpBox.Left + cIconW + Margin;
+  tmpBox.Left := tmpBox.Left + cIconW + cMargin;
 
   Al := DT_LEFT;
   case Alignment of
@@ -504,7 +504,7 @@ end;
 function TVisibilityLabel.WidthNeeded: integer;
 begin
   Result := inherited;
-  Result := Result + cIconW;
+  Result := Result + cIconW + cMargin;
 end;
 
 { TRtfdClassName }
