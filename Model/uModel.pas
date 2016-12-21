@@ -31,7 +31,11 @@ interface
 uses Contnrs, Classes, uListeners, uModelEntity, uIterators;
 
 const
+{$IFDEF LINUX}
+  UNKNOWNPACKAGE_NAME = '<<Unknown>>';
+{$ELSE}
   UNKNOWNPACKAGE_NAME = '«Unknown»';
+{$IFDEF LINUX}
   ConfigFileExt = '.essModel';
 
 type
