@@ -5,8 +5,8 @@ unit uRtfdLabel;
 
 interface
 uses LCLIntf, LCLType,
- Messages, ExtCtrls, Classes, Graphics, uModel, uModelEntity, Controls, uListeners,
-  uViewIntegrator, uDiagramFrame, uConfig;
+  ExtCtrls, Classes, Graphics, uModel, uModelEntity, Controls, uListeners,
+  uConfig;
 
 
 const
@@ -58,7 +58,7 @@ protected
   procedure SetText(const Value: TCaption);
   function GetText: TCaption;
 public
-  constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); virtual;
+  constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); reintroduce; virtual;
   destructor Destroy; override;
   procedure Change(Sender: TModelEntity); virtual;
   procedure Paint(width: integer); virtual;{override;}

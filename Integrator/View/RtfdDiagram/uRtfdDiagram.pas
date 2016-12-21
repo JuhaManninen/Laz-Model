@@ -512,7 +512,7 @@ end;
 procedure TRtfdDiagram.StoreDiagram;
 var
   Ini : TCustomIniFile;
-  I,OldMode : integer;
+  I : integer;
   Box : TRtfdBox;
   S : string;
   DoSave : boolean;

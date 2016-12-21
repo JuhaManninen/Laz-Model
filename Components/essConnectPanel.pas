@@ -27,7 +27,7 @@ interface
 uses
 
   LCLIntf, LCLType, {windows,} Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls,Contnrs;
+  ExtCtrls,Contnrs, uViewIntegrator;
 
 
 type
@@ -85,6 +85,7 @@ type
     FBackBitmap: TBitmap;
     TempHidden : TObjectList;
     ClientDragging: Boolean;
+    fNeedCheckSize: Boolean;
     procedure SetSelectedOnly(const Value : boolean);
   protected
     { Protected declarations }
@@ -600,25 +601,12 @@ procedure TessConnectPanel.OnManagedObjectClick(Sender: TObject);
 var
   inst: TManagedObject;
 begin
-  inst := FindManagedControl(Sender as TControl);
 
-
-
-//  if Assigned(inst) then
-//  begin
-//    if Assigned(inst.FOnClick) then inst.FOnClick(Sender);
-//  end;
 end;
 
 procedure TessConnectPanel.OnManagedObjectDblClick(Sender: TObject);
-var
-  inst: TManagedObject;
 begin
-//  inst := FindManagedControl(Sender as TControl);
-//  if Assigned(inst) then
-//  begin
-//    if Assigned(inst.FOnDblClick) then inst.FOnDblClick(Sender);
-//  end;
+  SetCurrentEntity(TRTFDBOX(Sender).Entity)
 end;
 
 procedure TessConnectPanel.ChildMouseDrag(Sender: TObject; Shift: TShiftState;
@@ -626,7 +614,6 @@ procedure TessConnectPanel.ChildMouseDrag(Sender: TObject; Shift: TShiftState;
 var
   pt,pt1: TPoint;
   r: TRect;
-  found: TControl;
   mcont: TManagedObject;
   p2: TPoint;
   i,dx,dy, mdx, mdy: Integer;
@@ -678,6 +665,7 @@ begin
   begin
     FMemMousePos := pt;
     FIsMoving := True;
+    fNeedCheckSize := True;
     MovedRect:=Rect(MaxInt,0,0,0);
     for i:=0 to FManagedObjects.Count -1 do
     begin
@@ -744,6 +732,11 @@ var
     inst: TManagedObject;
 begin
   ClientDragging := False;
+  if fNeedCheckSize then
+  begin
+     ReCalcSize;
+     fNeedCheckSize := False;
+  end;
   inst := FindManagedControl(Sender as TControl);
    if not(ssCtrl in shift) then
         ClearSelection;

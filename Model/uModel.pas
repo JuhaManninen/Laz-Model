@@ -31,7 +31,7 @@ interface
 uses Contnrs, Classes, uListeners, uModelEntity, uIterators;
 
 const
-  UNKNOWNPACKAGE_NAME = '<<Unknown>>';
+  UNKNOWNPACKAGE_NAME = '«Unknown»';
   ConfigFileExt = '.essModel';
 
 type

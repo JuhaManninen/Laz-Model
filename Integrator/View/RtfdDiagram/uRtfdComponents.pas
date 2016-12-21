@@ -24,7 +24,7 @@ unit uRtfdComponents;
 
 interface
 uses LCLIntf, LCLType,
- Messages, ExtCtrls, Classes, uModel, uModelEntity, Controls, uListeners,
+  ExtCtrls, Classes, uModel, uModelEntity, Controls, uListeners,
   uViewIntegrator, uDiagramFrame, uRtfdLabel;
 
 type
@@ -593,10 +593,7 @@ begin
 end;
 
 procedure TRtfdSeparator.Paint;
-var
-  R: TRect;
 begin
-
   Canvas.Pen.Color := clBlack;
   Canvas.MoveTo(FBox.Left, FBox.Top + (Height div 2));
   Canvas.LineTo(FBox.Right, FBox.Top + (Height div 2));
@@ -815,7 +812,7 @@ begin
   inherited Create(AOwner, AEntity, 2);
   Alignment := taCenter;
   Transparent := True;
-  Self.Caption := '<<' + ACaption + '>>';
+  Self.Caption := '«' + ACaption + '»';
 end;
 
 

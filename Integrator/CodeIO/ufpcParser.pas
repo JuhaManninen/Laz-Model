@@ -58,6 +58,7 @@ type
       function getVisibility(vis: TPasMemberVisibility): TVisibility;
       function getProcType(pt: TProcType): TOperationType;
       function getClassifier(s: String): TClassifier;
+      function getInterfaceRef(s: string): TInterface;
 
       procedure ParseProject(M: TPasProgram);
       procedure ParseUnit(M: TPasModule);
@@ -162,8 +163,6 @@ end;
 
 
 procedure TfpcParser.ParseProject(M: TPasProgram);
-var
-  intf: TInterfaceSection;
 begin
   FUnit := (FModel as TLogicPackage).AddUnit(M.Name);
   FUnit.Sourcefilename := Filename;
@@ -265,7 +264,6 @@ var
   attr: TAttribute;
   vari: TPasVariable;
   prop: TProperty;
-  cons: TPasConstructor;
 begin
    for i := 0 to mems.Count-1 do
    begin
@@ -302,7 +300,6 @@ begin
            begin
               op := ths.AddOperation(TPasType(mems.Items[i]).Name);
               AddDestructor(op, TPasDestructor(mems.Items[i]));
-
            end
          else
            begin
@@ -367,11 +364,25 @@ begin
       Result := FOM.UnknownPackage.AddDatatype(s);
 end;
 
+function TfpcParser.getInterfaceRef(s: string): TInterface;
+begin
+   Result := FUnit.FindClassifier(s,False,TInterface) as TInterface;
+   if not Assigned(Result) then
+   begin
+     Result := FOM.UnknownPackage.FindClassifier(s,False,TInterface) as TInterface;
+     if not (Assigned(Result) and (Result is TInterface)) then
+        Result := FOM.UnknownPackage.AddInterface(s);
+   end;
+end;
+
 procedure TfpcParser.PopulateClass(ths: TClass; cls: TPasClassType);
 var
   ans: TPasType;
   ancestor: TClass;
   cfr: TClassifier;
+  intf: TInterface;
+  intfs: TFPList;
+  i: integer;
 begin
   if Assigned(cls.AncestorType) then
   begin
@@ -389,6 +400,16 @@ begin
       ths.Ancestor := FOM.UnknownPackage.AddClass(ans.Name);
   end;
 
+  If Assigned(cls.Interfaces) then
+  begin
+    intfs:= cls.Interfaces;
+    for i := 0 to intfs.Count -1 do
+    begin
+      intf := getInterfaceRef(TPasType(intfs[i]).Name);
+      ths.AddImplements(intf);
+    end;
+  end;
+
   if Assigned(cls.Members) then
      PopulateMembers(ths, cls.Members);
 
@@ -399,19 +420,8 @@ var
   classif, interf: TInterface;
 begin
   if Assigned (cls.AncestorType) then
-  begin
-    interf := FUnit.FindClassifier(cls.AncestorType.Name,False,TInterface) as TInterface;
-    if not Assigned(interf) then
-    begin
-      classif := FOM.UnknownPackage.FindClassifier(cls.AncestorType.Name,False,TInterface) as TInterface;
-      if Assigned(classif) and (classif is TInterface) then
-        interf := classif as TInterface;
-    end;
-    if Assigned(interf) then
-      intf.Ancestor := interf
-    else
-      intf.Ancestor := FOM.UnknownPackage.AddInterface(cls.AncestorType.Name);
-    end;
+     intf.Ancestor := getInterfaceRef(cls.AncestorType.Name);
+
   if Assigned(cls.Members) then
      PopulateMembers(intf, cls.Members);
 
