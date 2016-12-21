@@ -35,7 +35,7 @@ const
   UNKNOWNPACKAGE_NAME = '<<Unknown>>';
 {$ELSE}
   UNKNOWNPACKAGE_NAME = '«Unknown»';
-{$IFDEF LINUX}
+{$ENDIF LINUX}
   ConfigFileExt = '.essModel';
 
 type
