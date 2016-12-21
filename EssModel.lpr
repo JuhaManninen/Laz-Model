@@ -45,6 +45,7 @@ uses
   uConfig in 'System\uConfig.pas',
   uDiagramFrame in 'Integrator\View\uDiagramFrame.pas' {DiagramFrame: TFrame},
   uRtfdDiagramFrame in 'Integrator\View\RtfdDiagram\uRtfdDiagramFrame.pas' {RtfdDiagramFrame: TFrame},
+  uRtfdLabel in 'Integrator\View\RtfdDiagram\uRtfdLabel.pas',
   uIterators in 'Model\uIterators.pas',
   uDocGen in 'Integrator\Doc\uDocGen.pas',
   uDocumentation in 'Model\uDocumentation.pas',

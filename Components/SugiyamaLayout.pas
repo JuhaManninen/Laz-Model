@@ -171,13 +171,14 @@ begin
       //Here the connection is reversed: from=to, to=from
       //This is because the algorithm assumes that everything points downwards, while
       //we want all arrows to point upwards (descendants pointing up to their baseclass).
-      if Con.FConnectStyle=csNormal then
-      begin  //Reverse Inheritance-connections
+      if (Con.FConnectStyle=csNormal) or
+         ((Con.FConnectStyle=csThinDash) and (Con.ArrowStyle=asEmptyClosed)) then
+      begin  //Reverse Inheritance-connections and interface connections
         FromNode := Nodes[ Con.FTo.Tag ];
         ToNode := Nodes[ Con.FFrom.Tag ];
       end
       else
-      begin  //Do not reverse Unit-Associations and Implements-interface
+      begin  //Do not reverse Unit-Associations
         FromNode := Nodes[ Con.FFrom.Tag ];
         ToNode := Nodes[ Con.FTo.Tag ];
       end;
