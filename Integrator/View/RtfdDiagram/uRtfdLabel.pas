@@ -126,6 +126,7 @@ begin
   Al := Al or DT_CALCRECT  or DT_NOPREFIX;
 
   DC := GetDC(0);
+  SelectObject(DC, fFont.Handle);
   DrawText(DC, PChar(txt), Length(txt), Rect, Al);
   ReleaseDC(0,DC);
 
