@@ -73,7 +73,6 @@ begin
 
 end;
 
-
 class function TfpciImporter.GetFileExtensions: TStringList;
 begin
   Result := TStringList.Create;
@@ -81,7 +80,7 @@ begin
   Result.Values['.pp'] := 'code';
   Result.Values['.inc'] := 'include';
   Result.Values['.lpr'] := 'Lazarus project';
-  Result.Values['.lpk'] := 'Lazarus package';
+//  Result.Values['.lpk'] := 'Lazarus package';
 end;
 
 function TfpciImporter.NeedPackageHandler(const AName: string; var AStream: TStream; OnlyLookUp: Boolean = True):String;

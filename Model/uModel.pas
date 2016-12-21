@@ -162,6 +162,8 @@ type
     function GetImplementingClasses : IModelIterator;
   end;
 
+  { TClass }
+
   TClass = class(TClassifier, IBeforeClassListener)
   protected
     class function GetBeforeListener: TGUID; override;
@@ -749,7 +751,7 @@ begin
   end;
 end;
 
-procedure TClass.AncestorAddChild(Sender, NewChild: TModelEntity);
+procedure TClass.AncestorAddChild(Sender: TModelEntity; NewChild: TModelEntity);
 begin
   ErrorHandler.Trace(Format('%s : %s : %s : %s', ['AncestorAddChild', ClassName, FName, Sender.Name]));
 end;
@@ -1009,7 +1011,7 @@ end;
 
 function TClassifier.GetSourcefilename: String;
 begin
-  Result := FSourceFilename;
+  Result := inherited GetSourcefilename;
 end;
 
 procedure TClassifier.SetSourcefilename(const Value: String);

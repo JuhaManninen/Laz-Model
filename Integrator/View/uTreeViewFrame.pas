@@ -25,8 +25,8 @@ unit uTreeViewFrame;
 interface
 
 uses
-  LCLIntf, LCLType, LMessages, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ComCtrls, ImgList;
+  LCLIntf, LCLType, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+   ComCtrls;
 
 type
   TTreeViewFrame = class(TFrame)
