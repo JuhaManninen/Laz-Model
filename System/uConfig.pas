@@ -70,14 +70,13 @@ var
 implementation
 
 uses
-  Forms, uConst, SysUtils, LResources;
+  Forms, SysUtils, LResources;
 
 const
   cSettings = 'Settings';
 
 constructor TConfig.Create;
 var
-  DC : integer;
   FDir: String;
 begin
   IsLimitedColors := False;

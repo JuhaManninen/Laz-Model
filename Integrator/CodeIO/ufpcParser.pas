@@ -175,7 +175,7 @@ var
   intf: TInterfaceSection;
 begin
    FUnit := (FModel as TLogicPackage).AddUnit(M.Name);
-   FUnit.Sourcefilename := Filename;
+   FUnit.Sourcefilename := Self.Filename;
    intf := M.InterfaceSection;
    GetUnits(intf.UsesList);
    GetClasses(intf.Classes);
@@ -242,16 +242,17 @@ begin
           okObject, okClass:
           begin
             ths := FUnit.AddClass(cls.Name);
+            ths.SourceY := cls.SourceLinenumber;
             PopulateClass(ths, cls);
           end;
           okInterface:
           begin
             intf := FUnit.AddInterface(cls.Name);
+            intf.SourceY := cls.SourceLinenumber;
             PopulateInterface(intf, cls);
           end;
 //  TODO        okGeneric, okSpecialize,
 //  or NOT      okClassHelper,okRecordHelper,okTypeHelper
-
         end;
      end;
 
@@ -271,17 +272,20 @@ begin
         'procedure':
         begin
            op := ths.AddOperation(TPasType(mems.Items[i]).Name);
+           op.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
            AddProcedure(op,TPasProcedure(mems.Items[i]));
         end;
         'function' :
           begin
             op := ths.AddOperation(TPasType(mems.Items[i]).Name);
+            op.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
             AddFunction(op, TPasFunction(mems.Items[i]));
           end;
 
         'property'  :
           begin
              prop := ths.AddProperty(TPasType(mems.Items[i]).Name);
+             prop.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
              AddProperty(prop, TPasProperty(mems.Items[i]));
           end;
          'variable'  :
@@ -290,20 +294,25 @@ begin
               attr := ths.AddAttribute(vari.Name);
               attr.TypeClassifier := getClassifier(vari.VarType.name);
               attr.Visibility := getVisibility(vari.Visibility);
+              attr.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
            end;
          'constructor':
            begin
               op := ths.AddOperation(TPasType(mems.Items[i]).Name);
+              op.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
               AddConstructor(op, TPasConstructor(mems.Items[i]));
            end;
          'destructor':
            begin
               op := ths.AddOperation(TPasType(mems.Items[i]).Name);
+              op.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
               AddDestructor(op, TPasDestructor(mems.Items[i]));
            end
          else
            begin
-             //op.Create(ths);
+             {$IFDEF DEBUG}
+               Assert(True, 'Missing '  + TPasType(mems.Items[i]).ElementTypeName + ' in class members');
+             {$ENDIF}
            end;
 
       end;
@@ -321,16 +330,20 @@ begin
        'procedure':
        begin
           op := intf.AddOperation(TPasType(mems.Items[i]).Name);
+          op.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
           AddProcedure(op,TPasProcedure(mems.Items[i]));
        end;
        'function' :
          begin
             op := intf.AddOperation(TPasType(mems.Items[i]).Name);
+            op.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
             AddFunction(op, TPasFunction(mems.Items[i]));
-         end;
-       'variable'  :
+         end
+       else
          begin
-            intf.AddAttribute(TPasType(mems.Items[i]).Name);
+            {$IFDEF DEBUG}
+              Assert(True, 'Missing '  + TPasType(mems.Items[i]).ElementTypeName + ' in interface members');
+            {$ENDIF}
          end;
      end;
   end;
@@ -416,8 +429,6 @@ begin
 end;
 
 procedure TfpcParser.PopulateInterface(intf: TInterface; cls: TPasClassType);
-var
-  classif, interf: TInterface;
 begin
   if Assigned (cls.AncestorType) then
      intf.Ancestor := getInterfaceRef(cls.AncestorType.Name);
