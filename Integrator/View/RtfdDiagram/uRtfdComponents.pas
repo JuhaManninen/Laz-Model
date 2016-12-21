@@ -145,7 +145,7 @@ type
   public
     constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); override;
     constructor Create(AOwner: TComponent; Tp: integer);
-    procedure Paint; override;
+    procedure Paint(width: integer); override;
   end;
 
   TRtfdStereotype = class(TRtfdCustomLabel)
@@ -588,15 +588,15 @@ constructor TRtfdSeparator.Create(AOwner: TComponent; Tp: integer);
 begin
   inherited Create(AOwner, nil, Tp);
   FBox.Left := 0;
-  FBox.Right := cDefaultWidth - ClassShadowWidth ;
+  FBox.Right := cDefaultWidth - ClassShadowWidth  ;
 
 end;
 
-procedure TRtfdSeparator.Paint;
+procedure TRtfdSeparator.Paint(width: integer);
 begin
   Canvas.Pen.Color := clBlack;
   Canvas.MoveTo(FBox.Left, FBox.Top + (Height div 2));
-  Canvas.LineTo(FBox.Right, FBox.Top + (Height div 2));
+  Canvas.LineTo(Width - ClassShadowWidth, FBox.Top + (Height div 2));
 end;
 
 { TRtfdPackageName }
@@ -819,123 +819,5 @@ begin
 {$ENDIF LINUX}
 end;
 
-
-{
-function TRtfdCustomLabel.GetAlignment: TAlignment;
-begin
-  Result := FAlignment;
-end;
-
-procedure TRtfdCustomLabel.SetAlignment(const Value: TAlignment);
-begin
-  if Value <> FAlignment then
-    begin
-    FAlignment := Value;
-    Invalidate;
-  end;
-end;
-
-procedure TRtfdCustomLabel.Paint;
-var
-  Al: Integer;
-  oldFont: TFont;
-  r: TRect;
-begin
-  inherited;
-  { TODO : Fix }
-  oldFont := Canvas.Font;
-  Canvas.Font := Font;
-  if FTransparent then
-    Canvas.Brush.Style := bsClear
-  else
-    Canvas.Brush.Style := bsSolid;
-  Al := DT_LEFT;
-  case FAlignment of
-    taLeftJustify: Al := DT_LEFT;
-    taRightJustify: Al := DT_RIGHT;
-    taCenter: Al := DT_CENTER;
-  end;
-  r := ClientRect;
-  DrawText(Canvas.Handle,PChar(Caption),Length(Caption),r,Al);
-  Canvas.Font := oldFont;
-end;
-
-procedure TRtfdCustomLabel.SetTransparent(const Value: Boolean);
-begin
-  if FTransparent <> Value then
-  begin
-    FTransparent := Value;
-    Invalidate;
-  end;
-end;
-
-
-function TRtfdCustomLabel.GetText: TCaption;
-begin
-  Result := FCaption;
-end;
-
-procedure TRtfdCustomLabel.SetText(const Value: TCaption);
-begin
-  inherited;
-  if FCaption <> Value then
-  begin
-    FCaption := Value;
-    Invalidate;
-  end;
-end;
-
-procedure TRtfdCustomLabel.CMTextChanged(var Message: TMessage);
-begin
-  Invalidate;
-  Adjustbounds;
-end;
-
-procedure TRtfdCustomLabel.AdjustBounds;
-var
-  DC: HDC;
-  X: Integer;
-  Rect: TRect;
-  AAlignment: TAlignment;
-begin
-  if not (csReading in ComponentState) then
-  begin
-    Rect := ClientRect;
-    DC := GetDC(0);
-    Canvas.Handle := DC;
-    DoDrawText(Rect, (DT_EXPANDTABS or DT_CALCRECT));
-    Canvas.Handle := 0;
-    ReleaseDC(0, DC);
-    X := Left;
-    AAlignment := FAlignment;
-    if UseRightToLeftAlignment then ChangeBiDiModeAlignment(AAlignment);
-    if AAlignment = taRightJustify then Inc(X, Width - Rect.Right);
-    SetBounds(X, Top, cDefaultWidth, Rect.Bottom);
-  end;
-end;
-
-procedure TRtfdCustomLabel.DoDrawText(var Rect: TRect; Flags: Integer);
-var
-  Txt: string;
-begin
-  Txt := Caption;
-  if (Flags and DT_CALCRECT <> 0) and ((Txt = '') and
-    (Txt[1] = '&') and (Txt[2] = #0)) then Txt := Txt + ' ';
-  Flags := Flags or DT_NOPREFIX;
-//  Flags := DrawTextBiDiModeFlags(Flags);
-  Canvas.Font := Font;
-  if not Enabled then
-  begin
-    OffsetRect(Rect, 1, 1);
-    Canvas.Font.Color := clBtnHighlight;
-    DrawText(Canvas.Handle, PChar(Txt), Length(Txt), Rect, Flags);
-    OffsetRect(Rect, -1, -1);
-    Canvas.Font.Color := clBtnShadow;
-    DrawText(Canvas.Handle, PChar(Txt), Length(Txt), Rect, Flags);
-  end
-  else
-    DrawText(Canvas.Handle, PChar(Txt), Length(Txt), Rect, Flags);
-end;
-}
 
 end.
