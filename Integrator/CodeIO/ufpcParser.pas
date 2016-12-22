@@ -464,6 +464,7 @@ begin
   begin
      arg :=  TPasArgument(proc.ProcType.Args.Items[i]);
      par := op.AddParameter(arg.Name);
+     par.SourceY := arg.SourceLinenumber;
      if Assigned (arg.ArgType) then
        par.TypeClassifier := getClassifier(arg.ArgType.Name);
   end;
@@ -482,7 +483,9 @@ begin
   begin
      arg :=  TPasArgument(proc.ProcType.Args.Items[i]);
      par := op.AddParameter(arg.Name);
-     par.TypeClassifier := getClassifier(arg.ArgType.Name);
+     par.SourceY := arg.SourceLinenumber;
+     if Assigned (arg.ArgType) then
+       par.TypeClassifier := getClassifier(arg.ArgType.Name);
   end;
 end;
 
@@ -504,6 +507,7 @@ begin
   begin
      arg :=  TPasArgument(proc.ProcType.Args.Items[i]);
      par := op.AddParameter(arg.Name);
+     par.SourceY := arg.SourceLinenumber;
      If Assigned (arg.ArgType) then
        par.TypeClassifier := getClassifier(arg.ArgType.Name);
   end;
@@ -515,7 +519,6 @@ begin
    prop.Visibility := getVisibility(pproc.Visibility);
    If Assigned (pproc.VarType) then
      prop.TypeClassifier := getClassifier(pproc.VarType.Name);
-
 end;
 
 

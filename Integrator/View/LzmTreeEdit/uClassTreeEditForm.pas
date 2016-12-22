@@ -5,7 +5,7 @@ unit uClassTreeEditForm;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, RTTIGrids, Forms, Controls, Graphics, Dialogs,
+  Classes, SysUtils, FileUtil, RTTIGrids, Forms, Controls, Graphics, Dialogs, typinfo,
   ComCtrls, ExtCtrls, uModel, uModelEntity, uIterators, uViewIntegrator, uListeners ;
 
 type
@@ -69,11 +69,13 @@ end;
 
 procedure TClassTreeEditForm.InitTreeFromModel;
 var
-  tp, tc, nod,nod1: TTreeNode;
+  tp, tc, nod,nod1, nod2,nod3: TTreeNode;
   s: string;
-  Mi: IModelIterator;
-  ent: TModelEntity;
+  Pi, Mi: IModelIterator;
+  ent, ent1: TModelEntity;
   attr: TAttribute;
+  op: TOperation;
+  par: TParameter;
 begin
     TreeView1.Items.Clear;
     if (FModelObject is TClass) then
@@ -126,7 +128,22 @@ begin
           begin
             ent := Mi.Next;
             nod1 := TreeView1.Items.AddChildObject(nod, ent.Name + ' : ' + ent.ClassName, ent);
+            op := TOperation(ent);
+            TreeView1.Items.AddChild(nod1,' Operation Type: ' + GetEnumName(typeinfo(TOperationType), ord(op.OperationType)));
 
+            Pi := TModelIterator.Create(op.GetParameters);
+            if Pi.Count > 0  then
+              while Pi.HasNext do
+              begin
+                par := TParameter(Pi.Next);
+                nod2 := TreeView1.Items.AddChildObject(nod1, par.Name + ' : ' + par.ClassName, par);
+
+                nod3 := TreeView1.Items.AddChildObject(nod2, par.TypeClassifier.Name + ' : ' + par.TypeClassifier.ClassName, par.TypeClassifier);
+              end;
+            if (op.OperationType = otFunction) then
+            begin
+              TreeView1.Items.AddChildObject(nod1,'Return: ' + op.ReturnValue.Name + ' : ' + op.ReturnValue.ClassName, op.ReturnValue);
+            end;
           end;
         end;
 
