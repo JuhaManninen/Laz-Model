@@ -28,10 +28,15 @@ interface
 uses
   LCLIntf, LCLType,  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   uModel, uIntegrator, ufpcIntegrator, ActnList, uViewIntegrator,
-  {$IFDEF DRAG_SUPPORT}DropSource, DropTarget, {$ENDIF}Menus, uFeedback, uTreeViewIntegrator,ExtCtrls;
+  {$IFDEF DRAG_SUPPORT}DropSource, DropTarget, {$ENDIF}Menus, uFeedback,
+  uClassTreeEditIntegrator, uClassTreeEditForm, uTreeViewIntegrator,ExtCtrls;
 
 type
+
+  { TMainModule }
+
   TMainModule = class(TDataModule)
+    TreeEditShow: TAction;
     ActionList: TActionList;
     CopyDiagramClipboardAction: TAction;
     PrintDiagramAction: TAction;
@@ -59,6 +64,7 @@ type
     procedure FileOpenActionExecute(Sender: TObject);
     procedure ExitActionExecute(Sender: TObject);
     procedure SettingsActionExecute(Sender: TObject);
+    procedure TreeEditShowExecute(Sender: TObject);
     procedure UnhideElementsActionUpdate(Sender: TObject);
     procedure UnhideElementsActionExecute(Sender: TObject);
     procedure SaveDiagramActionExecute(Sender: TObject);
@@ -74,6 +80,7 @@ type
     RecentFiles : TStringList;
     RecentOpenFolderPath : string;
     FTreeView : TTreeViewIntegrator;
+    FTreeEditView : TClassTreeEditIntegrator;
     {$if Defined(WIN32) and Defined(DRAG_SUPPORT)}
     Drop : TDropFileTarget;
     {$ifend}
@@ -138,6 +145,10 @@ begin
   FTreeView := TTreeViewIntegrator.Create(FModel,MainForm.TreePanel,Feedback);
 
   TZoomFrame.Create(MainForm.ZoomPanel,Diagram);
+  {$IFDEF DEBUG}
+  FTreeEditView := TClassTreeEditIntegrator.Create(FModel,ClassTreeEditForm, Feedback);
+  {$ENDIF DEBUG}
+
 
   {$if Defined(WIN32) and Defined(DRAG_SUPPORT)}
   Drop := TDropFileTarget.Create(Self);
@@ -237,6 +248,9 @@ begin
   SaveDiagramAction.Enabled := True;
   CopyDiagramClipboardAction.Enabled := True;
   ExportEmxAction.Enabled := True;
+  {$IFDEF DEBUG}
+  TreeEditShow.Enabled := True;
+  {$ENDIF DEBUG}
 end;
 
 procedure TMainModule.LoadProject(FileName : string);
@@ -511,6 +525,11 @@ begin
   finally
     F.Free;
   end;
+end;
+
+procedure TMainModule.TreeEditShowExecute(Sender: TObject);
+begin
+   ClassTreeEditForm.Show;
 end;
 
 procedure TMainModule.UnhideElementsActionUpdate(Sender: TObject);

@@ -38,7 +38,7 @@ type
 
   TVisibility = (viPrivate, viProtected, viPublic, viPublished);
 
-  TModelEntity = class(TInterfacedObject)
+  TModelEntity = class(TInterfacedPersistent)
   private
     function GetRoot: TModelEntity;
   protected
@@ -69,16 +69,20 @@ type
     destructor Destroy; override;
     procedure AddListener(NewListener: IUnknown);
     procedure RemoveListener(Listener: IUnknown);
-    property Name: string read FName write SetName;
     property FullName: string read GetFullName;
     property Owner: TModelEntity read FOwner write FOwner;
-    property Visibility: TVisibility read FVisibility write SetVisibility;
     property Locked: boolean read GetLocked write FLocked;
     property Root : TModelEntity read GetRoot;
     property Documentation : TDocumentation read FDocumentation;
-    property Sourcefilename: String read GetSourcefilename write SetSourcefilename;
     property SourceX: Integer read FSourceX write FSourceX;
+  published
+    property Name: string read FName write SetName;
+    property Visibility: TVisibility read FVisibility write SetVisibility;
+
+    // TODO These are read only so are only here while developing Model
+    property Sourcefilename: String read GetSourcefilename write SetSourcefilename;
     property SourceY: Integer read FSourceY write FSourceY;
+
   end;
 
   TModelEntityClass = class of TModelEntity;

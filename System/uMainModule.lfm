@@ -5,8 +5,8 @@ object MainModule: TMainModule
   left = 219
   top = 203
   Height = 540
-  HorizontalOffset = 225
-  VerticalOffset = 306
+  HorizontalOffset = 525
+  VerticalOffset = 112
   Width = 783
   object ActionList: TActionList
     left = 81
@@ -77,6 +77,12 @@ object MainModule: TMainModule
       Caption = 'Export model to EMX-file'
       Enabled = False
       OnExecute = ExportEmxActionExecute
+    end
+    object TreeEditShow: TAction
+      Caption = 'TreeEditShow'
+      DisableIfNoHandler = False
+      Enabled = False
+      OnExecute = TreeEditShowExecute
     end
   end
 end

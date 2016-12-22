@@ -25,7 +25,7 @@
 program EssModel;
 
 uses
-  Forms, Interfaces,
+  Forms, Interfaces, sysutils,
   uMainForm in 'System\uMainForm.pas' {MainForm},
   uMainModule in 'System\uMainModule.pas' {MainModule: TDataModule},
   uListeners in 'Model\uListeners.pas',
@@ -63,6 +63,8 @@ uses
   uFeedback in 'System\uFeedback.pas',
   uTreeViewFrame in 'Integrator\View\uTreeViewFrame.pas' {TreeViewFrame: TFrame},
   uTreeViewIntegrator in 'Integrator\View\uTreeViewIntegrator.pas',
+  uClassTreeEditIntegrator in 'Integrator\View\LzmTreeEdit\uClassTreeEditIntegrator.pas',
+  uClassTreeEditForm in 'Integrator\View\LzmTreeEdit\uClassTreeEditForm.pas',
   uXmiExportArgoUML in 'Integrator\Export\uXmiExportArgoUML.pas',
   uZoomFrame in 'System\uZoomFrame.pas' {ZoomFrame: TFrame},
   uEmxExport in 'Integrator\Export\uEmxExport.pas';
@@ -70,9 +72,23 @@ uses
 {$R *.res}
 
 begin
+   {$IFDEF DEBUG}
+  // Assuming your build mode sets -dDEBUG in Project Options/Other when defining -gh
+  // This avoids interference when running a production/default build without -gh
+
+  // Set up -gh output for the Leakview package:
+  if FileExists('heap.trc') then
+    DeleteFile('heap.trc');
+  SetHeapTraceOutput('heap.trc');
+  {$ENDIF DEBUG}
+
+
   Application.Initialize;
   Application.Title := 'essModel';
   Application.CreateForm(TMainForm, MainForm);
+  {$IFDEF DEBUG}
+  Application.CreateForm(TClassTreeEditForm, ClassTreeEditForm);
+  {$ENDIF DEBUG}
   Application.Run;
 end.
 

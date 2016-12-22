@@ -30,9 +30,13 @@ uses
   ExtCtrls, Menus, uMainModule,  Buttons;
 
 type
+
+  { TMainForm }
+
   TMainForm = class(TForm)
     MainMenu1: TMainMenu;
     File1: TMenuItem;
+    TreeEdit: TMenuItem;
     Printdiagram1: TMenuItem;
     Generatedocumentation1: TMenuItem;
     About1: TMenuItem;

@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 84
+  Left = 33
   Height = 526
-  Top = 339
+  Top = 564
   Width = 648
   Caption = 'x'
   ClientHeight = 507
@@ -212,6 +212,11 @@ object MainForm: TMainForm
       Caption = 'Help'
       object About1: TMenuItem
         Action = MainModule.AboutAction
+        AutoCheck = True
+      end
+      object TreeEdit: TMenuItem
+        Action = MainModule.TreeEditShow
+        Caption = 'TreeEdit Show'
       end
     end
   end
