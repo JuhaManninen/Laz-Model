@@ -24,7 +24,6 @@ unit uMainModule;
 
 interface
 
-
 uses
   LCLIntf, LCLType,  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   uModel, uIntegrator, ufpcIntegrator, ActnList, uViewIntegrator,
