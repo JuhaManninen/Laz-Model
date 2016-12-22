@@ -25,6 +25,7 @@ object ClassTreeEditForm: TClassTreeEditForm
     DefaultItemHeight = 16
     ReadOnly = True
     TabOrder = 0
+    OnSelectionChanged = TreeView1SelectionChanged
     Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
     TreeLinePenStyle = psSolid
   end
