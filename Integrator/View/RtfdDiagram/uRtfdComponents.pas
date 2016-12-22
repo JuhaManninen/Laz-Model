@@ -1,6 +1,6 @@
 {
   ESS-Model
-  Copyright (C) 2002  Eldean AB, Peter Söderman, Ville Krumlinde
+  Copyright (C) 2002  Eldean AB, Peter SÃ¶derman, Ville Krumlinde
   Portions (C) 2016 Peter Dyson. Initial Lazarus port
 
   This program is free software; you can redistribute it and/or
@@ -815,7 +815,7 @@ begin
 {$IFDEF LINUX}
   Self.Caption := '<<' + ACaption + '>>';
 {$ELSE}
-  Self.Caption := '«' + ACaption + '»';
+  Self.Caption := 'Â«' + ACaption + 'Â»';
 {$ENDIF LINUX}
 end;
 
