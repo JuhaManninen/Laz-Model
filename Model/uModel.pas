@@ -79,8 +79,9 @@ type
   public
     constructor Create(AOwner: TModelEntity); override;
     destructor Destroy; override;
-    property IsPlaceholder: boolean read FIsPlaceHolder write FIsPlaceholder;
     function GetFeatures : IModelIterator;
+  published
+    property IsPlaceholder: boolean read FIsPlaceHolder write FIsPlaceholder;
   end;
 
   TParameter = class(TModelEntity)
@@ -89,7 +90,7 @@ type
   protected
     class function GetBeforeListener: TGUID; override;
     class function GetAfterListener: TGUID; override;
-  public
+  published
     property TypeClassifier : TClassifier read FTypeClassifier write FTypeClassifier;
   end;
 
@@ -109,10 +110,11 @@ type
     constructor Create(AOwner: TModelEntity); override;
     destructor Destroy; override;
     function AddParameter(const NewName: string): TParameter;
+    function GetParameters : IModelIterator;
+  published
     property OperationType: TOperationType read FOperationType write SetOperationType;
     property IsAbstract: boolean read FIsAbstract write SetIsAbstract;
     property ReturnValue: TClassifier read FReturnValue write SetReturnValue;
-    function GetParameters : IModelIterator;
   end;
 
   TAttribute = class(TFeature)
@@ -122,7 +124,7 @@ type
   protected
     class function GetBeforeListener: TGUID; override;
     class function GetAfterListener: TGUID; override;
-  public
+  published
     property TypeClassifier : TClassifier read FTypeClassifier write SetTypeClassifier;
   end;
 

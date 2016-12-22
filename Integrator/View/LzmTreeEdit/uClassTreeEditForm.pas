@@ -17,6 +17,7 @@ type
     TIPropertyGrid1: TTIPropertyGrid;
     TreeView1: TTreeView;
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+    procedure TreeView1SelectionChanged(Sender: TObject);
   private
     { private declarations }
     FModel: TObjectModel;
@@ -47,6 +48,13 @@ begin
   CanClose := False;
 end;
 
+procedure TClassTreeEditForm.TreeView1SelectionChanged(Sender: TObject);
+begin
+  if Assigned(TreeView1.Selected) then
+  if (Assigned(TreeView1.Selected.Data)) and (TObject(TreeView1.Selected.Data) is TPersistent) then
+    TIPropertyGrid1.TIObject := TPersistent(TreeView1.Selected.Data);
+end;
+
 procedure TClassTreeEditForm.SetObject(AValue: TModelEntity);
 begin
     Self.FModelObject :=  AValue;
@@ -61,10 +69,11 @@ end;
 
 procedure TClassTreeEditForm.InitTreeFromModel;
 var
-  tp, tc, nod: TTreeNode;
+  tp, tc, nod,nod1: TTreeNode;
   s: string;
   Mi: IModelIterator;
   ent: TModelEntity;
+  attr: TAttribute;
 begin
     TreeView1.Items.Clear;
     if (FModelObject is TClass) then
@@ -88,7 +97,43 @@ begin
         end
         else
           tc := TreeView1.Items.AddChild(tp, Name);
+
+        Mi := TModelIterator.Create(GetAttributes);
+        if Mi.Count > 0 then
+        begin
+          nod := TreeView1.Items.AddChildObject(tc, 'Attributes', nil);
+          while Mi.HasNext do
+          begin
+            ent := Mi.Next;
+            case  ent.ClassName of
+            'TAttribute','TProperty' :
+               begin
+                 attr := TAttribute(ent);
+                 nod1 := TreeView1.Items.AddChildObject(nod, attr.Name + ' : ' + attr.ClassName, attr);
+                 TreeView1.Items.AddChildObject(nod1, attr.TypeClassifier.Name + ' : ' + attr.TypeClassifier.ClassName, attr.TypeClassifier);
+               end;
+             else
+              Assert(True, 'Unhandled Attribute class ' + ent.ClassName);
+            end;
+          end;
+        end;
+
+        Mi := TModelIterator.Create(GetOperations);
+        if Mi.Count > 0 then
+        begin
+          nod := TreeView1.Items.AddChildObject(tc, 'Operations', nil);
+          while Mi.HasNext do
+          begin
+            ent := Mi.Next;
+            nod1 := TreeView1.Items.AddChildObject(nod, ent.Name + ' : ' + ent.ClassName, ent);
+
+          end;
+        end;
+
+
       end;
+
+
     end;
 
 end;
