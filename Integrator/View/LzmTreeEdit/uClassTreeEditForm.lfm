@@ -1,0 +1,63 @@
+object ClassTreeEditForm: TClassTreeEditForm
+  Left = 391
+  Height = 917
+  Top = 121
+  Width = 335
+  Anchors = []
+  Caption = 'ClassTreeEditForm'
+  ClientHeight = 917
+  ClientWidth = 335
+  OnCloseQuery = FormCloseQuery
+  UseDockManager = True
+  LCLVersion = '1.6.0.4'
+  object TreeView1: TTreeView
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Splitter1
+    Left = 0
+    Height = 400
+    Top = 0
+    Width = 335
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    AutoExpand = True
+    DefaultItemHeight = 16
+    ReadOnly = True
+    TabOrder = 0
+    Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+    TreeLinePenStyle = psSolid
+  end
+  object Splitter1: TSplitter
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 0
+    Height = 10
+    Top = 400
+    Width = 335
+    Align = alNone
+    Anchors = [akLeft, akRight]
+    AutoSnap = False
+  end
+  object TIPropertyGrid1: TTIPropertyGrid
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Splitter1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 507
+    Top = 410
+    Width = 335
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    CheckboxForBoolean = False
+    DefaultValueFont.Color = clWindowText
+    Filter = [tkInteger, tkChar, tkEnumeration, tkFloat, tkSet, tkMethod, tkSString, tkLString, tkAString, tkWString, tkVariant, tkArray, tkRecord, tkInterface, tkClass, tkObject, tkWChar, tkBool, tkInt64, tkQWord, tkDynArray, tkInterfaceRaw, tkProcVar, tkUString, tkUChar, tkHelper, tkFile, tkClassRef, tkPointer]
+    Indent = 9
+    NameFont.Color = clWindowText
+    ValueFont.Color = clMaroon
+  end
+end
