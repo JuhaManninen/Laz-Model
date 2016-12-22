@@ -371,10 +371,14 @@ begin
   if not Assigned(Result) then
      Result := FOM.UnknownPackage.FindClassifier(s);
   if not Assigned(Result) then
-  if s[1] ='T' then   // HACK ALERT
-      Result := FOM.UnknownPackage.AddClass(s)
-  else
-      Result := FOM.UnknownPackage.AddDatatype(s);
+  begin
+    if s[1] ='T' then   // HACK ALERT
+        Result := FOM.UnknownPackage.AddClass(s)
+    else
+        Result := FOM.UnknownPackage.AddDatatype(s);
+    // As we have had to create this in the unknown bucket
+    Result.IsPlaceholder := True;
+  end;
 end;
 
 function TfpcParser.getInterfaceRef(s: string): TInterface;
@@ -384,7 +388,10 @@ begin
    begin
      Result := FOM.UnknownPackage.FindClassifier(s,False,TInterface) as TInterface;
      if not (Assigned(Result) and (Result is TInterface)) then
+     begin
         Result := FOM.UnknownPackage.AddInterface(s);
+        Result.IsPlaceholder := True;
+     end;
    end;
 end;
 
@@ -405,12 +412,18 @@ begin
     begin
         cfr := FOM.UnknownPackage.FindClassifier(ans.Name);
         if Assigned(cfr) then
+        begin
+           cfr.IsPlaceholder := True;
            TClassifier( ancestor) := cfr;
+        end;
     end;
     If Assigned( ancestor) then
       ths.Ancestor := ancestor
     else
+      begin
       ths.Ancestor := FOM.UnknownPackage.AddClass(ans.Name);
+      ths.Ancestor.IsPlaceholder := True ;
+      end;
   end;
 
   If Assigned(cls.Interfaces) then
