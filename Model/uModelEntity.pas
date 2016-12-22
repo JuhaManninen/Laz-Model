@@ -229,7 +229,6 @@ begin
     end;
 end;
 
-
 function TModelEntity.QueryInterface(const IID: TGUID; out Obj): HResult;
 begin
   if GetInterface(IID, Obj) then Result := S_OK

@@ -1,6 +1,6 @@
 {
   ESS-Model
-  Copyright (C) 2002  Eldean AB, Peter Söderman, Ville Krumlinde
+  Copyright (C) 2002  Eldean AB, Peter SÃ¶derman, Ville Krumlinde
   Portions (C) 2016 Peter Dyson. Initial Lazarus port
 
   This program is free software; you can redistribute it and/or
@@ -31,18 +31,19 @@ interface
 uses Contnrs, Classes, uListeners, uModelEntity, uIterators;
 
 const
-{$IFDEF LINUX}
-  UNKNOWNPACKAGE_NAME = '<<Unknown>>';
-{$ELSE}
-  UNKNOWNPACKAGE_NAME = '«Unknown»';
-{$ENDIF LINUX}
+
+  UNKNOWNPACKAGE_NAME = 'Â«UnknownÂ»';
   ConfigFileExt = '.essModel';
 
 type
   TLogicPackage = class;
   TUnitPackage = class;
 
+  { Non UML construct, need to transform for xmi}
   TOperationType = (otConstructor, otDestructor, otProcedure, otFunction);
+
+  { UML Modeling Language 2.5 9.5.3 }
+  TAggregationKind = (akNone, akShared, akComposite);
 
   TObjectModel = class
   private
@@ -81,6 +82,7 @@ type
     destructor Destroy; override;
     function GetFeatures : IModelIterator;
   published
+    property Features: IModelIterator read GetFeatures;
     property IsPlaceholder: boolean read FIsPlaceHolder write FIsPlaceholder;
   end;
 
@@ -130,9 +132,13 @@ type
 
   TProperty = class(TAttribute)
   { TODO : to be specified later }
+  private
+    FAggregationKind: TAggregationKind;
   protected
     class function GetBeforeListener: TGUID; override;
     class function GetAfterListener: TGUID; override;
+  published
+    property AggregationKind: TAggregationKind read FAggregationKind write FAggregationKind default akNone;
   end;
 
   TDataType = class(TClassifier)

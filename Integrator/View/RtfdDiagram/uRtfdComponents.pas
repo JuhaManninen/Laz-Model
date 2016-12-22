@@ -812,11 +812,7 @@ begin
   inherited Create(AOwner, AEntity, 2);
   Alignment := taCenter;
   Transparent := True;
-{$IFDEF LINUX}
-  Self.Caption := '<<' + ACaption + '>>';
-{$ELSE}
   Self.Caption := '«' + ACaption + '»';
-{$ENDIF LINUX}
 end;
 
 
