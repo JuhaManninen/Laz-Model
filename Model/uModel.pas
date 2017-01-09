@@ -45,6 +45,30 @@ type
   { UML Modeling Language 2.5 9.5.3 }
   TAggregationKind = (akNone, akShared, akComposite);
 
+  { UML Modeling Language 2.5 9.4.2
+    Translates to a feature on a parameter in xmi}
+  TParameterDirectionKind = (dkIn, dkInOut, dkOut, dkReturn);
+  //  TArgumentAccess = (argDefault, argConst, argVar, argOut, argConstRef);
+
+  { Pascal call modifiers
+    translates to Features on an Operation in xmi}
+  TCallModifier = (cmDefault, cmRegister, cmCdecl, cmPascal, cmStdCall, cmSafeCall, cmInline);
+  //  TCallingConvention = (ccDefault,ccRegister,ccPascal,ccCDecl,ccStdCall,ccOldFPCCall,ccSafeCall,ccSysCall);
+
+
+  {using this we can keep full pascal declaration and use UML abstract concept
+   to flag a method as abstract along with virtual or dysnamic}
+  TMethodDirective = (mdDefault, mdVirtual, mdDynamic, mdAbstract, mdOverride, mdReintroduce, mdMessage);
+
+
+  // these are more oriented to procdural pascal programming.
+  //TProcedureModifier = (pmVirtual, pmDynamic, pmAbstract, pmOverride,
+  //                        pmExport, pmOverload, pmMessage, pmReintroduce,
+  //                        pmStatic,pmInline,pmAssembler,pmVarargs, pmPublic,
+  //                        pmCompilerProc,pmExternal,pmForward);
+
+  TCallModifiers = set of TCallModifier;
+
   TObjectModel = class
   private
     Listeners: TInterfaceList;
@@ -89,12 +113,22 @@ type
   TParameter = class(TModelEntity)
   private
     FTypeClassifier : TClassifier;
+    FDirection: TParameterDirectionKind;
+    FIsConst: boolean;
+    FDefaultValue: string;
   protected
     class function GetBeforeListener: TGUID; override;
     class function GetAfterListener: TGUID; override;
   published
     property TypeClassifier : TClassifier read FTypeClassifier write FTypeClassifier;
+    property Direction: TParameterDirectionKind read FDirection write Fdirection default dkIn;
+    { Pascal specific addition to TParameterDirectionKind.dkIn could be set as true for
+     any dkIn and not change the program functionality.}
+    property IsConst: boolean read FIsConst write FIsConst default false;
+    property DefaultValue: string read FDefaultValue write FDefaultValue;
   end;
+
+  { TOperation }
 
   TOperation = class(TFeature)
   protected
@@ -105,6 +139,8 @@ type
     FParameters: TObjectList;
     FIsAbstract: boolean;
     FReturnValue: TClassifier;
+    FModifier: TCallModifier;
+    FMethodDirective: TMethodDirective;
     procedure SetOperationType(const Value: TOperationType);
     procedure SetIsAbstract(const Value: boolean);
     procedure SetReturnValue(const Value: TClassifier);
@@ -113,10 +149,25 @@ type
     destructor Destroy; override;
     function AddParameter(const NewName: string): TParameter;
     function GetParameters : IModelIterator;
+    procedure AddCallModifier(AValue: TCallModifier);
   published
     property OperationType: TOperationType read FOperationType write SetOperationType;
     property IsAbstract: boolean read FIsAbstract write SetIsAbstract;
     property ReturnValue: TClassifier read FReturnValue write SetReturnValue;
+    property MethodDirective: TMethodDirective read FMethodDirective write FMethodDirective default mdDefault;
+    property CallModifier: TCallModifier read FModifier write FModifier;
+  end;
+
+  { TEnumLiteral }
+
+  TEnumLiteral = class(TFeature)
+  private
+    FOrdVal: integer;
+  protected
+    class function GetBeforeListener: TGUID; override;
+    class function GetAfterListener: TGUID; override;
+  published
+    property OrdVal:integer read FOrdVal write FOrdVal;
   end;
 
   TAttribute = class(TFeature)
@@ -150,6 +201,28 @@ type
   protected
     class function GetBeforeListener: TGUID; override;
     class function GetAfterListener: TGUID; override;
+  end;
+
+
+  { TStructuredDataType }
+
+  TStructuredDataType = class(TDataType)
+  public
+    function AddAttribute(const NewName: string): TAttribute;
+    function GetAttributes: IModelIterator;
+  end;
+
+  { UML Modeling Language 2.5 10.2.2 }
+
+  { TEnumeration }
+
+  TEnumeration = class(TDataType)
+  protected
+    class function GetBeforeListener: TGUID; override;
+    class function GetAfterListener: TGUID; override;
+  public
+    function AddLiteral(const s: string): TEnumLiteral;
+  published
   end;
 
   TInterface = class(TClassifier)
@@ -226,6 +299,8 @@ type
     Package : TUnitPackage;
   end;
 
+  { TUnitPackage }
+
   TUnitPackage = class(TAbstractPackage)
   protected
     class function GetBeforeListener: TGUID; override;
@@ -239,6 +314,7 @@ type
     function AddClass(const NewName: string): TClass;
     function AddInterface(const NewName: string): TInterface;
     function AddDatatype(const NewName: string): TDataType;
+    function AddEnumeration(const NewName: string): TEnumeration;
     function AddUnitDependency(U : TUnitPackage; AVisibility : TVisibility): TUnitDependency;
     function FindClassifier(const CName: string; RaiseException: boolean = False; TheClass : TModelEntityClass = nil; CaseSense : boolean = False): TClassifier;
     function GetClassifiers : IModelIterator;
@@ -298,6 +374,49 @@ type
 
 const
   CompareFunc : array[boolean] of TStrCompare = (@CompareText, @CompareStr);
+
+{ TStructuredDataType }
+
+function TStructuredDataType.AddAttribute(const NewName: string): TAttribute;
+begin
+
+end;
+
+function TStructuredDataType.GetAttributes: IModelIterator;
+begin
+
+end;
+
+{ TEnumLiteral }
+
+class function TEnumLiteral.GetBeforeListener: TGUID;
+begin
+  Result:=inherited GetBeforeListener;
+end;
+
+class function TEnumLiteral.GetAfterListener: TGUID;
+begin
+  Result:=inherited GetAfterListener;
+end;
+
+{ TEnumeration }
+
+class function TEnumeration.GetBeforeListener: TGUID;
+begin
+  Result:=inherited GetBeforeListener;
+end;
+
+class function TEnumeration.GetAfterListener: TGUID;
+begin
+  Result:=inherited GetAfterListener;
+end;
+
+function TEnumeration.AddLiteral(const s: string): TEnumLiteral;
+begin
+  Result := TEnumLiteral.Create(self);
+  Result.Name:= s;
+  FFeatures.Add(Result);
+end;
 
 { TObjectModel }
 
@@ -576,6 +695,20 @@ begin
   Fire(mtAfterAddChild, Result);
 end;
 
+function TUnitPackage.AddEnumeration(const NewName: string): TEnumeration;
+begin
+  Result := TEnumeration.Create(Self);
+  Result.FName := NewName;
+  FClassifiers.Add(Result);
+  try
+    Fire(mtBeforeAddChild, Result);
+  except
+    FClassifiers.Remove(Result);
+    raise;
+  end;
+  Fire(mtAfterAddChild, Result);
+end;
+
 class function TUnitPackage.GetAfterListener: TGUID;
 begin
   Result := IAfterUnitPackageListener;
@@ -596,7 +729,7 @@ function TUnitPackage.FindClassifier(const CName: string;
   TheClass : TModelEntityClass = nil;
   CaseSense : boolean = False): TClassifier;
 var
-  C : TClassifier;
+  Clsf : TClassifier;
   Mi : IModelIterator;
   P : TUnitPackage;
   F : TStrCompare;
@@ -610,13 +743,13 @@ var
     if Assigned(TheClass) then
       Mi := TModelIterator.Create( P.GetClassifiers , TheClass )
     else
-      Mi := P.GetClassifiers;
+      Mi := TModelIterator.Create(P.GetClassifiers);
     while Mi.HasNext do
     begin
-      C := Mi.Next as TClassifier;
-      if F(C.Name,CName)=0 then
+      Clsf := TClassifier(Mi.Next) ;
+      if F(Clsf.Name,CName)=0 then
       begin
-        Result := C;
+        Result := Clsf;
         Break;
       end;
     end;
@@ -646,6 +779,7 @@ function TUnitPackage.GetClassifiers: IModelIterator;
 begin
   Result := TModelIterator.Create( FClassifiers );
 end;
+
 
 function TUnitPackage.AddUnitDependency(U: TUnitPackage; AVisibility: TVisibility): TUnitDependency;
 begin
@@ -952,6 +1086,11 @@ end;
 function TOperation.GetParameters: IModelIterator;
 begin
   Result := TModelIterator.Create( FParameters );
+end;
+
+procedure TOperation.AddCallModifier(AValue: TCallModifier);
+begin
+  FModifier := AValue;
 end;
 
 { TAttribute }

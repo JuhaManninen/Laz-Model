@@ -71,6 +71,16 @@ type
     procedure AddChild(Sender: TModelEntity; NewChild: TModelEntity); override;
   end;
 
+  { TRtfdEnumeration }
+
+  TRtfdEnumeration = class(TRtfdBox, IAfterEnumerationListener)
+  public
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; AFrame: TDiagramFrame; AMinVisibility : TVisibility); override;
+    destructor Destroy; override;
+    procedure RefreshEntities; override;
+    procedure AddChild(Sender: TModelEntity; NewChild: TModelEntity); override;
+  end;
+
   TRtfdUnitPackage = class(TRtfdBox)
   public
     P: TUnitPackage;
@@ -85,6 +95,25 @@ type
   public
     constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); override;
 
+  end;
+
+  { TRtfdEnumName }
+
+  TRtfdEnumName = class(TRtfdCustomLabel, IAfterEnumerationListener)
+  public
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); override;
+    destructor Destroy; override;
+    procedure EntityChange(Sender: TModelEntity); override;
+  end;
+
+
+  { TRtfdEnumLiteral }
+
+  TRtfdEnumLiteral = class(TRtfdCustomLabel, IAfterEnumerationListener)
+  public
+    constructor Create(AOwner: TComponent; AEntity: TModelEntity; Tp: integer); override;
+    destructor Destroy; override;
+    procedure EntityChange(Sender: TModelEntity); override;
   end;
 
 
@@ -183,6 +212,125 @@ implementation
 
 uses Graphics, uError, SysUtils, essConnectPanel, uIterators,
 uConfig, uRtfdDiagramFrame, Math;
+
+{ TRtfdEnumLiteral }
+
+constructor TRtfdEnumLiteral.Create(AOwner: TComponent; AEntity: TModelEntity;
+  Tp: integer);
+begin
+  inherited Create(AOwner, AEntity, Tp);
+  Entity.AddListener(IAfterEnumerationListener(Self));
+  EntityChange(nil);
+end;
+
+destructor TRtfdEnumLiteral.Destroy;
+begin
+  Entity.RemoveListener(IAfterEnumerationListener(Self));
+  inherited Destroy;
+end;
+
+procedure TRtfdEnumLiteral.EntityChange(Sender: TModelEntity);
+begin
+//  if ((Parent as TRtfdBox).Frame as TDiagramFrame).Diagram.Package<>Entity.Owner then
+//    Caption := Entity.FullName
+//  else
+    Caption := Entity.Name;
+  inherited EntityChange(Sender);
+end;
+
+{ TRtfdEnumName }
+
+constructor TRtfdEnumName.Create(AOwner: TComponent; AEntity: TModelEntity;
+  Tp: integer);
+begin
+  inherited Create(AOwner, AEntity, Tp);
+  Font.Style := [fsBold];
+  Transparent := True;
+  Alignment := taCenter;
+  Entity.AddListener(IAfterEnumerationListener(Self));
+  EntityChange(nil);
+end;
+
+destructor TRtfdEnumName.Destroy;
+begin
+  Entity.RemoveListener(IAfterEnumerationListener(Self));
+  inherited Destroy;
+end;
+
+procedure TRtfdEnumName.EntityChange(Sender: TModelEntity);
+begin
+  if ((Parent as TRtfdBox).Frame as TDiagramFrame).Diagram.Package<>Entity.Owner then
+    Caption := Entity.FullName
+  else
+    Caption := Entity.Name;
+
+  inherited EntityChange(Sender);
+end;
+
+
+{ TRtfdEnumeration }
+
+constructor TRtfdEnumeration.Create(AOwner: TComponent; AEntity: TModelEntity;
+  AFrame: TDiagramFrame; AMinVisibility: TVisibility);
+begin
+  inherited Create(AOwner, AEntity, AFrame, AMinVisibility);
+  PopupMenu := Frame.ClassInterfacePopupMenu;
+  Entity.AddListener(IAfterEnumerationListener(Self));
+  RefreshEntities;
+end;
+
+destructor TRtfdEnumeration.Destroy;
+begin
+  Entity.RemoveListener(IAfterEnumerationListener(Self));
+  inherited Destroy;
+end;
+
+procedure TRtfdEnumeration.RefreshEntities;
+var
+  NeedH,NeedW,I : integer;
+  E: TEnumeration;
+  Lmi : IModelIterator;
+  WasVisible : boolean;
+begin
+  E := Entity as TEnumeration;
+
+  WasVisible := Visible;
+  Hide;
+  DestroyComponents;
+
+  NeedW := 0;
+  NeedH := (ClassShadowWidth * 2) + 4;
+  Inc(NeedH, TRtfdStereotype.Create(Self, Entity, 'enumeration').Height);
+  Inc(NeedH, TRtfdEnumName.Create(Self, Entity, 16).Height);
+
+
+  if FMinVisibility < TVisibility( ord(high(TVisibility))+1) then
+  begin
+    Inc(NeedH, TRtfdSeparator.Create(Self, NeedH).Height);
+    Lmi := TModelIterator.Create(E.GetFeatures);
+
+    while Lmi.HasNext do
+      Inc(NeedH, TRtfdEnumLiteral.Create(Self,Lmi.Next, NeedH).Height);
+
+  end;
+
+
+  for i:= 0 to ComponentCount - 1 do
+    if (TComponent(Components[I]) is TRtfdODLabel) then
+      NeedW := Max( TRtfdODLabel(Components[I]).WidthNeeded,NeedW);
+
+  Height :=  Max(NeedH,cDefaultHeight) + 10;
+  Width  :=  Max(NeedW,cDefaultWidth);
+
+  Visible := WasVisible;
+
+end;
+
+procedure TRtfdEnumeration.AddChild(Sender: TModelEntity; NewChild: TModelEntity
+  );
+begin
+  RefreshEntities;
+end;
 
 
 

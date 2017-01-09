@@ -127,6 +127,20 @@ type
   end;
 //End **********  Interface Listener
 
+// **********  Enumeration Listener
+  IEnumerationListener = interface(IClassifierListener)
+    ['{9EA15EB5-FE1B-433E-B58E-1DC546D3DF04}']
+  end;
+
+  IBeforeEnumerationListener = interface(IEnumerationListener)
+    ['{C64FEC67-D6F8-43D2-90D1-278CAFC71C23}']
+  end;
+
+  IAfterEnumerationListener = interface(IEnumerationListener)
+    ['{1C358876-9908-4CD7-8EAB-EDD7A72942DC}']
+  end;
+//End **********  Enumeration Listener
+
 // **********  Datatype Listener
   IDatatypeListener = interface(IClassifierListener)
     ['{9650274C-47AA-44D4-B76B-A867DF094E4A}']

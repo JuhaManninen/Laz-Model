@@ -68,10 +68,19 @@ type
     function Accept(M : TModelEntity) : boolean; virtual; abstract;
   end;
 
-  //Filters on a class and a minimum visibilty
+
+  { TDataTypeFilter }
+
+  // Filters DataTypes from other classifiers
+  TDataTypeFilter = class(TIteratorFilter)
+  public
+    function Accept(M : TModelEntity) : boolean;  override;
+  end;
+
 
   { TClassAndVisibilityFilter }
 
+  //Filters on a class and a minimum visibilty
   TClassAndVisibilityFilter = class(TIteratorFilter)
   private
     OneClass : TModelEntityClass;
@@ -80,6 +89,8 @@ type
     constructor Create(AOneClass : TModelEntityClass; AMinVisibility : TVisibility = Low(TVisibility));
     function Accept(M : TModelEntity) : boolean; override;
   end;
+
+
 
   //Excludes an entity
 
@@ -95,7 +106,15 @@ type
 
 implementation
 
-uses Classes, SysUtils;
+uses Classes, SysUtils, uModel;
+
+{ TDataTypeFilter }
+
+function TDataTypeFilter.Accept(M: TModelEntity): boolean;
+begin
+  Result := (M is TDataType);
+end;
+
 
 
 

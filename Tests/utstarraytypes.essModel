@@ -1,0 +1,9 @@
+[Box: ::utstsettypes - ::utstsettypes::Days]
+X=42
+Y=40
+
+[Diagram: ::utstsettypes]
+OffsetX=0
+OffsetY=0
+Visibility=0
+ShowAssoc=0

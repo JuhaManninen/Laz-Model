@@ -361,7 +361,13 @@ begin
       Panel.AddManagedObject( InCreateBox((E as TInterface).Ancestor,TRtfdInterface) );
     if GetBox(E.FullName)=nil then
       Panel.AddManagedObject( InCreateBox(E,TRtfdInterface) );
+  end
+  else if E is TEnumeration then
+  begin
+    if GetBox(E.FullName)=nil then
+      Panel.AddManagedObject( InCreateBox(E,TRtfdEnumeration) );
   end;
+
 end;
 
 

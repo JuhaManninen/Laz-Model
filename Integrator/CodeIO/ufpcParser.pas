@@ -59,11 +59,16 @@ type
       function getProcType(pt: TProcType): TOperationType;
       function getClassifier(s: String): TClassifier;
       function getInterfaceRef(s: string): TInterface;
+      function GetDefaultValue(exp: TPasExpr):string;
 
+      procedure FillEnum(tp: TPasEnumType; te: TEnumeration);
+
+      procedure AddOpDirectives(op: TOperation; Mods:TProcedureModifiers);
       procedure ParseProject(M: TPasProgram);
       procedure ParseUnit(M: TPasModule);
       procedure GetUnits(u: TFPList; AVisibility: TVisibility = viPublic; Recurse: Boolean = True);
       procedure GetClasses(c: TFPList; AVisibility: TVisibility = viPublic; Recurse: Boolean = True);
+      procedure GetTypes(c: TFPList);
       procedure PopulateMembers(ths: TClass; mems: TFPList); overload;
       procedure PopulateMembers(intf: TInterface; mems: TFPList); overload;
       procedure PopulateClass(ths: TClass; cls: TPasClassType);
@@ -178,6 +183,7 @@ begin
    FUnit.Sourcefilename := Self.Filename;
    intf := M.InterfaceSection;
    GetUnits(intf.UsesList);
+   GetTypes(intf.Types);
    GetClasses(intf.Classes);
 
 end;
@@ -257,6 +263,73 @@ begin
      end;
 
 end;
+
+procedure TfpcParser.GetTypes(c: TFPList);
+var
+  i: integer;
+  tp: TPasType;
+  dt: TDataType;
+  te: TEnumeration;
+begin
+  if Assigned(c) and (c.Count > 0) then
+    for i := 0 to c.Count-1 do
+    begin
+      tp := TPasType(c.Items[i]);
+      case tp.ClassName of
+        'TPasProcedureType':
+          begin
+            dt := FUnit.AddDatatype(tp.Name);
+            dt.SourceY := tp.SourceLinenumber;
+
+          end;
+        'TPasFunctionType':
+          begin
+            dt := FUnit.AddDatatype(tp.Name);
+            dt.SourceY := tp.SourceLinenumber;
+
+          end;
+        'TPasEnumType':
+          begin
+            te := TEnumeration (FUnit.AddEnumeration(tp.Name));
+            te.SourceY:= tp.SourceLinenumber;
+            FillEnum(TPasEnumType(tp), te);
+          end;
+        'TPasAliasType':
+          begin
+            dt := FUnit.AddDatatype(tp.Name);
+            dt.SourceY := tp.SourceLinenumber;
+
+          end;
+        'TPasArrayType':
+          begin
+            dt := FUnit.AddDatatype(tp.Name);
+            dt.SourceY := tp.SourceLinenumber;
+
+          end;
+        'TPasSetType':
+          begin
+            dt := FUnit.AddDatatype(tp.Name);
+            dt.SourceY := tp.SourceLinenumber;
+          end;
+        'TPasRecordType':
+          begin
+            dt := FUnit.AddDatatype(tp.Name);
+            dt.SourceY := tp.SourceLinenumber;
+          end;
+        'TPasPointerType':
+          begin
+            dt := FUnit.AddDatatype(tp.Name);
+            dt.SourceY := tp.SourceLinenumber;
+          end;
+
+      else
+        {$IFDEF DEBUG}
+          Assert(True, 'Unhandled Data Type: ' + tp.ClassName);
+        {$ENDIF DEBUG}
+      end;
+    end;
+end;
+
 
 procedure TfpcParser.PopulateMembers(ths: TClass; mems: TFPList);
 var
@@ -395,6 +468,51 @@ begin
    end;
 end;
 
+function TfpcParser.GetDefaultValue(exp: TPasExpr): string;
+var
+  tpeBoolConst: TBoolConstExpr;
+begin
+  case exp.Kind of
+    pekIdent:;
+    pekNumber:;
+    pekString:;
+    pekSet:;
+    pekNil:;
+    pekBoolConst:
+      begin
+        tpeBoolConst := TBoolConstExpr(exp);
+        Result := BoolToStr(tpeBoolConst.Value, true);
+      end;
+    pekRange:;
+    pekUnary:;
+    pekBinary:;
+    pekFuncParams:;
+    pekArrayParams:;
+    pekListOfExp:;
+    pekInherited:;
+    pekSelf:;
+  end;
+end;
+
+procedure TfpcParser.FillEnum(tp: TPasEnumType; te: TEnumeration);
+var
+  i: integer;
+  ev: TpasEnumValue;
+  blah: TObject;
+  tel: TEnumLiteral;
+begin
+// lit := tp.Values;
+ for i := 0 to tp.Values.Count-1 do
+ begin
+   ev := TPasEnumValue(tp.Values[i]);
+   tel := te.AddLiteral(ev.Name);
+   tel.SourceY:= ev.SourceLinenumber;
+ // TODO  tel.OrdVal:=ev.Value???;
+ end;
+
+end;
+
+
 procedure TfpcParser.PopulateClass(ths: TClass; cls: TPasClassType);
 var
   ans: TPasType;
@@ -467,8 +585,34 @@ begin
      par.SourceY := arg.SourceLinenumber;
      if Assigned (arg.ArgType) then
        par.TypeClassifier := getClassifier(arg.ArgType.Name);
+     if arg.Access = argConst then
+       par.IsConst:= True;
+     if Assigned(arg.ValueExpr) then
+       par.DefaultValue:=GetDefaultValue(arg.ValueExpr);
   end;
+  AddOpDirectives(op,proc.Modifiers);
+
 end;
+
+procedure TfpcParser.AddOpDirectives(op: TOperation; Mods: TProcedureModifiers);
+begin
+  if (pmAbstract in Mods) then
+    op.IsAbstract:= true;
+
+  if (pmVirtual in Mods) then
+    op.MethodDirective:=mdVirtual;
+  if (pmDynamic in Mods) then
+    op.MethodDirective:=mdDynamic;
+  if (pmReintroduce in Mods) then
+    op.MethodDirective:=mdReintroduce;
+  if (pmOverride in Mods) then
+    op.MethodDirective:=mdOverride;
+  if (pmMessage in Mods) then
+    op.MethodDirective:=mdMessage;
+
+end;
+
+
 
 procedure TfpcParser.AddConstructor(op: TOperation; proc: TPasConstructor);
 var
@@ -487,12 +631,14 @@ begin
      if Assigned (arg.ArgType) then
        par.TypeClassifier := getClassifier(arg.ArgType.Name);
   end;
+  AddOpDirectives(op,proc.Modifiers);
 end;
 
 procedure TfpcParser.AddDestructor(op: TOperation; proc: TPasDestructor);
 begin
   op.Visibility := getVisibility(proc.Visibility);
   op.OperationType := otDestructor;
+  AddOpDirectives(op,proc.Modifiers);
 end;
 
 procedure TfpcParser.AddFunction(op: TOperation; proc: TPasFunction);
@@ -508,9 +654,17 @@ begin
      arg :=  TPasArgument(proc.ProcType.Args.Items[i]);
      par := op.AddParameter(arg.Name);
      par.SourceY := arg.SourceLinenumber;
+     case arg.Access of
+       argConst:;
+       argConstRef:;
+       argDefault:;  // do nothing default already
+       argOut:par.Direction:=dkOut;
+       argVar:par.Direction:=dkInOut;
+     end;
      If Assigned (arg.ArgType) then
        par.TypeClassifier := getClassifier(arg.ArgType.Name);
   end;
+  AddOpDirectives(op,proc.Modifiers);
   op.ReturnValue := getClassifier(TPasFunctionType(proc.ProcType).ResultEl.ResultType.Name);
 end;
 

@@ -1,0 +1,27 @@
+[Box: ::«Unknown» - ::«Unknown»::TObject]
+X=31
+Y=40
+
+[Diagram: ::«Unknown»]
+OffsetX=0
+OffsetY=0
+Visibility=0
+ShowAssoc=0
+
+[Box: ::utstClasses - ::«Unknown»::TObject]
+X=20
+Y=40
+
+[Box: ::utstClasses - ::utstClasses::TTestClass]
+X=27
+Y=123
+
+[Box: ::utstClasses - ::utstClasses::TTestClass1]
+X=28
+Y=327
+
+[Diagram: ::utstClasses]
+OffsetX=0
+OffsetY=0
+Visibility=0
+ShowAssoc=0

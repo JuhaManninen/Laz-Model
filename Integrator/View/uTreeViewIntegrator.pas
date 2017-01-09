@@ -138,7 +138,9 @@ begin
     else if ent is uModel.TClass then
       imIndex := 2
     else if ent is uModel.TInterface then
-      imIndex := 3;
+      imIndex := 3
+    else if ent is uModel.TDataType then
+      imIndex := 4;
 
     Node.ImageIndex := imIndex;
     Node.SelectedIndex := Node.ImageIndex;
@@ -202,6 +204,21 @@ begin
     begin
       ent := Mi.Next;
       ATreeRoot.Owner.AddChildObject(newRoot, (ent as TUnitDependency).Package.Name, (ent as TUnitDependency).Package);
+    end;
+  end;
+
+  Mi := TModelIterator.Create(AEntity.GetClassifiers,TDataTypeFilter.Create, ioAlpha);
+  if Mi.Count > 0 then
+  begin
+    newRoot := ATreeRoot.Owner.AddChildObject(ATreeRoot, 'datatypes', nil);
+    while Mi.HasNext do
+    begin
+      ent := Mi.Next as TClassifier;
+      if (ent is uModel.TDataType) then
+      begin
+        ATreeRoot.Owner.AddChildObject(newRoot, (ent as TDataType).Name, ent );
+
+      end;
     end;
   end;
 
