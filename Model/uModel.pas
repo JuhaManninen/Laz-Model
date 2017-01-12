@@ -39,6 +39,9 @@ type
   TLogicPackage = class;
   TUnitPackage = class;
 
+  { Non UML construct, needed for class operations}
+  TClassOperationType = (cotNone, cotClass, cotStaticClass);
+
   { Non UML construct, need to transform for xmi}
   TOperationType = (otConstructor, otDestructor, otProcedure, otFunction);
 
@@ -140,6 +143,7 @@ type
     FIsAbstract: boolean;
     FReturnValue: TClassifier;
     FModifier: TCallModifier;
+    FIsStatic: TClassOperationType;
     FMethodDirective: TMethodDirective;
     procedure SetOperationType(const Value: TOperationType);
     procedure SetIsAbstract(const Value: boolean);
@@ -152,6 +156,7 @@ type
     procedure AddCallModifier(AValue: TCallModifier);
   published
     property OperationType: TOperationType read FOperationType write SetOperationType;
+    property IsStatic: TClassOperationType read FIsStatic write FIsStatic default cotNone;
     property IsAbstract: boolean read FIsAbstract write SetIsAbstract;
     property ReturnValue: TClassifier read FReturnValue write SetReturnValue;
     property MethodDirective: TMethodDirective read FMethodDirective write FMethodDirective default mdDefault;
@@ -173,12 +178,22 @@ type
   TAttribute = class(TFeature)
   private
     FTypeClassifier: TClassifier;
+    FIsStatic: boolean;
     procedure SetTypeClassifier(const Value: TClassifier);
   protected
     class function GetBeforeListener: TGUID; override;
     class function GetAfterListener: TGUID; override;
   published
     property TypeClassifier : TClassifier read FTypeClassifier write SetTypeClassifier;
+    { UML 2.5 9.5.3
+     < When a Property is a static attribute of a Classifier, the value or values
+      are related to the Classifier itself within some execution scope >
+      We need this on Attribute rather than property as Pascal can have Class
+      Variables which are not Properties but are needed by Class Operations.
+      Properties will inherit this.
+      Used in Model to flag Class variables.
+    }
+    property IsStatic: boolean read FIsStatic write FIsStatic default False;
   end;
 
   TProperty = class(TAttribute)

@@ -342,12 +342,32 @@ begin
    for i := 0 to mems.Count-1 do
    begin
       case TPasType(mems.Items[i]).ElementTypeName of
+        'class procedure':
+          begin
+             op := ths.AddOperation(TPasType(mems.Items[i]).Name);
+             op.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
+             AddProcedure(op,TPasProcedure(mems.Items[i]));
+             if (pmStatic in TPasClassProcedure(mems.Items[i]).Modifiers) then
+               op.IsStatic := cotStaticClass
+             else
+               op.IsStatic := cotClass;
+          end;
         'procedure':
         begin
            op := ths.AddOperation(TPasType(mems.Items[i]).Name);
            op.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
            AddProcedure(op,TPasProcedure(mems.Items[i]));
         end;
+        'class function' :
+          begin
+            op := ths.AddOperation(TPasType(mems.Items[i]).Name);
+            op.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
+            AddFunction(op, TPasFunction(mems.Items[i]));
+             if (pmStatic in TPasClassFunction(mems.Items[i]).Modifiers) then
+               op.IsStatic := cotStaticClass
+             else
+               op.IsStatic := cotClass;
+          end;
         'function' :
           begin
             op := ths.AddOperation(TPasType(mems.Items[i]).Name);
@@ -368,6 +388,8 @@ begin
               attr.TypeClassifier := getClassifier(vari.VarType.name);
               attr.Visibility := getVisibility(vari.Visibility);
               attr.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
+              if (vmClass in vari.VarModifiers) then
+                attr.IsStatic := True;
            end;
          'constructor':
            begin
@@ -375,11 +397,26 @@ begin
               op.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
               AddConstructor(op, TPasConstructor(mems.Items[i]));
            end;
+         'class constructor':
+           begin
+              op := ths.AddOperation(TPasType(mems.Items[i]).Name);
+              op.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
+              AddConstructor(op, TPasConstructor(mems.Items[i]));
+              op.IsStatic := cotClass;
+           end;
+
          'destructor':
            begin
               op := ths.AddOperation(TPasType(mems.Items[i]).Name);
               op.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
               AddDestructor(op, TPasDestructor(mems.Items[i]));
+           end;
+         'class destructor':
+           begin
+              op := ths.AddOperation(TPasType(mems.Items[i]).Name);
+              op.SourceY := TPasType(mems.Items[i]).SourceLinenumber;
+              AddDestructor(op, TPasDestructor(mems.Items[i]));
+              op.IsStatic := cotClass;
            end
          else
            begin
@@ -498,10 +535,8 @@ procedure TfpcParser.FillEnum(tp: TPasEnumType; te: TEnumeration);
 var
   i: integer;
   ev: TpasEnumValue;
-  blah: TObject;
   tel: TEnumLiteral;
 begin
-// lit := tp.Values;
  for i := 0 to tp.Values.Count-1 do
  begin
    ev := TPasEnumValue(tp.Values[i]);
