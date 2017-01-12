@@ -38,6 +38,16 @@ type
 
   TVisibility = (viPrivate, viProtected, viPublic, viPublished);
 
+
+  {
+    TModelEntity is the representation of UML 2.5 NamedElement abstract class.
+
+    This is documented in Section 7.8.9 of the Formal Spec.
+
+    The original code seems to assume that all NamedElements are owned at
+    the package level and derive the NameSpace heirarchy from package ownership.
+
+  }
   TModelEntity = class(TInterfacedPersistent)
   private
     function GetRoot: TModelEntity;

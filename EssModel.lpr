@@ -56,6 +56,7 @@ uses
   essLayout in 'Components\essLayout.pas',
   uHtmlDocGen in 'Integrator\Doc\uHtmlDocGen.pas',
   uJavaParser in 'Integrator\CodeIO\uJavaParser.pas',
+  ufpcParser in 'Integrator\CodeIO\ufpcParser.pas',
   SugiyamaLayout in 'Components\SugiyamaLayout.pas',
   uConst in 'System\uConst.pas',
   uAboutForm in 'System\uAboutForm.pas' {AboutForm},

@@ -9,6 +9,7 @@ uses
 
 type
 
+  // See utstrecordtypes for handling of record
   FPoint = Record
     X,Y,Z : real;
     end;

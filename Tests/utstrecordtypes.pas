@@ -16,10 +16,34 @@ uses
 
 type
 
-  Point = Record
+ // Model as Aggregated Association Classifiers.
+ // ?? could be done by just having more than one Association in datatype features ??
+ // ?? TRecord datatype in Model ??
+ // ?? «Record» keyword if viewed in diagram ??
+   Point = Record
           X,Y,Z : Real;
           end;
 
+// functionally identical, semantically identical, CodeStyle different
+// Require Packed {Feature | Member of TRecord}
+  {$PackRecords 1}
+   Trec2A = Record
+     A : Byte;
+     B : Word;
+   end;
+  {$PackRecords default}
+
+   Trec2B = Packed Record
+     A : Byte;
+     B : Word;
+   end;
+
+
+  // Requires Single Control Classifier (TDataType parent)
+  // Control Classifier Instance[s] ->  Aggregated Association Classifier[s]
+  // OR Control Classifier Instance[s] ->  TRecord
+  // ?? Probably requires seperate Model Class ??
+  //
   RPoint = Record
           Case Boolean of
           False : (X,Y,Z : Real);
@@ -32,6 +56,9 @@ type
           True : (R,theta,phi : Real);
           end;
 
+
+
+ // ???????  Control Classifier implied integer ???
   MyRec = Record
         X : Longint;
         Case byte of
@@ -42,19 +69,6 @@ type
         end;
 
 
- //The following two types should be identical apart from name
- {$PackRecords 1}
-   Trec2A = Record
-     A : Byte;
-     B : Word;
-   end;
- {$PackRecords default}
-
-
- Trec2B = Packed Record
-    A : Byte;
-    B : Word;
- end;
 
 implementation
 

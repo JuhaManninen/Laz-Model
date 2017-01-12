@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, RTTIGrids, Forms, Controls, Graphics, Dialogs, typinfo,
-  ComCtrls, ExtCtrls, uModel, uModelEntity, uIterators, uViewIntegrator, uListeners ;
+  ComCtrls, ExtCtrls, uModel, uModelEntity, uIterators, uViewIntegrator ;
 
 type
 
@@ -27,6 +27,8 @@ type
     procedure InitTreeFromModel;
     procedure InitTreeFromClass;
     procedure InitTreeFromUnit;
+    procedure InitTreeFromDataType;
+    procedure DisplayEnums(ParentNode: TTreeNode; Enum: TEnumeration);
   public
     { public declarations }
     property Model: TObjectModel write SetModel;
@@ -76,12 +78,14 @@ begin
       InitTreeFromClass;
     if (FModelObject is TUnitPackage) then
       InitTreeFromUnit;
+    if (FModelObject is TDataType) then
+      InitTreeFromDataType;
 
 end;
 
 procedure TClassTreeEditForm.InitTreeFromClass;
 var
-  tp, tc, nod,nod1, nod2,nod3: TTreeNode;
+  tp, tc, nod,nod1, nod2, nod3: TTreeNode;
   Pi, Mi: IModelIterator;
   ent: TModelEntity;
   attr: TAttribute;
@@ -163,12 +167,10 @@ end;
 
 procedure TClassTreeEditForm.InitTreeFromUnit;
 var
-  tp, tc, nod,nod1, nod2,nod3: TTreeNode;
-  dt: TDataType;
+  nod,nod1: TTreeNode;
   clsf: TClassifier;
-  i: integer;
-  Mi,Pi: IModelIterator;
-  tel: TEnumLiteral;
+  Mi: IModelIterator;
+
 begin
     nod := TreeView1.Items.AddChildObject(nil,FModelObject.Name, FModelObject);
     with FModelObject as TUnitPackage do
@@ -191,15 +193,7 @@ begin
              begin
              end;
           'TEnumeration':
-             begin
-               Pi := TModelIterator.Create(clsf.GetFeatures);
-               if Pi.Count > 0 then
-               while Pi.HasNext do
-               begin
-                 tel := TEnumLiteral(Pi.Next);
-                 nod2 := TreeView1.Items.AddChildObject(nod1, tel.Name + ' : ' + tel.ClassName,tel);
-               end;
-             end;
+             DisplayEnums(nod1,TEnumeration(clsf));
           else
             Assert(true,'Unknown Classifier Type: ' + clsf.ClassName);
           end;
@@ -208,6 +202,42 @@ begin
     end;
 
 end;
+
+
+
+procedure TClassTreeEditForm.InitTreeFromDataType;
+var
+  root: TTreeNode;
+begin
+   root :=  TreeView1.Items.AddChildObject(nil, FModelObject.Name + ' : ' + FModelObject.ClassName, FModelObject);
+   case  FModelObject.ClassName of
+     'TEnumeration':
+        begin
+
+          DisplayEnums(root, TEnumeration(FModelObject));
+
+        end;
+     'TStructuredDataType':;
+     'TDataType':;
+   end;
+end;
+
+procedure TClassTreeEditForm.DisplayEnums(ParentNode: TTreeNode;
+  Enum: TEnumeration);
+var
+  Pi: TModelIterator;
+  tel: TEnumLiteral;
+begin
+   Pi := TModelIterator.Create(Enum.GetFeatures);
+   if Pi.Count > 0 then
+   while Pi.HasNext do
+   begin
+     tel := TEnumLiteral(Pi.Next);
+     TreeView1.Items.AddChildObject(ParentNode, tel.Name + ' : ' + tel.ClassName,tel);
+   end;
+end;
+
+
 
 end.
 

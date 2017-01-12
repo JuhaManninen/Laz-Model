@@ -194,7 +194,7 @@ procedure TTreeViewIntegrator.BuildUnitPackageView(ATreeRoot: TTreeNode;
 var
   Mi: IModelIterator;
   ent: TModelEntity;
-  newRoot: TTreeNode;
+  newRoot, dataRoot: TTreeNode;
 begin
   Mi := TModelIterator.Create(AEntity.GetUnitDependencies, ioAlpha);
   if Mi.Count > 0 then
@@ -216,8 +216,8 @@ begin
       ent := Mi.Next as TClassifier;
       if (ent is uModel.TDataType) then
       begin
-        ATreeRoot.Owner.AddChildObject(newRoot, (ent as TDataType).Name, ent );
-
+        dataRoot := ATreeRoot.Owner.AddChildObject(newRoot, (ent as TDataType).Name, ent );
+        (dataRoot as TViewNode).FIsImplementation := True;
       end;
     end;
   end;
