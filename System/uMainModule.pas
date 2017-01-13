@@ -44,12 +44,10 @@ type
     ExportXmiAction: TAction;
     LayoutDiagramAction: TAction;
     FileOpenAction: TAction;
-    ExitAction: TAction;
     SettingsAction: TAction;
     UnhideElementsAction: TAction;
     SaveDiagramAction: TAction;
     DocGenPreviewAction: TAction;
-    CloseTimer: TTimer;
     OpenFolderAction: TAction;
     ExportEmxAction: TAction;
     procedure DataModuleCreate(Sender: TObject);
@@ -61,14 +59,12 @@ type
     procedure ExportXmiActionExecute(Sender: TObject);
     procedure LayoutDiagramActionExecute(Sender: TObject);
     procedure FileOpenActionExecute(Sender: TObject);
-    procedure ExitActionExecute(Sender: TObject);
     procedure SettingsActionExecute(Sender: TObject);
     procedure TreeEditShowExecute(Sender: TObject);
     procedure UnhideElementsActionUpdate(Sender: TObject);
     procedure UnhideElementsActionExecute(Sender: TObject);
     procedure SaveDiagramActionExecute(Sender: TObject);
     procedure DocGenPreviewActionExecute(Sender: TObject);
-    procedure CloseTimerTimer(Sender: TObject);
     procedure OpenFolderActionExecute(Sender: TObject);
     procedure ExportEmxActionExecute(Sender: TObject);
   private
@@ -422,11 +418,11 @@ begin
       DoDocGen(False,DocGenDir);
     if IsXmi then
       DoXmiFile(XmiFile);
-    if IsDocGen or IsXmi then
+    //if IsDocGen or IsXmi then
       //Delayed exit by using a timer, this is so that all global objects have
       //time to initialize (MainForm, MainModule). Otherwise this would be a
       //special case exit.
-      CloseTimer.Enabled := True;
+      //CloseTimer.Enabled := True; <- Did not work, removed
 
   finally
     Files.Free;
@@ -490,11 +486,6 @@ begin
   end;
 end;
 
-
-procedure TMainModule.ExitActionExecute(Sender: TObject);
-begin
-  Application.MainForm.Close;
-end;
 
 procedure TMainModule.DoDocGen(IsPreview : boolean; const DestPath: string = '');
 var
@@ -610,11 +601,6 @@ end;
 procedure TMainModule.DocGenPreviewActionExecute(Sender: TObject);
 begin
   DoDocGen(True);
-end;
-
-procedure TMainModule.CloseTimerTimer(Sender: TObject);
-begin
-  ExitAction.Execute;
 end;
 
 procedure TMainModule.OpenFolderActionExecute(Sender: TObject);

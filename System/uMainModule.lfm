@@ -46,10 +46,6 @@ object MainModule: TMainModule
       Hint = 'Open...'
       OnExecute = FileOpenActionExecute
     end
-    object ExitAction: TAction
-      Caption = 'Exit'
-      OnExecute = ExitActionExecute
-    end
     object SettingsAction: TAction
       Caption = 'Change settings...'
       OnExecute = SettingsActionExecute
