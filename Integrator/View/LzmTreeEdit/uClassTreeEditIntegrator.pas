@@ -5,8 +5,8 @@ unit uClassTreeEditIntegrator;
 interface
 
 uses
-  uIntegrator, uViewIntegrator, uModel, uModelEntity, Controls, Graphics,
-       Classes, uFeedback, uListeners, uClassTreeEditForm;
+  Controls,
+  uViewIntegrator, uModel, uFeedback, uClassTreeEditForm;
 
 type
 

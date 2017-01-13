@@ -5,8 +5,9 @@ unit uClassTreeEditForm;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, RTTIGrids, Forms, Controls, Graphics, Dialogs, typinfo,
-  ComCtrls, ExtCtrls, uModel, uModelEntity, uIterators, uViewIntegrator ;
+  Classes, Forms, typinfo,
+  RTTIGrids, ComCtrls, ExtCtrls,
+  uModel, uModelEntity, uIterators;
 
 type
 
@@ -41,7 +42,6 @@ implementation
 {$R *.lfm}
 
 { TClassTreeEditForm }
-
 
 procedure TClassTreeEditForm.FormCloseQuery(Sender: TObject;
   var CanClose: boolean);

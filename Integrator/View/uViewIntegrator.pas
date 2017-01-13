@@ -24,8 +24,10 @@ unit uViewIntegrator;
 
 interface
 
-uses uIntegrator, uModel, uModelEntity, Controls, Graphics,
-      IniFiles, Classes, uFeedback, Contnrs, Types;
+uses
+  Classes, SysUtils, Contnrs, Types, IniFiles, math,
+  Controls, Forms, Graphics,
+  uIntegrator, uModel, uModelEntity, uFeedback;
 
 type
 
@@ -93,7 +95,7 @@ type
 
 implementation
 
-uses uRtfdDiagram, SysUtils, Forms,  math, uConfig;
+uses uRtfdDiagram, uConfig;
 
 var
   _CurrentEntity : TModelEntity = nil;

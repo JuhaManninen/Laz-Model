@@ -24,10 +24,11 @@ unit uRtfdDiagram;
 
 interface
 
-uses uViewIntegrator, essConnectPanel, uModelEntity, uModel, Controls, uListeners, Graphics,
-  Classes, Forms, uDiagramFrame, uRtfdComponents, uFeedback,
- { Windows, }
-   Types;
+uses
+  Classes, SysUtils, contnrs, Math, Types,
+  Controls, Graphics, LCLIntf, LCLType, IniFiles, Dialogs,
+  uViewIntegrator, essConnectPanel, uModelEntity, uModel, uListeners,
+  uDiagramFrame, uRtfdComponents, uFeedback;
 
 
 type
@@ -90,9 +91,8 @@ type
 
 implementation
 
-uses uRtfdDiagramFrame, Math, LCLIntf, LCLType, uError, SysUtils,
-  uIterators, IniFiles, Dialogs, EssLayout, uConfig, contnrs, ExtCtrls,
-  uIntegrator;
+uses
+  uRtfdDiagramFrame, uError, uIterators, EssLayout, uConfig;
 
 
 { TRtfdDiagram }

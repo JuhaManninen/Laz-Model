@@ -33,7 +33,8 @@ unit SugiyamaLayout;
 
 interface
 
-uses essLayout, contnrs, Controls;
+uses
+  Classes, SysUtils, Math, contnrs, Controls, essLayout;
 
 type
   TEdgeList = class;
@@ -113,11 +114,7 @@ type
 
 implementation
 
-uses Classes,
-     essConnectPanel,
-     Math,
-     SysUtils;
-
+uses essConnectPanel;
 
 
 { TSugiyamaLayout }

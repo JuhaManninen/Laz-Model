@@ -24,7 +24,9 @@ unit ufpcParser;
 interface
 
 uses
-  Classes, SysUtils, uCodeParser, uModel, uModelEntity, PParser, PasTree;
+  Classes, SysUtils,
+  Dialogs,
+  uCodeParser, uModel, uModelEntity, PParser, PasTree;
 
 
 type
@@ -87,9 +89,6 @@ type
 
 
 implementation
-
-uses
-  Dialogs;
 
 function DelQuot(s:String):String;
    var i:integer;

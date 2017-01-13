@@ -25,10 +25,12 @@ unit uMainModule;
 interface
 
 uses
-  LCLIntf, LCLType,  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  uModel, uIntegrator, ufpcIntegrator, ActnList, uViewIntegrator,
-  {$IFDEF DRAG_SUPPORT}DropSource, DropTarget, {$ENDIF}Menus, uFeedback,
-  uClassTreeEditIntegrator, uClassTreeEditForm, uTreeViewIntegrator,ExtCtrls;
+  SysUtils, Classes, Contnrs,
+  LCLIntf, LCLType, Graphics, Controls, ExtCtrls, Forms, Dialogs, Menus, Clipbrd,
+  Printers, ActnList,
+  uModel, uIntegrator, ufpcIntegrator, uViewIntegrator,
+  {$IFDEF DRAG_SUPPORT}DropSource, DropTarget, {$ENDIF}uFeedback,
+  uClassTreeEditIntegrator, uClassTreeEditForm, uTreeViewIntegrator;
 
 type
 
@@ -101,8 +103,6 @@ var
 implementation
 
 uses uMainForm,
-  Clipbrd,
-  Printers,
   uFileProvider,
   uDocGen,
   uConfig,
@@ -111,7 +111,6 @@ uses uMainForm,
   {$IFDEF ARGO_XMI}uXmiExportArgoUML, {$ELSE}uXmiExport, {$ENDIF}
   uConst,
   uError,
-  Contnrs,
   uAboutForm,
   uSettingsForm,
   uZoomFrame,

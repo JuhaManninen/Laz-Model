@@ -24,10 +24,9 @@ unit uRtfdDiagramFrame;
 
 interface
 
-
 uses
-  LCLIntf, LCLType, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  uDiagramFrame, ActnList, uRtfdDiagram, Menus, ExtCtrls, Buttons;
+  Classes, ExtCtrls,
+  uDiagramFrame, uRtfdDiagram;
 
 type
   TRtfdDiagramFrame = class(TDiagramFrame)
@@ -44,10 +43,7 @@ type
 
 implementation
 
-uses uError;
-
 {$R *.lfm}
-
 
 
 { TRtfdDiagramFrame }

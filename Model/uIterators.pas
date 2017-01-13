@@ -28,7 +28,9 @@ interface
   Iterators and filters for model navigation.
 }
 
-uses Contnrs, uModelEntity;
+uses
+  Classes, SysUtils, Contnrs,
+  uModelEntity;
 
 
 type
@@ -106,7 +108,7 @@ type
 
 implementation
 
-uses Classes, SysUtils, uModel;
+uses uModel;
 
 { TDataTypeFilter }
 

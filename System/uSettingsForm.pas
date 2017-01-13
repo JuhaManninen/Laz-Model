@@ -25,8 +25,7 @@ unit uSettingsForm;
 interface
 
 uses
-  LCLIntf, LCLType, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls;
+  Forms, StdCtrls;
 
 
 type
@@ -54,7 +53,7 @@ type
 
 implementation
 
-uses uIntegrator, uConfig;
+uses uConfig;
 
 {$R *.lfm}
 

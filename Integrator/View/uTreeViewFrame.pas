@@ -25,8 +25,7 @@ unit uTreeViewFrame;
 interface
 
 uses
-  LCLIntf, LCLType, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-   ComCtrls;
+  Controls, Forms, ComCtrls;
 
 type
   TTreeViewFrame = class(TFrame)
@@ -40,7 +39,9 @@ type
   end;
 
 implementation
+
 uses uTreeViewIntegrator;
+
 {$R *.lfm}
 
 procedure TTreeViewFrame.tvModelDblClick(Sender: TObject);

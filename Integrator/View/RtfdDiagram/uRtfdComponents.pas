@@ -23,9 +23,9 @@ unit uRtfdComponents;
 {$mode objfpc}{$H+}
 
 interface
-uses LCLIntf, LCLType,
-  ExtCtrls, Classes, uModel, uModelEntity, Controls, uListeners,
-  uViewIntegrator, uDiagramFrame, uRtfdLabel;
+uses
+  Classes, Math, LCLIntf, LCLType, ExtCtrls, Graphics,
+  uModel, uModelEntity, Controls, uListeners, uViewIntegrator, uDiagramFrame, uRtfdLabel;
 
 type
 
@@ -210,8 +210,8 @@ type
 
 implementation
 
-uses Graphics, uError, SysUtils, essConnectPanel, uIterators,
-uConfig, uRtfdDiagramFrame, Math;
+uses
+  uError, essConnectPanel, uIterators, uConfig, uRtfdDiagramFrame;
 
 { TRtfdEnumLiteral }
 

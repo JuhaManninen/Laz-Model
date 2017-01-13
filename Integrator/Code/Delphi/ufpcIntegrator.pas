@@ -22,8 +22,10 @@ unit ufpcIntegrator;
 {$mode objfpc}{$H+}
 
 interface
-uses Classes, uIntegrator, uModel, ufpcParser, uCodeProvider,
-  uCodeParser;
+
+uses
+  Classes, SysUtils,
+  uIntegrator, uModel, ufpcParser, uCodeProvider, uCodeParser;
 
 type
 
@@ -42,7 +44,9 @@ type
 
 
 implementation
-uses SysUtils, uError;
+
+uses uError;
+
 { TfpcImporter }
 
 procedure TfpciImporter.ImportOneFile(const FileName : string);

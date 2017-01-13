@@ -23,7 +23,9 @@ unit uCodeIntegrator;
 {$mode objfpc}{$H+}
 
 interface
-uses uIntegrator, uCodeProvider;
+
+uses
+  uIntegrator, uCodeProvider;
 
 type
   {

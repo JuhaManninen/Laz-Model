@@ -24,7 +24,9 @@ unit uDocGen;
 
 interface
 
-uses uIntegrator, uModel, uModelEntity;
+uses
+  SysUtils,
+  uIntegrator, uModel, uModelEntity;
 
 type
   //Baseclass for documenation generators.
@@ -54,8 +56,6 @@ implementation
 uses uIterators,
   uHtmlDocGen,
   uUseful,
-  SysUtils,
-  Forms,
   uConst;
 
 

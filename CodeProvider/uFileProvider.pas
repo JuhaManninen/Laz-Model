@@ -23,7 +23,9 @@ unit uFileProvider;
 {$mode objfpc}{$H+}
 
 interface
-uses Classes, uCodeProvider;
+
+uses
+  Classes, SysUtils, uCodeProvider;
 
 type
 
@@ -42,7 +44,7 @@ type
 
 implementation
 
-uses SysUtils, uConfig;
+uses uConfig;
 
 { TFileProvider }
 

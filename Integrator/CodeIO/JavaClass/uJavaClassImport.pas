@@ -24,7 +24,9 @@ unit uJavaClassImport;
 
 interface
 
-uses uCodeParser, Classes, uModel, uIntegrator, uModelEntity, uCodeProvider;
+uses
+  Classes, SysUtils,
+  uCodeParser, uModel, uIntegrator, uModelEntity;
 
 type
   TJavaClassImporter = class(TImportIntegrator)
@@ -38,7 +40,7 @@ type
 
 implementation
 
-uses uJavaClass, SysUtils, uError;
+uses uJavaClass, uError;
 
 type
   TJavaClassParser = class(TCodeParser)

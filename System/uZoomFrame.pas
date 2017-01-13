@@ -25,8 +25,8 @@ unit uZoomFrame;
 interface
 
 uses
-  LCLIntf, LCLType, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  uViewIntegrator, ExtCtrls;
+  Classes, Controls, Forms, ExtCtrls,
+  uViewIntegrator;
 
 type
   TZoomFrame = class(TFrame)

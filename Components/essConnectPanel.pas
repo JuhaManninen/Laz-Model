@@ -25,9 +25,9 @@ unit essConnectPanel;
 interface
 
 uses
-
-  LCLIntf, LCLType, {windows,} Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls,Contnrs, uViewIntegrator;
+  Classes, SysUtils, Contnrs, Math,
+  LCLIntf, LCLType, Messages, Graphics, Controls, Forms, Dialogs, ExtCtrls,
+  uViewIntegrator;
 
 
 type
@@ -213,7 +213,8 @@ type
 procedure Register;
 
 implementation
-uses Math, uRtfdComponents, uConfig;
+
+uses uRtfdComponents;
 
 type
   TCrackControl = class(TControl) end;

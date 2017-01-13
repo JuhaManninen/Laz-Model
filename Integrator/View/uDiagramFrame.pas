@@ -26,9 +26,9 @@ interface
 
 
 uses
-  LCLIntf, LCLType, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ActnList, Menus, uViewIntegrator, StdCtrls, ExtCtrls, uListeners, uModelEntity,
-  uModel, Buttons;
+  Classes,
+  Controls, Messages, Forms, ActnList, Menus, StdCtrls, ExtCtrls, Buttons,
+  uViewIntegrator, uListeners, uModelEntity, uModel;
 
 
 //const
@@ -93,8 +93,6 @@ diagramframe
 
 
 implementation
-
-uses uError;
 
 {$R *.lfm}
 

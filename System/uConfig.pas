@@ -25,7 +25,9 @@ unit uConfig;
 interface
 
 uses
-  Classes, IniFiles;
+  SysUtils, IniFiles,
+  LResources;
+
 
 type
   //Save changed diagram layout setting
@@ -68,9 +70,6 @@ var
   Config: TConfig;
 
 implementation
-
-uses
-  Forms, SysUtils, LResources;
 
 const
   cSettings = 'Settings';

@@ -25,7 +25,9 @@ unit uEmxExport;
 
 interface
 
-uses uIntegrator, uModelEntity, Classes, uModel, uFeedback;
+uses
+  Classes, SysUtils, Dialogs,
+  uIntegrator, uModelEntity, uModel, uFeedback;
 
 type
   TEmxExporter = class(TExportIntegrator)
@@ -58,7 +60,6 @@ type
   end;
 
 implementation
-uses SysUtils, Dialogs;
 
 { TEmxExporter }
 

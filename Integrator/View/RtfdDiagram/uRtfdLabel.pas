@@ -4,9 +4,9 @@ unit uRtfdLabel;
 
 
 interface
-uses LCLIntf, LCLType,
-  ExtCtrls, Classes, Graphics, uModel, uModelEntity, Controls, uListeners,
-  uConfig;
+uses
+  Classes, LCLIntf, LCLType, Controls, ExtCtrls, Graphics,
+  uModel, uModelEntity, uListeners, uConfig;
 
 
 const
@@ -78,7 +78,6 @@ end;
 
 
 implementation
-
 
 
 { TRtfdODLabel }

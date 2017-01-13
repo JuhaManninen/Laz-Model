@@ -23,7 +23,10 @@ unit uCodeParser;
 {$mode objfpc}{$H+}
 
 interface
-uses Classes, uModel, Sysutils;
+
+uses
+  Classes, uModel, Sysutils;
+
 type
 
 //  TNeedPackageEvent = procedure(const AName: string; var AStream: TStream; OnlyLookUp: Boolean = False) of object;

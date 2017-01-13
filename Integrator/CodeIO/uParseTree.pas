@@ -23,7 +23,9 @@ unit uParseTree;
 {$mode objfpc}{$H+}
 
 interface
-uses  uModelEntity, Contnrs;
+uses
+  Classes, SysUtils, Contnrs,
+  uModelEntity;
 
 type
 
@@ -75,7 +77,6 @@ type
   end;
 
 implementation
-uses Classes, SysUtils;
 
 { TParseTree }
 

@@ -28,7 +28,9 @@ unit uModel;
 
 interface
 
-uses Contnrs, Classes, uListeners, uModelEntity, uIterators;
+uses
+  Classes, SysUtils, Contnrs,
+  uListeners, uModelEntity, uIterators;
 
 const
 
@@ -358,7 +360,7 @@ type
 
 implementation
 
-uses SysUtils, uError;
+uses uError;
 
 
 Var
