@@ -71,10 +71,9 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
     Created : boolean;
   public
-    { Public declarations }
+
   end;
 
 var

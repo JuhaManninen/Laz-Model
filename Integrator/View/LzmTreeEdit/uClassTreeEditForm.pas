@@ -19,7 +19,6 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure TreeView1SelectionChanged(Sender: TObject);
   private
-    { private declarations }
     FModel: TObjectModel;
     FModelObject: TModelEntity;
     procedure SetObject(AValue: TModelEntity);
@@ -30,7 +29,6 @@ type
     procedure InitTreeFromDataType;
     procedure DisplayEnums(ParentNode: TTreeNode; Enum: TEnumeration);
   public
-    { public declarations }
     property Model: TObjectModel write SetModel;
     property ModelObject: TModelEntity write SetObject;
   end;

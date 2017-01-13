@@ -88,7 +88,6 @@ type
     fNeedCheckSize: Boolean;
     procedure SetSelectedOnly(const Value : boolean);
   protected
-    { Protected declarations }
     FManagedObjects: TList;
     FConnections: TObjectList;
 
@@ -115,7 +114,6 @@ type
     procedure Paint; override;
   public
     OnContentChanged : TNotifyEvent;
-    { Public declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -161,7 +159,6 @@ type
     //Only draw selected
     property SelectedOnly : boolean read FSelectedOnly write SetSelectedOnly;
   published
-    { Published declarations }
     property Align;
     property Alignment;
     property Anchors;

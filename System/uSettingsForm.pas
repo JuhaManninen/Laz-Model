@@ -45,12 +45,11 @@ type
     procedure ShellCheckClick(Sender: TObject);
     procedure OkButtonClick(Sender: TObject);
   private
-    { Private declarations }
     ShellChanged,IDEChanged : boolean;
     procedure ReadSettings;
     procedure SaveSettings;
   public
-    { Public declarations }
+
   end;
 
 implementation
