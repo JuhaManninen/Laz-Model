@@ -190,7 +190,8 @@ object MainForm: TMainForm
         Caption = '-'
       end
       object Exit1: TMenuItem
-        Action = MainModule.ExitAction
+        Caption = 'Exit'
+        OnClick = Exit1Click
       end
     end
     object Diagram1: TMenuItem

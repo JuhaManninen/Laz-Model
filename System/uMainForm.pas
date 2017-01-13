@@ -67,6 +67,7 @@ type
     Previewdocumentation1: TMenuItem;
     OpenFolderAction1: TMenuItem;
     ExportmodeltoEMXfile1: TMenuItem;
+    procedure Exit1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var aAction: TCloseAction);
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -85,11 +86,10 @@ uses uConst, Math;
 
 {$R *.lfm}
 
-
-procedure TMainForm.FormClose(Sender: TObject; var aAction: TCloseAction);
+procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  //Free här istället för destroy, annars visas inte savechanged-dialog för diagram
-  MainModule.Free;
+  Height := Max( Round(Screen.Height * 0.75), 480 );
+  Width := Max( Round(Screen.Width * 0.75) , 640 );
 end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
@@ -102,10 +102,15 @@ begin
   end;
 end;
 
-procedure TMainForm.FormCreate(Sender: TObject);
+procedure TMainForm.FormClose(Sender: TObject; var aAction: TCloseAction);
 begin
-  Height := Max( Round(Screen.Height * 0.75), 480 );
-  Width := Max( Round(Screen.Width * 0.75) , 640 );
+  // Free here istead of FormDestroy, otherwise SaveChanged-dialog for a diagram will not show.
+  MainModule.Free;
+end;
+
+procedure TMainForm.Exit1Click(Sender: TObject);
+begin
+  Close;
 end;
 
 end.
