@@ -183,6 +183,7 @@ begin
    FUnit := (FModel as TLogicPackage).AddUnit(M.Name);
    FUnit.Sourcefilename := Self.Filename;
    FUnit.Documentation.Description := M.DocComment;
+   FUnit.Visibility := viPublic;
    intf := M.InterfaceSection;
    GetUnits(intf.UsesList);
    GetTypes(intf.Types);
@@ -252,6 +253,7 @@ begin
             ths := FUnit.AddClass(cls.Name);
             ths.SourceY := cls.SourceLinenumber;
             ths.Documentation.Description := cls.DocComment;
+            ths.Visibility := viPublic;
             PopulateClass(ths, cls);
           end;
           okInterface:
@@ -259,6 +261,7 @@ begin
             intf := FUnit.AddInterface(cls.Name);
             intf.SourceY := cls.SourceLinenumber;
             intf.Documentation.Description := cls.DocComment;
+            intf.Visibility := viPublic;
             PopulateInterface(intf, cls);
           end;
 //  TODO        okGeneric, okSpecialize,
@@ -268,6 +271,10 @@ begin
 
 end;
 
+
+// NOTE most dt instancea may be replaced by
+// other classes as model evolves. Do not factor
+// common code yet.
 procedure TfpcParser.GetTypes(c: TFPList);
 var
   i: integer;
@@ -285,12 +292,14 @@ begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
             dt.Documentation.Description := tp.DocComment;
+            dt.Visibility := viPublic;
           end;
         'TPasFunctionType':
           begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
             dt.Documentation.Description := tp.DocComment;
+            dt.Visibility := viPublic;
 
           end;
         'TPasEnumType':
@@ -298,6 +307,7 @@ begin
             te := TEnumeration (FUnit.AddEnumeration(tp.Name));
             te.SourceY:= tp.SourceLinenumber;
             te.Documentation.Description := tp.DocComment;
+            te.Visibility := viPublic;
             FillEnum(TPasEnumType(tp), te);
           end;
         'TPasAliasType':
@@ -305,6 +315,7 @@ begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
             dt.Documentation.Description := tp.DocComment;
+            dt.Visibility := viPublic;
 
           end;
         'TPasArrayType':
@@ -312,6 +323,7 @@ begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
             dt.Documentation.Description := tp.DocComment;
+            dt.Visibility := viPublic;
 
           end;
         'TPasSetType':
@@ -319,18 +331,21 @@ begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
             dt.Documentation.Description := tp.DocComment;
+            dt.Visibility := viPublic;
           end;
         'TPasRecordType':
           begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
             dt.Documentation.Description := tp.DocComment;
+            dt.Visibility := viPublic;
           end;
         'TPasPointerType':
           begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
             dt.Documentation.Description := tp.DocComment;
+            dt.Visibility := viPublic;
           end;
 
       else
