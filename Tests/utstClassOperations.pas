@@ -1,3 +1,8 @@
+{
+ MODEL   STATUS Interface Working.
+ DOC     STATUS Not Implemented.
+ CODEGEN STATUS Not Implemented.
+}
 unit utstClassOperations;
 
 {$mode objfpc}{$H+}
@@ -9,19 +14,16 @@ uses
 
 type
 
-  TClassType = (Class1, Class2, Class3);
+{ Support Type. Not part of test }
+TClassType = (Class1, Class2, Class3);
 
-  TClassVariable = class
-    private
-      class var FClassType: TClassType;
-  end;
+{ Test for Class Variable }
+TClassVariable = class
+  private
+    class var FClassType: TClassType;
+end;
 
-{ Not currently implemented in FPC }
 
- // TClassProperty = class (TClassVariable)
- //   published
- //   class property ClassType: TClassType read FClassType write FClassType default Class1;
- // end;
 
  TClassFunction = class(TClassVariable)
    public

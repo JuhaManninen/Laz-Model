@@ -111,7 +111,7 @@ function DelQuot(s:String):String;
 constructor TSimpleEngine.Create;
 begin
   self.InterfaceOnly := True;
-  self.NeedComments := False;
+  self.NeedComments := True;
  inherited;
 end;
 
@@ -123,6 +123,7 @@ begin
   Result.Visibility := AVisibility;
   Result.SourceFilename := ASourceFilename;
   Result.SourceLinenumber := ASourceLinenumber;
+  Result.DocComment := CurrentParser.SavedComments;
 end;
 
 function TSimpleEngine.FindElement(const AName: String): TPasElement;
@@ -181,6 +182,7 @@ var
 begin
    FUnit := (FModel as TLogicPackage).AddUnit(M.Name);
    FUnit.Sourcefilename := Self.Filename;
+   FUnit.Documentation.Description := M.DocComment;
    intf := M.InterfaceSection;
    GetUnits(intf.UsesList);
    GetTypes(intf.Types);
@@ -249,12 +251,14 @@ begin
           begin
             ths := FUnit.AddClass(cls.Name);
             ths.SourceY := cls.SourceLinenumber;
+            ths.Documentation.Description := cls.DocComment;
             PopulateClass(ths, cls);
           end;
           okInterface:
           begin
             intf := FUnit.AddInterface(cls.Name);
             intf.SourceY := cls.SourceLinenumber;
+            ths.Documentation.Description := cls.DocComment;
             PopulateInterface(intf, cls);
           end;
 //  TODO        okGeneric, okSpecialize,
@@ -280,46 +284,53 @@ begin
           begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
-
+            dt.Documentation.Description := tp.DocComment;
           end;
         'TPasFunctionType':
           begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
+            dt.Documentation.Description := tp.DocComment;
 
           end;
         'TPasEnumType':
           begin
             te := TEnumeration (FUnit.AddEnumeration(tp.Name));
             te.SourceY:= tp.SourceLinenumber;
+            te.Documentation.Description := tp.DocComment;
             FillEnum(TPasEnumType(tp), te);
           end;
         'TPasAliasType':
           begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
+            dt.Documentation.Description := tp.DocComment;
 
           end;
         'TPasArrayType':
           begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
+            dt.Documentation.Description := tp.DocComment;
 
           end;
         'TPasSetType':
           begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
+            dt.Documentation.Description := tp.DocComment;
           end;
         'TPasRecordType':
           begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
+            dt.Documentation.Description := tp.DocComment;
           end;
         'TPasPointerType':
           begin
             dt := FUnit.AddDatatype(tp.Name);
             dt.SourceY := tp.SourceLinenumber;
+            dt.Documentation.Description := tp.DocComment;
           end;
 
       else

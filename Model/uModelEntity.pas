@@ -70,6 +70,7 @@ type
     procedure Fire(Method: TListenerMethodType; Info: TModelEntity = nil); virtual;
     function GetSourcefilename: String; virtual;
     procedure SetSourcefilename(const Value: String); virtual;
+    function GetDescription: string;
     {IUnknown, behövs för att kunna vara lyssnare}
     function QueryInterface(const IID: TGUID; out Obj): HResult;
     function _AddRef: Integer;
@@ -92,7 +93,7 @@ type
     // TODO These are read only so are only here while developing Model
     property Sourcefilename: String read GetSourcefilename write SetSourcefilename;
     property SourceY: Integer read FSourceY write FSourceY;
-
+    property Description : string read GetDescription;
   end;
 
   TModelEntityClass = class of TModelEntity;
@@ -281,6 +282,11 @@ end;
 procedure TModelEntity.SetSourcefilename(const Value: String);
 begin
  if Owner <> nil then Owner.Sourcefilename := Value;
+end;
+
+function TModelEntity.GetDescription: string;
+begin
+  Result := FDocumentation.Description;
 end;
 
 initialization

@@ -64,7 +64,7 @@ type
   TMethodDirective = (mdDefault, mdVirtual, mdDynamic, mdAbstract, mdOverride, mdReintroduce, mdMessage);
 
 
-  // these are more oriented to procdural pascal programming.
+  // these are more oriented to procedural pascal programming.
   //TProcedureModifier = (pmVirtual, pmDynamic, pmAbstract, pmOverride,
   //                        pmExport, pmOverload, pmMessage, pmReintroduce,
   //                        pmStatic,pmInline,pmAssembler,pmVarargs, pmPublic,
