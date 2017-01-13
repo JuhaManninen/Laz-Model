@@ -26,8 +26,8 @@ interface
 
 
 uses
-  LCLIntf, LCLType, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, Menus, uMainModule,  Buttons;
+  Classes, Math, Forms, ExtCtrls, Menus, Buttons,
+  uMainModule, uClassTreeEditForm, uConst;
 
 type
 
@@ -72,7 +72,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    Created : boolean;
+
   public
 
   end;
@@ -82,24 +82,21 @@ var
 
 implementation
 
-uses uConst, Math;
-
 {$R *.lfm}
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Height := Max( Round(Screen.Height * 0.75), 480 );
   Width := Max( Round(Screen.Width * 0.75) , 640 );
+  {$IFDEF DEBUG}
+  ClassTreeEditForm := TClassTreeEditForm.Create(Self);
+  {$ENDIF DEBUG}
+  MainModule := TMainModule.Create(Nil);
 end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
-  if not Created then
-  begin
-    Created := True;
-    Caption := uConst.ProgName;
-    MainModule := TMainModule.Create(Self);
-  end;
+  Caption := uConst.ProgName;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var aAction: TCloseAction);

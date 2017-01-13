@@ -250,9 +250,7 @@ end;
 initialization
 
 finalization
-
-  if Assigned(_Integrators) then
-    _Integrators.Free;
+  _Integrators.Free;
 
 end.
 

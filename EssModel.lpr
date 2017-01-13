@@ -83,13 +83,9 @@ begin
   SetHeapTraceOutput('heap.trc');
   {$ENDIF DEBUG}
 
-
   Application.Initialize;
   Application.Title := 'essModel';
   Application.CreateForm(TMainForm, MainForm);
-  {$IFDEF DEBUG}
-  Application.CreateForm(TClassTreeEditForm, ClassTreeEditForm);
-  {$ENDIF DEBUG}
   Application.Run;
 end.
 

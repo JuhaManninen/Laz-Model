@@ -134,7 +134,6 @@ initialization
   {$ENDIF}
 
 finalization
-
   ErrorHandler.Free;
 
 end.
