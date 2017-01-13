@@ -258,7 +258,7 @@ begin
           begin
             intf := FUnit.AddInterface(cls.Name);
             intf.SourceY := cls.SourceLinenumber;
-            ths.Documentation.Description := cls.DocComment;
+            intf.Documentation.Description := cls.DocComment;
             PopulateInterface(intf, cls);
           end;
 //  TODO        okGeneric, okSpecialize,
