@@ -1,6 +1,6 @@
 {
   ESS-Model
-  Copyright (C) 2002  Eldean AB, Peter Söderman, Ville Krumlinde
+  Copyright (C) 2002  Eldean AB, Peter SÃ¶derman, Ville Krumlinde
   Portions (C) 2016 Peter Dyson. Initial Lazarus port
 
   This program is free software; you can redistribute it and/or
@@ -33,11 +33,7 @@ uses
   uListeners, uModelEntity, uIterators, uError;
 
 const
-{$IFDEF LINUX}
-  UNKNOWNPACKAGE_NAME = '<<Unknown>>';
-{$ELSE}
-  UNKNOWNPACKAGE_NAME = '«Unknown»';
-{$ENDIF LINUX}
+  UNKNOWNPACKAGE_NAME = 'Â«UnknownÂ»';
   ConfigFileExt = '.essModel';
 
 type

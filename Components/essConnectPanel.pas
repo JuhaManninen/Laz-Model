@@ -1,6 +1,6 @@
 {
   ESS-Model
-  Copyright (C) 2002  Eldean AB, Peter Söderman, Ville Krumlinde
+  Copyright (C) 2002  Eldean AB, Peter SÃ¶derman, Ville Krumlinde
   Portions (C) 2016 Peter Dyson. Initial Lazarus port
 
   This program is free software; you can redistribute it and/or
@@ -127,11 +127,9 @@ type
     // The list should be freed by the caller.
     function GetSelectedControls : TObjectList;
 
-
     // Returns a list containing all the managed controls.
     // The list should be freed by the caller.
     function GetManagedObjects: TList;
-
 
     // Returns a list with all interobject connections.
     // The list should be freed by the caller.

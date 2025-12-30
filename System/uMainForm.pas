@@ -1,6 +1,6 @@
 {
   ESS-Model
-  Copyright (C) 2002  Eldean AB, Peter Söderman, Ville Krumlinde
+  Copyright (C) 2002  Eldean AB, Peter SÃ¶derman, Ville Krumlinde
   Portions (C) 2016 Peter Dyson. Initial Lazarus port
 
   This program is free software; you can redistribute it and/or
@@ -23,7 +23,6 @@ unit uMainForm;
 {$mode objfpc}{$H+}
 
 interface
-
 
 uses
   SysUtils, Math,
@@ -85,7 +84,7 @@ implementation
 
 procedure TMainForm.FormClose(Sender: TObject; var aAction: TCloseAction);
 begin
-  //Free här istället för destroy, annars visas inte savechanged-dialog för diagram
+  //Free hÃ¤r istÃ¤llet fÃ¶r destroy, annars visas inte savechanged-dialog fÃ¶r diagram
   MainModule.Free;
 end;
 

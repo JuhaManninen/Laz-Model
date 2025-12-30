@@ -1,6 +1,6 @@
 {
   ESS-Model
-  Copyright (C) 2002  Eldean AB, Peter Söderman, Ville Krumlinde
+  Copyright (C) 2002  Eldean AB, Peter SÃ¶derman, Ville Krumlinde
   Portions (C) 2016 Peter Dyson. Initial Lazarus port
 
   This program is free software; you can redistribute it and/or
@@ -465,8 +465,6 @@ end;
 
 { TVisibilityLabel }
 
-
-
 procedure TVisibilityLabel.Paint(width: integer);
 var
   Al: integer;
@@ -814,11 +812,7 @@ begin
   inherited Create(AOwner, AEntity, 2);
   Alignment := taCenter;
   Transparent := True;
-{$IFDEF LINUX}
-  Self.Caption := '<<' + ACaption + '>>';
-{$ELSE}
-  Self.Caption := '«' + ACaption + '»';
-{$ENDIF LINUX}
+  Self.Caption := 'Â«' + ACaption + 'Â»';
 end;
 
 
