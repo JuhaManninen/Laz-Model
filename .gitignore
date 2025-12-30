@@ -1,0 +1,12 @@
+lib/*
+backup/*
+*/backup/*
+*/*/backup/*
+*/*/*/backup/*
+*/*/*/*/backup/*
+*.lps
+*.o
+*.ppu
+*.dbg
+*.exe
+*.obj

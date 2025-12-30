@@ -45,7 +45,6 @@ type
     property IsProgram: boolean read fIsProgram write fIsProgram;
   end;
 
-
   { TfpcParser }
 
   TfpcParser = class(TCodeParser)
@@ -64,9 +63,11 @@ type
       procedure ParseUnit(M: TPasModule);
       procedure GetUnits(u: TFPList; AVisibility: TVisibility = viPublic; Recurse: Boolean = True);
       procedure GetClasses(c: TFPList; AVisibility: TVisibility = viPublic; Recurse: Boolean = True);
+      procedure GetTypes(c: TFPList; AVisibility: TVisibility = viPublic; Recurse: Boolean = True);
       procedure PopulateMembers(ths: TClass; mems: TFPList); overload;
       procedure PopulateMembers(intf: TInterface; mems: TFPList); overload;
-      procedure PopulateClass(ths: TClass; cls: TPasClassType);
+      procedure PopulateClass(ths: TClass; cls: TPasMembersType);
+      procedure LinkProperties(ths: TClass);
       procedure PopulateInterface(intf: TInterface; cls: TPasClassType);
       procedure AddProcedure(op: TOperation; proc: TPasProcedure);
       procedure AddConstructor(op: TOperation; proc: TPasConstructor);
@@ -101,7 +102,7 @@ function DelQuot(s:String):String;
    Result:=s;
   end;
 
-  { TSimpleEngine }
+{ TSimpleEngine }
 
 constructor TSimpleEngine.Create;
 begin
@@ -115,6 +116,7 @@ function TSimpleEngine.CreateElement(AClass: TPTreeElement;
   const ASourceFilename: String; ASourceLinenumber: Integer): TPasElement;
 begin
   Result := AClass.Create(AName, AParent);
+
   Result.Visibility := AVisibility;
   Result.SourceFilename := ASourceFilename;
   Result.SourceLinenumber := ASourceLinenumber;
@@ -160,14 +162,12 @@ begin
   end;
 end;
 
-
-
 procedure TfpcParser.ParseProject(M: TPasProgram);
 begin
   FUnit := (FModel as TLogicPackage).AddUnit(M.Name);
+  FOM.AddNestedUnit(FUnit, false);
   FUnit.Sourcefilename := Filename;
   GetUnits(M.ProgramSection.UsesList);
-
 end;
 
 procedure TfpcParser.ParseUnit(M: TPasModule);
@@ -176,10 +176,11 @@ var
 begin
    FUnit := (FModel as TLogicPackage).AddUnit(M.Name);
    FUnit.Sourcefilename := Self.Filename;
+   FOM.AddNestedUnit(FUnit, false);
    intf := M.InterfaceSection;
    GetUnits(intf.UsesList);
    GetClasses(intf.Classes);
-
+   GetTypes(intf.Types);
 end;
 
 procedure TfpcParser.GetUnits(u: TFPList; AVisibility: TVisibility;
@@ -190,8 +191,10 @@ var
   str: TStream;
   fullName, uName: string;
   ref: TPasElement;
+  aUn : TUnitPackage;
 begin
   If Assigned(u) and (u.Count > 0) then
+  begin
      for i := 0 to u.Count- 1 do
      begin
        ref := TPasElement(u.Items[i]);
@@ -199,7 +202,9 @@ begin
           uname := DelQuot(TPasModule(ref).FileName)
         else
           uName := ref.Name;
-       if Assigned(NeedPackage) and (FOM.ModelRoot.FindUnitPackage(uName) = nil) then
+
+       aUn := FOM.ModelRoot.FindUnitPackage(uName);
+       if Assigned(NeedPackage) and not Assigned(aUn) then
        begin
          fullName := NeedPackage(uName, str{%H-}, Recurse);
          if Fullname <> '' then
@@ -210,6 +215,7 @@ begin
              prs.NeedPackage := NeedPackage;
              try
                prs.ParseFileWithDefines(FModel, FOM, FGlobalDefines);
+               aUn := FOM.ModelRoot.FindUnitPackage(uName);
              except
                on E : EParseError do
                  ShowMessage(E.Message);
@@ -219,42 +225,111 @@ begin
            end;
          end;
        end;
-       if (FOM.ModelRoot.FindUnitPackage(uName) <> nil) and Recurse then
-         FUnit.AddUnitDependency(FOM.ModelRoot.FindUnitPackage(uName),AVisibility);
-
+       if Assigned(aUn) and Recurse then
+         FUnit.AddUnitDependency(aUn,AVisibility);
+       FOM.AddNestedUnit(FUnit.Name, uName, false);
      end;
+  end;
 end;
 
 procedure TfpcParser.GetClasses(c: TFPList; AVisibility: TVisibility;
   Recurse: Boolean);
 var
   i: integer;
-  cls: TPasClassType;
+  cls : TPasClassType;
+  rec : TPasRecordType;
   ths: TClass;
   intf: TInterface;
 begin
   If Assigned(c) and (c.Count > 0) then
+  begin
      for i := 0 to c.Count- 1 do
      begin
+       if TObject(c.Items[i]) is TPasClassType then
+       begin
         cls := TPasClassType(c.Items[i]);
-
         case cls.ObjKind of
           okObject, okClass:
           begin
             ths := FUnit.AddClass(cls.Name);
             ths.SourceY := cls.SourceLinenumber;
-            PopulateClass(ths, cls);
           end;
           okInterface:
           begin
             intf := FUnit.AddInterface(cls.Name);
             intf.SourceY := cls.SourceLinenumber;
+          end;
+//  TODO        okGeneric, okSpecialize,
+//  or NOT      okClassHelper,okRecordHelper,okTypeHelper
+        end;
+       end else
+       if TObject(c.Items[i]) is TPasRecordType then
+       begin
+         rec := TPasRecordType(c.Items[i]);
+         ths := FUnit.AddClass(rec.Name);
+         ths.SourceY := rec.SourceLinenumber;
+       end;
+     end;
+     for i := 0 to c.Count- 1 do
+     begin
+       if TObject(c.Items[i]) is TPasClassType then
+       begin
+        cls := TPasClassType(c.Items[i]);
+        case cls.ObjKind of
+          okObject, okClass:
+          begin
+            ths := TClass(FUnit.FindClassifier(cls.Name));
+            PopulateClass(ths, cls);
+          end;
+          okInterface:
+          begin
+            intf := TInterface(FUnit.AddInterface(cls.Name));
             PopulateInterface(intf, cls);
           end;
 //  TODO        okGeneric, okSpecialize,
 //  or NOT      okClassHelper,okRecordHelper,okTypeHelper
         end;
+       end else
+       if TObject(c.Items[i]) is TPasRecordType then
+       begin
+         rec := TPasRecordType(c.Items[i]);
+         ths := TClass(FUnit.FindClassifier(rec.Name));
+         PopulateClass(ths, rec);
+       end;
      end;
+  end;
+
+end;
+
+procedure TfpcParser.GetTypes(c : TFPList; AVisibility : TVisibility;
+  Recurse : Boolean);
+var
+  i: integer;
+  rec : TPasRecordType;
+  ths: TClass;
+  intf: TInterface;
+begin
+  If Assigned(c) and (c.Count > 0) then
+  begin
+     for i := 0 to c.Count- 1 do
+     begin
+       if TObject(c.Items[i]) is TPasRecordType then
+       begin
+         rec := TPasRecordType(c.Items[i]);
+         ths := FUnit.AddClass(rec.Name);
+         ths.SourceY := rec.SourceLinenumber;
+       end;
+     end;
+     for i := 0 to c.Count- 1 do
+     begin
+       if TObject(c.Items[i]) is TPasRecordType then
+       begin
+         rec := TPasRecordType(c.Items[i]);
+         ths := TClass(FUnit.FindClassifier(rec.Name));
+         PopulateClass(ths, rec);
+       end;
+     end;
+  end;
 
 end;
 
@@ -363,17 +438,17 @@ end;
 function TfpcParser.getClassifier(s: String): TClassifier;
 begin
   if s = '' then s := 'Unidentified datatype';
-  Result := FUnit.FindClassifier(s);
+  Result := FUnit.FindClassifier(s, False, TClass);
   if not Assigned(Result) then
-     Result := FUnit.FindClassifier(s, False, TClass);
+     Result := FUnit.FindClassifier(s);
   if not Assigned(Result) then
        Result := FOM.UnknownPackage.FindClassifier(s, False, TClass);
   if not Assigned(Result) then
      Result := FOM.UnknownPackage.FindClassifier(s);
   if not Assigned(Result) then
-  if s[1] ='T' then   // HACK ALERT
+  {if s[1] ='T' then   // HACK ALERT
       Result := FOM.UnknownPackage.AddClass(s)
-  else
+  else}
       Result := FOM.UnknownPackage.AddDatatype(s);
 end;
 
@@ -388,7 +463,7 @@ begin
    end;
 end;
 
-procedure TfpcParser.PopulateClass(ths: TClass; cls: TPasClassType);
+procedure TfpcParser.PopulateClass(ths: TClass; cls: TPasMembersType);
 var
   ans: TPasType;
   ancestor: TClass;
@@ -397,9 +472,13 @@ var
   intfs: TFPList;
   i: integer;
 begin
-  if Assigned(cls.AncestorType) then
+  if (cls is TPasClassType) and Assigned(TPasClassType(cls).AncestorType) then
   begin
-    ans := TPasType(cls.AncestorType);
+    ans := TPasType(TPasClassType(cls).AncestorType);
+    if Length(ans.Name) = 0 then //some empty parent name -> TObject
+    begin
+      ans.Name := 'TObject';
+    end;
     ancestor := FUnit.FindClassifier(ans.Name,False,TClass) as TClass;
     if Not Assigned(ancestor) then
     begin
@@ -413,9 +492,9 @@ begin
       ths.Ancestor := FOM.UnknownPackage.AddClass(ans.Name);
   end;
 
-  If Assigned(cls.Interfaces) then
+  If (cls is TPasClassType) and Assigned(TPasClassType(cls).Interfaces) then
   begin
-    intfs:= cls.Interfaces;
+    intfs:= TPasClassType(cls).Interfaces;
     for i := 0 to intfs.Count -1 do
     begin
       intf := getInterfaceRef(TPasType(intfs[i]).Name);
@@ -423,9 +502,25 @@ begin
     end;
   end;
 
-  if Assigned(cls.Members) then
+  if Assigned(cls.Members) then begin
      PopulateMembers(ths, cls.Members);
+     LinkProperties(ths);
+  end;
 
+end;
+
+procedure TfpcParser.LinkProperties(ths : TClass);
+var
+  MI : IModelIterator;
+  Pr : TAttribute;
+begin
+  MI := ths.GetAttributes;
+  while MI.HasNext do
+  begin
+    Pr := TAttribute(MI.Next);
+    if Pr is TProperty then
+      TProperty(Pr).LinkAttrs(ths);
+  end;
 end;
 
 procedure TfpcParser.PopulateInterface(intf: TInterface; cls: TPasClassType);
@@ -502,7 +597,10 @@ begin
    prop.Visibility := getVisibility(pproc.Visibility);
    If Assigned (pproc.VarType) then
      prop.TypeClassifier := getClassifier(pproc.VarType.Name);
-
+   if assigned(pproc.ReadAccessor) then
+     prop.ReadAttrExpr := pproc.ReadAccessor.GetDeclaration(false);
+   if assigned(pproc.WriteAccessor) then
+     prop.WriteAttrExpr := pproc.WriteAccessor.GetDeclaration(false);
 end;
 
 
@@ -512,7 +610,9 @@ procedure TfpcParser.ParseFileWithDefines(AModel: TAbstractPackage;
 var
   M: TPasModule;
   E: TPasTreeContainer;
-  s: string;
+  s, platform, cpu: string;
+  params : Array of String;
+  i : integer;
   pp: TPasProgram;
 begin
   FGlobalDefines := GlobalDefines;
@@ -521,21 +621,44 @@ begin
 
   E := TSimpleEngine.Create;
   s:=  ExtractFileExt(fFilename);
-  if ( s = '.lpr') then
-  begin
-     E.InterfaceOnly := false;
-     TSImpleEngine(E).IsProgram := True;
-     pp:= ParseSource(E, self.Filename ,'WINDOWS' ,'i386', True) as TPasProgram;
-     ParseProject (pp);
-     FreeAndNil(E);
-  end
-  else
-  begin
-     M := ParseSource(E, self.Filename ,'WINDOWS' ,'i386', True);
-     ParseUnit(M);
-     FreeAndNil(M);
+  try
+    {$IFDEF WINDOWS}
+    platform := 'WINDOWS';
+    {$ELSE}
+    {$IFDEF LINUX}
+    platform := 'LINUX';
+    {$ENDIF}
+    {$ENDIF}
+    {$IFDEF CPU64}
+    cpu := 'x86_64';
+    {$ELSE}
+    cpu := 'i8086';
+    {$ENDIF}
+    SetLength(params, 1 + GlobalDefines.Count);
+    for i := 0 to GlobalDefines.Count-1 do
+    begin
+      params[i+1] := GlobalDefines[i];
+    end;
+    params[0] := self.Filename;
+
+    if ( s = '.lpr') then
+    begin
+       E.InterfaceOnly := false;
+       TSImpleEngine(E).IsProgram := True;
+
+       pp:= ParseSource(E, params, platform ,cpu, [poUseStreams]) as TPasProgram;
+
+       ParseProject (pp);
+    end
+    else
+    begin
+       M := ParseSource(E, params, platform , cpu, [poUseStreams]);
+       ParseUnit(M);
+       FreeAndNil(M);
+    end;
+  finally
+      E.Free;
   end;
-  E.Free;
 end;
 
 end.

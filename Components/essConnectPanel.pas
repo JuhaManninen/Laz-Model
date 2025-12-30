@@ -34,7 +34,7 @@ type
   // Available linestyles
   TessConnectionStyle = (csThin, csNormal, csThinDash);
   //Different kinds of arrowheads
-  TessConnectionArrowStyle = (asEmptyOpen,asEmptyClosed);
+  TessConnectionArrowStyle = (asNone,asEmptyOpen,asEmptyClosed,asDiamond);
 
   {
     Specifies a connection between two managed objects.
@@ -42,8 +42,11 @@ type
   TConnection = class
   public
     FFrom, FTo: TControl;
+    FLabFrom, FLabTo : TComponent;
+    FLabel : String;
     FConnectStyle: TessConnectionStyle;
-    ArrowStyle : TessConnectionArrowStyle;
+    ArrowToStyle : TessConnectionArrowStyle;
+    ArrowFromStyle : TessConnectionArrowStyle;
   end;
 
 
@@ -139,9 +142,15 @@ type
     function GetConnections : TList;
 
     // Add a connection from Src to Dst with the supplied style
-    function ConnectObjects(Src, Dst: TControl;
-      AStyle:TessConnectionStyle = csNormal;
-      Arrow : TessConnectionArrowStyle = asEmptyClosed): Boolean;
+    function ConnectObjects(Src, Dst : TControl;
+      const aLabel : String;
+      AStyle : TessConnectionStyle;
+      ArrowFrom, ArrowTo : TessConnectionArrowStyle) : Boolean;
+    function ConnectObjectsLables(Src, Dst : TControl;
+      const aLabel : String;
+      SrcLab, DstLab : TComponent;
+      AStyle : TessConnectionStyle; ArrowFrom,
+  ArrowTo : TessConnectionArrowStyle) : Boolean;
 
     // Free all managed objects and the managed controls.
     procedure ClearManagedObjects;
@@ -427,19 +436,32 @@ begin
   ClearSelection;
 end;
 
-function TessConnectPanel.ConnectObjects(Src, Dst: TControl;
-  AStyle: TessConnectionStyle; Arrow : TessConnectionArrowStyle): Boolean;
+function TessConnectPanel.ConnectObjects(Src, Dst : TControl;
+  const aLabel : String; AStyle : TessConnectionStyle; ArrowFrom,
+  ArrowTo : TessConnectionArrowStyle) : Boolean;
+begin
+  Result := ConnectObjectsLables(Src, Dst, aLabel, nil, nil, AStyle, ArrowFrom, ArrowTo);
+end;
+
+function TessConnectPanel.ConnectObjectsLables(Src, Dst : TControl;
+  const aLabel : String; SrcLab, DstLab : TComponent;
+  AStyle : TessConnectionStyle; ArrowFrom, ArrowTo : TessConnectionArrowStyle
+  ) : Boolean;
 var
   conn: TConnection;
 begin
   if (FindManagedControl(Src) <> nil) and (FindManagedControl(Dst) <> nil) and
-    (Src<>Dst) then
+    (Src<>Dst)  then
   begin
     conn := TConnection.Create;
     conn.FFrom := Src;
     conn.FTo := Dst;
+    conn.FLabel := aLabel;
+    conn.FLabFrom := SrcLab;
+    conn.FLabTo := DstLab;
     conn.FConnectStyle := AStyle;
-    conn.ArrowStyle := Arrow;
+    conn.ArrowFromStyle := ArrowFrom;
+    conn.ArrowToStyle := ArrowTo;
     FConnections.Add(conn);
     Result := True;
   end else
@@ -830,7 +852,7 @@ begin
       Canvas.Pen.Color := clBlack;
 
     Canvas.Brush.Color := clWhite;
-    DrawArrow(Canvas,p,p1,Conn.ArrowStyle);
+    DrawArrow(Canvas,p,p1,Conn.ArrowToStyle);
   end;
 
   Canvas.Pen.Style := psSolid;

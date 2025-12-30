@@ -44,17 +44,43 @@ type
 
   TOperationType = (otConstructor, otDestructor, otProcedure, otFunction);
 
+  { TNestedUnits }
+
+  TNestedUnits = class(TObjectList)
+  private
+    FUnitName : String;
+    FUnit : TUnitPackage;
+    function GetDeps(index : integer) : TNestedUnits;
+    function GetUnitName : String;
+  public
+    constructor Create(const aUP : String); reintroduce;
+    property UnitName : String read GetUnitName;
+    property ModelUnit : TUnitPackage read FUnit write FUnit;
+    function FindByName(const aUn : String; CaseSens : Boolean) : TNestedUnits;
+    function AddUnit(const aUn : String; CaseSens : Boolean) : TNestedUnits; overload;
+    property Deps[index : integer] : TNestedUnits read GetDeps; default;
+  end;
+
+  { TObjectModel }
+
   TObjectModel = class
   private
+    FNestedUnitsTree : TNestedUnits;
     Listeners: TInterfaceList;
     FModelRoot: TLogicPackage;
     FUnknownPackage: TUnitPackage;
     FLocked: boolean;
     procedure CreatePackages;
+    procedure SetDependence(E : TModelEntity; UNE : TUnitPackage);
   public
     constructor Create;
     destructor Destroy; override;
     procedure Fire(Method: TListenerMethodType; Info: TModelEntity = nil);
+    procedure AddNestedUnit(aUn : TUnitPackage;
+      CaseSens : Boolean); overload;
+    procedure AddNestedUnit(const aRoot, aUn : String;
+      CaseSens : Boolean); overload;
+    procedure CleanUpUnknown(CaseSens : Boolean);
     procedure AddListener(NewListener: IUnknown);
     procedure RemoveListener(Listener: IUnknown);
     procedure Clear;
@@ -126,11 +152,21 @@ type
     property TypeClassifier : TClassifier read FTypeClassifier write SetTypeClassifier;
   end;
 
+  { TProperty }
+
   TProperty = class(TAttribute)
-  { TODO : to be specified later }
+  private
+    FReadAttr, FWriteAttr : TFeature;
+    FReadAttrExpr, FWriteAttrExpr : String;
   protected
     class function GetBeforeListener: TGUID; override;
     class function GetAfterListener: TGUID; override;
+  public
+    property ReadAttr : TFeature read FReadAttr;
+    property WriteAttr : TFeature read FWriteAttr;
+    property ReadAttrExpr : String read FReadAttrExpr write FReadAttrExpr;
+    property WriteAttrExpr : String read FWriteAttrExpr write FWriteAttrExpr;
+    procedure LinkAttrs(aOwner : TClassifier);
   end;
 
   TDataType = class(TClassifier)
@@ -291,18 +327,67 @@ type
 const
   CompareFunc : array[boolean] of TStrCompare = (@CompareText, @CompareStr);
 
+{ TNestedUnits }
+
+function TNestedUnits.GetDeps(index : integer) : TNestedUnits;
+begin
+  Result := TNestedUnits(Items[index]);
+end;
+
+function TNestedUnits.GetUnitName : String;
+begin
+  Result := FUnitName;
+end;
+
+constructor TNestedUnits.Create(const aUP : String);
+begin
+  Inherited Create(True);
+  FUnitName := aUP;
+  FUnit := nil;
+end;
+
+function TNestedUnits.FindByName(const aUn : String; CaseSens : Boolean) : TNestedUnits;
+var i : integer;
+begin
+  for i := 0 to Count-1 do
+  begin
+    if CaseSens then
+    begin
+      if SameStr(aUn, Deps[i].UnitName) then
+        Exit(Deps[i]);
+    end else
+    begin
+      if SameText(aUn, Deps[i].UnitName) then
+        Exit(Deps[i]);
+    end;
+  end;
+  Result := nil;
+end;
+
+function TNestedUnits.AddUnit(const aUn : String; CaseSens : Boolean) : TNestedUnits;
+begin
+  Result := FindByName(aUn, CaseSens);
+  if not Assigned(Result) then
+  begin
+    Result := TNestedUnits.Create(aUn);
+    Add(Result);
+  end;
+end;
+
 { TObjectModel }
 
 constructor TObjectModel.Create;
 begin
   Listeners := TInterfaceList.Create;
   CreatePackages;
+  FNestedUnitsTree := TNestedUnits.Create(FModelRoot.Name);
 end;
 
 destructor TObjectModel.Destroy;
 begin
   FreeAndNil(Listeners);
   FreeAndNil(FModelRoot);
+  FreeAndNil(FNestedUnitsTree);
 // FUnknownPackage will be freed by FModelRoot who owns it
   inherited;
 end;
@@ -315,12 +400,14 @@ begin
   begin
     Lock;
     FreeAndNil(FModelRoot);
+    FNestedUnitsTree.Clear;
     CreatePackages;
     UnLock;
   end
   else
   begin
     FreeAndNil(FModelRoot);
+    FNestedUnitsTree.Clear;
     CreatePackages;
   end;
 end;
@@ -348,6 +435,185 @@ begin
         raise Exception.Create(ClassName + ' Eventmethod not recognized.');
       end;
     end;
+end;
+
+procedure TObjectModel.SetDependence(E : TModelEntity; UNE: TUnitPackage);
+var DI : IModelIterator;
+  found : boolean;
+begin
+  if (not Assigned(E)) or (E = UNE) then Exit;
+
+  if E is TUnitPackage then
+  begin
+    DI := TUnitPackage(E).GetUnitDependencies;
+    found := false;
+    while DI.HasNext do
+    begin
+      if (DI.Next as TUnitDependency).Package = UNE then
+      begin
+        found := true;
+        break;
+      end;
+    end;
+    if not found then
+      TUnitPackage(E).AddUnitDependency(UNE, viPublic);
+  end else
+    SetDependence(E.Owner, UNE);
+end;
+
+procedure TObjectModel.AddNestedUnit(aUn : TUnitPackage; CaseSens : Boolean);
+var i : integer;
+begin
+  if not Assigned(aUn) then Exit;
+
+  for i := 0 to FNestedUnitsTree.Count-1 do
+  begin
+    if Assigned(FNestedUnitsTree[i].FindByName(aUn.Name, CaseSens)) then
+      if Assigned(FNestedUnitsTree[i].ModelUnit) then
+        SetDependence(FNestedUnitsTree[i].ModelUnit, aUn);
+  end;
+
+  FNestedUnitsTree.AddUnit(aUn.Name, CaseSens).ModelUnit := aUn;
+end;
+
+procedure TObjectModel.AddNestedUnit(const aRoot, aUn : String;
+  CaseSens : Boolean);
+var NP : TNestedUnits;
+begin
+  NP := FNestedUnitsTree.FindByName(aRoot, CaseSens);
+
+  if Assigned(NP) then
+    NP.AddUnit(aUn, CaseSens);
+end;
+
+procedure TObjectModel.CleanUpUnknown(CaseSens : Boolean);
+
+var
+  olde, newe : TModelEntity;
+  UNE : TUnitPackage;
+  repfound : Boolean;
+
+procedure ReplaceAllEntities(It : TObjectList);
+var E : TModelEntity;
+  i : integer;
+begin
+  if not Assigned(It) then
+    Exit;
+  for i := 0 to It.Count-1 do
+  begin
+    E := TModelEntity(It[i]);
+    if (E <> olde) then
+    begin
+      if E.Owner = olde then E.Owner := newe;
+      if E is TClass then
+      begin
+        if (TClass(E).Ancestor = olde) and (newe is TClass) then
+        begin
+          TClass(E).Ancestor := newe as TClass;
+          SetDependence(E, UNE);
+          repfound := true;
+        end;
+        ReplaceAllEntities(TClass(E).FFeatures);
+      end else
+      if E is TInterface then
+      begin
+        if (TInterface(E).Ancestor = olde) and (newe is TInterface) then
+        begin
+          TInterface(E).Ancestor := newe as TInterface;
+          SetDependence(E, UNE);
+          repfound := true;
+        end;
+        ReplaceAllEntities(TInterface(E).FFeatures);
+      end  else
+      if E is TClassifier then
+      begin
+        ReplaceAllEntities(TClassifier(E).FFeatures);
+      end else
+      if E is TAttribute then
+      begin
+        if Assigned(TAttribute(E).TypeClassifier) then
+        if (TAttribute(E).TypeClassifier = olde) then
+        begin
+          TAttribute(E).TypeClassifier := newe as TClassifier;
+          SetDependence(E, UNE);
+          repfound := true;
+        end;
+      end else
+      if E is TOperation then
+      begin
+        if Assigned(TOperation(E).ReturnValue) then
+        if (TOperation(E).ReturnValue = olde) then
+        begin
+          TOperation(E).ReturnValue := newe as TClassifier;
+          SetDependence(E, UNE);
+          repfound := true;
+        end;
+        ReplaceAllEntities(TOperation(E).FParameters);
+      end else
+      if E is TParameter then
+      begin
+        if Assigned(TParameter(E).TypeClassifier) then
+        if (TParameter(E).TypeClassifier = olde) then
+        begin
+          TParameter(E).TypeClassifier := newe as TClassifier;
+          SetDependence(E, UNE);
+          repfound := true;
+        end;
+      end;
+    end;
+  end;
+end;
+
+var
+  i, j, k : integer;
+  UPI, MI, IUI : IModelIterator;
+
+  ME, CE : TModelEntity;
+
+
+  issame  : boolean;
+begin
+  i := 0;
+  MI := UnknownPackage.GetClassifiers;
+
+  while i < MI.Count do
+  begin
+    ME := TModelEntity(MI.List[i]);
+    repfound := false;
+    UPI := ModelRoot.GetAllUnitPackages;
+    for j := 0 to UPI.Count-1 do
+    begin
+      UNE := TUnitPackage(UPI.List[j]);
+      if UNE <> UnknownPackage then
+      begin
+        IUI := UNE.GetClassifiers;
+        for k := 0 to IUI.Count-1 do
+        begin
+          CE := TModelEntity(IUI.List[k]);
+          if CaseSens then
+            issame := SameStr(CE.Name, ME.Name) else
+            issame := SameText(CE.Name, ME.Name);
+          if (CE <> ME) and issame then
+          if (CE is TClassifier) then
+          begin
+            olde := ME;
+            newe := CE;
+            ReplaceAllEntities(ModelRoot.GetAllClassifiers.List);
+            if repfound then
+              Break;
+          end;
+        end;
+      end;
+      if repfound then begin
+        break;
+      end;
+    end;
+    if repfound then
+    begin
+      MI.List.Delete(i);
+    end else
+      Inc(i);
+  end;
 end;
 
 
@@ -692,6 +958,10 @@ function TClass.AddProperty(const NewName: string): TProperty;
 begin
   Result := TProperty.Create(Self);
   Result.FName := NewName;
+  Result.FReadAttrExpr := '';
+  Result.FWriteAttrExpr := '';
+  Result.FReadAttr := nil;
+  Result.FWriteAttr := nil;
   FFeatures.Add(Result);
 end;
 
@@ -981,6 +1251,31 @@ end;
 class function TProperty.GetAfterListener: TGUID;
 begin
   Result := IAfterPropertyListener;
+end;
+
+procedure TProperty.LinkAttrs(aOwner : TClassifier);
+
+function LinkAttr(const Expr : String) : TFeature;
+var
+  MI : IModelIterator;
+  F : TFeature;
+begin
+  MI := aOwner.GetFeatures;
+  while MI.HasNext do
+  begin
+    F := TFeature(MI.Next);
+    if (not ( F is TProperty )) and SameText(F.Name, Expr) then
+    begin
+      Result := F;
+      Exit;
+    end;
+  end;
+  Result := nil;
+end;
+
+begin
+  FReadAttr :=  LinkAttr(FReadAttrExpr);
+  FWriteAttr :=  LinkAttr(FWriteAttrExpr);
 end;
 
 class function TProperty.GetBeforeListener: TGUID;

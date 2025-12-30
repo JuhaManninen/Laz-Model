@@ -25,11 +25,16 @@ unit uConfig;
 interface
 
 uses
-  Classes, IniFiles;
+  Classes, IniFiles, uViewIntegrator;
 
 type
   //Save changed diagram layout setting
   TDiSaveSetting = (dsAlways,dsAsk,dsNever);
+  TDotPrefs = (dotRankDir,
+               dotRankSep,  dotNodeSep,
+               dotFontSize, dotFontName,
+               dotPort,     dotSplines,
+               dotConcentrate);
 
   { TConfig }
 
@@ -40,6 +45,17 @@ type
     FDiShowAssoc: boolean;
     FDiVisibilityFilter: integer;
     FEditorCommandLine: String;
+    FAdditionalDefines : String;
+
+    FDotAddUrls : Boolean;
+    FDotUrlsPrefix : String;
+
+    FDotPrefs : Array [TDiagramKind, TDotPrefs] of String;
+
+    FMDGenIgnoreEntites : String;
+    function GetDotPref(DiaKind : TDiagramKind; DotOpt : TDotPrefs ) : String;
+    procedure SetDotPref(DiaKind : TDiagramKind; DotOpt : TDotPrefs ;
+      AValue : String);
   public
     constructor Create;
     destructor Destroy; override;
@@ -49,6 +65,12 @@ type
     IsTerminating : boolean;
 
     property EditorCommandLine: String read FEditorCommandLine write FEditorCommandLine;
+    property AdditionalDefines: String read FAdditionalDefines write FAdditionalDefines;
+    property DotAddUrls : Boolean read FDotAddUrls write FDotAddUrls;
+    property DotUrlsPrefix: String read FDotUrlsPrefix write FDotUrlsPrefix;
+    property DotPref[DiaKind : TDiagramKind; DotOpt :TDotPrefs ]: String read GetDotPref write SetDotPref;
+
+    property MDGenIgnoreEntites : String read FMDGenIgnoreEntites write FMDGenIgnoreEntites;
 
     procedure WriteStr(const Key : string; const Value : string);
     function ReadStr(const Key : string; const Default : string) : string;
@@ -67,6 +89,16 @@ type
 var
   Config: TConfig;
 
+  cDIA2STR  : array [TDiagramKind] of String = ('Package', 'Class');
+  cDOTP2STR : array [TDotPrefs] of String = ('rankdir',
+                                             'ranksep',
+                                             'nodesep',
+                                             'fontsize',
+                                             'fontname',
+                                             'port',
+                                             'splines',
+                                             'concentrate');
+
 implementation
 
 uses
@@ -74,10 +106,27 @@ uses
 
 const
   cSettings = 'Settings';
+  cDotDefaults : Array [TDiagramKind, TDotPrefs] of String = (
+  ('BT', '0.75', '0.25', '12', 'sans', '_', 'true', 'false'),
+  ('LR', '1.25', '0.25', '12', 'courier', 'e', 'ortho', 'true'));
+
+function TConfig.GetDotPref(DiaKind : TDiagramKind; DotOpt : TDotPrefs
+  ) : String;
+begin
+  Result := FDotPrefs[DiaKind, DotOpt];
+end;
+
+procedure TConfig.SetDotPref(DiaKind : TDiagramKind; DotOpt : TDotPrefs ;
+  AValue : String);
+begin
+  FDotPrefs[DiaKind, DotOpt] := AValue;
+end;
 
 constructor TConfig.Create;
 var
   FDir: String;
+  i : TDiagramKind;
+  o : TDotPrefs;
 begin
   IsLimitedColors := False;
 
@@ -93,6 +142,18 @@ begin
   FDiShowAssoc := ReadInt('DiShowAssoc',0)<>0;
   FDiVisibilityFilter := ReadInt('DiVisibilityFilter',0);
   FEditorCommandLine := ReadStr('EditorCommandLine','');
+  FAdditionalDefines := ReadStr('AdditionalDefines','-Mobjfpc');
+  FDotUrlsPrefix := ReadStr('DotUrlsPrefix','https://yoururl.here/');
+  FDotAddUrls := ReadBool('DotAddUrls',false);
+
+  for i := Low(TDiagramKind) to high(TDiagramKind) do
+  for o := Low(TDotPrefs) to high(TDotPrefs) do
+  begin
+    FDotPrefs[i, o] := ReadStr('DotPref'+cDIA2STR[i]+cDOTP2STR[o],
+                                  cDotDefaults[i, o]);
+  end;
+
+  FMDGenIgnoreEntites := ReadStr('MDGenIgnoreEntites', '');
 end;
 
 destructor TConfig.Destroy;
@@ -114,8 +175,7 @@ begin
   end;
 end;
 
-function TConfig.ReadInt(const Key: string;
-  const Default: integer): integer;
+function TConfig.ReadInt(const Key : string; const Default : Integer) : Integer;
 begin
   Result := FIni.ReadInteger(cSettings, Key, Default);
 end;
@@ -146,11 +206,23 @@ begin
 end;
 
 procedure TConfig.StoreSettings;
+var
+  i : TDiagramKind;
+  o : TDotPrefs;
 begin
   WriteInt('DiSave',Integer(FDiSave));
   WriteBool('DiShowAssoc',FDiShowAssoc);
   WriteInt('DiVisibilityFilter',FDiVisibilityFilter);
   WriteStr('EditorCommandLine',FEditorCommandLine);
+  WriteStr('AdditionalDefines',FAdditionalDefines);
+  WriteBool('DotAddUrls',FDotAddUrls);
+  WriteStr('DotUrlsPrefix',FDotUrlsPrefix);
+  for i := Low(TDiagramKind) to high(TDiagramKind) do
+  for o := Low(TDotPrefs) to high(TDotPrefs) do
+  begin
+    WriteStr('DotPref'+cDIA2STR[i]+cDOTP2STR[o], FDotPrefs[i, o]);
+  end;
+  WriteStr('MDGenIgnoreEntites', FMDGenIgnoreEntites);
 end;
 
 initialization

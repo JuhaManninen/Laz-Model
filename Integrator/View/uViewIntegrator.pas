@@ -29,6 +29,8 @@ uses uIntegrator, uModel, uModelEntity, Controls, Graphics,
 
 type
 
+  TDiagramKind = (diakPackage, diakClass);
+
   //Baseclass for integrators that are parented
   TViewIntegrator = class(TTwowayIntegrator)
   private
@@ -45,11 +47,17 @@ type
     property CurrentEntity : TModelEntity read GetCurrentEntity write SetCurrentEntity;
   end;
 
+  TCheckIgnored = function (E : TModelEntity) : Boolean of object;
+
   //Class to show/edit a model in a powerpointy view
+
+  { TDiagramIntegrator }
+
   TDiagramIntegrator = class(TViewIntegrator)
   private
     FOnUpdateToolbar: TNotifyEvent;
     FOnUpdateZoom: TNotifyEvent;
+    FOnCheckIgnored : TCheckIgnored;
     FShowAssoc: boolean;
   protected
     FVisibilityFilter: TVisibility;
@@ -69,6 +77,7 @@ type
     function GetSelectedRect : TRect; virtual; abstract;
     procedure PaintTo(Canvas: TCanvas; X, Y: integer; SelectedOnly : boolean); virtual; abstract;
     procedure SaveAsPicture(const FileName : string);
+    procedure SaveAsDotGraph(DK : TDiagramKind; const FileName : string); virtual; abstract;
     procedure DoLayout; virtual; abstract;
     function GetClickAreas : TStringList; virtual; abstract;
     procedure DrawZoom(Canvas : TCanvas; W,H : integer); virtual; abstract;
@@ -85,6 +94,7 @@ type
     property VisibilityFilter : TVisibility read FVisibilityFilter write SetVisibilityFilter;
     property OnUpdateToolbar : TNotifyEvent read FOnUpdateToolbar write FOnUpdateToolbar;
     property OnUpdateZoom : TNotifyEvent read FOnUpdateZoom write FOnUpdateZoom;
+    property OnCheckIgnored : TCheckIgnored read FOnCheckIgnored write FOnCheckIgnored;
     //True if associations are to be shown
     property ShowAssoc : boolean read FShowAssoc write SetShowAssoc;
   end;
@@ -259,6 +269,7 @@ begin
   inherited Create(om, AParent, AFeedback);
   FShowAssoc := Config.DiShowAssoc;
   FVisibilityFilter := TVisibility( Config.DiVisibilityFilter );
+  OnCheckIgnored := nil;
 end;
 
 initialization

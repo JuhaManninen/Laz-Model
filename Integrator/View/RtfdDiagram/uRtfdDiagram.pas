@@ -31,6 +31,9 @@ uses uViewIntegrator, essConnectPanel, uModelEntity, uModel, Controls, uListener
 
 
 type
+
+  { TRtfdDiagram }
+
   TRtfdDiagram = class(TDiagramIntegrator,
       IBeforeObjectModelListener, IAfterObjectModelListener,
       IAfterUnitPackageListener)
@@ -73,6 +76,7 @@ type
     constructor Create(om: TObjectModel; AParent: TWinControl; AFeedback : IEldeanFeedback = nil); override;
     destructor Destroy; override;
     procedure InitFromModel; override;
+    procedure SaveAsDotGraph(DK : TDiagramKind; const FileName : string); override;
     procedure PaintTo(Canvas: TCanvas; X, Y: integer; SelectedOnly : boolean); override;
     procedure GetDiagramSize(var W,H : integer); override;
     procedure SetPackage(const Value: TAbstractPackage); override;
@@ -91,7 +95,7 @@ type
 implementation
 
 uses uRtfdDiagramFrame, Math, LCLIntf, LCLType, uError, SysUtils,
-  uIterators, IniFiles, Dialogs, EssLayout, uConfig, contnrs, ExtCtrls,
+  uIterators, IniFiles, Dialogs, essLayout, uConfig, contnrs, ExtCtrls,
   uIntegrator;
 
 
@@ -232,6 +236,330 @@ begin
   FHasChanged := False;
 end;
 
+procedure TRtfdDiagram.SaveAsDotGraph(DK : TDiagramKind; const FileName : string
+  );
+
+var AddCons : TList;
+
+procedure OptimizeConnections(CL : TList);
+var i : integer;
+    j : Integer;
+    Con, NCon : TConnection;
+    frp, tpo, frn, ton : TComponent;
+    found : Integer;
+    arF : TessConnectionArrowStyle;
+begin
+  i := 0;
+  while i < CL.Count do
+  begin
+    Con := TConnection(CL[i]);
+    frp := Con.FLabFrom;
+    tpo := Con.FLabTo;
+    arF := Con.ArrowFromStyle;
+    found := -1;
+    if Assigned(frp) and (not Assigned(tpo)) then
+    begin
+      frn := Con.FFrom;
+      ton := Con.FTo;
+      j := i + 1;
+      while j < CL.Count do
+      begin
+        Con := TConnection(CL[j]);
+        if (Con.FFrom = ton) and Assigned(Con.FLabFrom) and
+           (Con.FTo = frn) then
+        begin
+          NCon := TConnection.Create;
+          NCon.FFrom := TControl(frn);
+          NCon.FLabFrom := frp;
+          NCon.FTo := TControl(ton);
+          NCon.FLabTo := Con.FLabFrom;
+          NCon.ArrowFromStyle := arF;
+          NCon.ArrowToStyle := Con.ArrowFromStyle;
+          NCon.FConnectStyle := csThinDash;
+          found := j;
+          break;
+        end;
+        Inc(j);
+      end;
+    end;
+    if found > 0 then
+    begin
+      CL.Delete(found);
+      CL.Delete(i);
+      CL.Add(NCon);
+      AddCons.Add(NCon);
+    end else
+      Inc(i);
+  end;
+end;
+
+function CheckVis(E : TModelEntity) : Boolean;
+begin
+  if not assigned(E) then Exit(true);
+  if assigned(OnCheckIgnored) then
+    Result := not OnCheckIgnored(E) else
+    Result := true;
+end;
+
+var SL : TStringList;
+    ManagedObjs : TList;
+    Connections : TList;
+    Obj : TRtfdBox;
+    frp, tpo, frn, ton : TComponent;
+    Con : TConnection;
+    i, j : integer;
+    Lab : TRtfdCustomLabel;
+    S, side, opside : String;
+    useside : Boolean;
+    vis : TVisibility;
+
+    lstEdgeStyle : TessConnectionStyle;
+    lstEdgeToArrow, lstEdgeFromArrow : TessConnectionArrowStyle;
+    edgnum : integer;
+begin
+  SL := TStringList.Create;
+  try
+    SL.Add('digraph {');
+    SL.Add('graph [');
+    SL.Add('rankdir = "'+Config.DotPref[DK, dotRankDir]+'"');
+    SL.Add('ranksep = "'+Config.DotPref[DK, dotRankSep]+'"');
+    SL.Add('nodesep = "'+Config.DotPref[DK, dotNodeSep]+'"');
+    SL.Add('splines = "'+Config.DotPref[DK, dotSplines]+'"');
+    SL.Add('concentrate = "'+Config.DotPref[DK, dotConcentrate]+'"');
+    SL.Add('];');
+    SL.Add('node [');
+    SL.Add('fontsize = "'+Config.DotPref[DK, dotFontSize]+'"');
+    SL.Add('fontname = "'+Config.DotPref[DK, dotFontName]+'"');
+    SL.Add('shape = "rect"');
+    SL.Add('];');
+    SL.Add('edge [');
+    SL.Add('fontsize = "'+Config.DotPref[DK, dotFontSize]+'"');
+    SL.Add('fontname = "'+Config.DotPref[DK, dotFontName]+'"');
+    SL.Add('];');
+
+    if Config.DotPref[DK, dotPort] = 'w' then
+    begin
+      side := 'w';
+      opside := 'e';
+      useside := true;
+    end else
+    if Config.DotPref[DK, dotPort] = 'e' then
+    begin
+      side := 'e';
+      opside := 'w';
+      useside := true;
+    end else
+    begin
+      side := '';
+      opside := '';
+      useside := false;
+    end;
+
+    AddCons := TList.Create;
+    try
+      ManagedObjs := Panel.GetManagedObjects;
+      Connections := Panel.GetConnections;
+      try
+        OptimizeConnections(Connections);
+
+        for i := 0 to ManagedObjs.Count-1 do
+        begin
+          Obj := TRtfdBox(ManagedObjs[i]);
+          if Obj.Visible and CheckVis(Obj.Entity) then
+          begin
+            if Obj is TRtfdUnitPackage then
+            begin
+              if Config.DotAddUrls then
+              begin
+                SL.Add(Format('"%.1X" [URL="%s";label="%s";shape="tab"];',
+                                    [Obj.ComponentIndex, Config.DotUrlsPrefix + Obj.Entity.FullURIName, TRtfdUnitPackage(Obj).P.Name]));
+              end else
+              begin
+                SL.Add(Format('"%.1X" [label="%s";shape="tab"];',
+                                    [Obj.ComponentIndex, TRtfdUnitPackage(Obj).P.Name]));
+              end;
+            end else
+            if Obj is TRtfdClass then
+            begin
+              S := Format('"%.1X" [label=<<table border="1" cellborder="1" cellspacing="0">',
+                                    [Obj.ComponentIndex,  Obj.ComponentIndex]);
+
+              for j := 0 to TRtfdClass(Obj).ComponentCount-1 do
+              begin
+                if (TRtfdClass(Obj).Components[j] is TRtfdCustomLabel) then
+                begin
+                  Lab := TRtfdClass(Obj).Components[j] as TRtfdCustomLabel;
+
+                  if (Lab is TRtfdOperation) or
+                     (Lab is TRtfdAttribute) then
+                  begin
+                    if Assigned(Lab.ModelEntity) then
+                      vis := Lab.ModelEntity.Visibility else
+                      vis := viPublic;
+                  end else vis := viPublic;
+
+                  if (vis >= VisibilityFilter) and CheckVis(Lab.ModelEntity) then
+                  begin
+                    s := s + '<tr>';
+                    if Assigned(Lab.ModelEntity) and
+                      (Lab.ModelEntity is TFeature) then
+                    begin
+                      case vis of
+                        viPrivate:
+                        s := s + '<td border="0">-</td>';
+                        viProtected:
+                        s := s + '<td border="0">#</td>';
+                        viPublic, viPublished:
+                        s := s + '<td border="0">+</td>';
+                      end;
+                    end;
+
+                    if Config.DotAddUrls and Assigned(Lab.ModelEntity) then
+                      S := s + Format('<td port="%.1X" href="%s" title="%s" ',
+                                          [Lab.ComponentIndex, Config.DotUrlsPrefix + Lab.ModelEntity.FullURIName, Lab.ModelEntity.FullName])
+                    else
+                      s := s + Format('<td port="%.1X" ', [Lab.ComponentIndex]);
+                    if Lab is TRtfdSeparator then
+                    begin
+                      s := s + 'colspan="2" sides="T" ';
+                    end else
+                    if Lab is TRtfdClassName then
+                    begin
+                      s := s + 'colspan="2" border="0" bgcolor="#eeeeee" color="black" align="center" ';
+                    end else
+                    begin
+                      s := s + 'border="0" align="left" ';
+                    end;
+                    s := s + '>';
+                    s := s + Lab.Caption;
+                    s := s + '</td></tr>';
+                  end;
+                end;
+              end;
+              S := S + '</table>>; shape="plain"];';
+              SL.Add(S);
+            end;
+          end;
+        end;
+        edgnum := 0;
+        lstEdgeToArrow := asNone;
+        lstEdgeFromArrow := asNone;
+        lstEdgeStyle := csNormal;
+        for i := 0 to Connections.Count-1 do
+        begin
+          Con := TConnection(Connections[i]);
+          frn := nil;
+          ton := nil;
+          frp := nil;
+          tpo := nil;
+          if Con.FLabFrom is TRtfdCustomLabel then
+          begin
+            frn := Con.FFrom;
+            frp := Con.FLabFrom;
+          end else
+            frn := Con.FFrom;
+          if Con.FLabTo is TRtfdCustomLabel then
+          begin
+            ton := Con.FTo;
+            tpo := Con.FLabTo;
+          end else
+            ton := Con.FTo;
+          if Assigned(frn) and Assigned(ton) and
+             TRtfdBox(frn).Visible and TRtfdBox(ton).Visible and
+             CheckVis(TRtfdBox(frn).Entity) and
+             CheckVis(TRtfdBox(ton).Entity) then
+          begin
+            if (lstEdgeStyle <> Con.FConnectStyle) or (edgnum = 0) then
+            begin
+              S := 'edge [style=';
+              case Con.FConnectStyle of
+                csThin : s := s + 'solid';
+                csNormal : s := s + 'bold';
+                csThinDash : s := s + 'dashed';
+              end;
+              s := s + ']';
+              SL.Add(S);
+              lstEdgeStyle := Con.FConnectStyle;
+            end;
+
+            if (lstEdgeToArrow <> Con.ArrowToStyle) or
+               (lstEdgeFromArrow <> Con.ArrowFromStyle) then
+            begin
+              S := 'edge [';
+
+              if (Con.ArrowToStyle <> asNone) and
+                 (Con.ArrowFromStyle <> asNone) then
+                 s := s + 'dir=both' else
+              if (Con.ArrowToStyle <> asNone)  then
+                 s := s + 'dir=forward' else
+              if (Con.ArrowFromStyle <> asNone) then
+                 s := s + 'dir=back' else
+                 s := s + 'dir=none';
+
+              case Con.ArrowToStyle of
+                asEmptyOpen : s := s + ' arrowhead=vee';
+                asEmptyClosed : s := s + ' arrowhead=empty';
+                asDiamond : s := s + ' arrowhead=odiamond';
+              end;
+              case Con.ArrowFromStyle of
+                asEmptyOpen : s := s + ' arrowtail=vee';
+                asEmptyClosed : s := s + ' arrowtail=empty';
+                asDiamond : s := s + ' arrowtail=odiamond';
+              end;
+              s := s + ']';
+              SL.Add(S);
+              lstEdgeFromArrow := Con.ArrowFromStyle;
+              lstEdgeToArrow := Con.ArrowToStyle;
+            end;
+
+            if Assigned(frp) then
+            begin
+              S := Format('"%.1X":"%.1X"', [frn.ComponentIndex, frp.ComponentIndex]);
+              if useside then
+                S := S + ':' + side;
+            end else
+              S := Format('"%.1X"', [frn.ComponentIndex]);
+
+            S := S + ' -> ';
+            if Assigned(tpo) then
+            begin
+              S := S + Format('"%.1X":"%.1X"', [ton.ComponentIndex, tpo.ComponentIndex]);
+              if useside then
+                S := S + ':' + opside;
+            end else
+              S := S + Format('"%.1X"', [ton.ComponentIndex]);
+
+            if Length(Con.FLabel) > 0 then
+              S := S + '[label='+Con.FLabel+']';
+
+           { if Con.ArrowStyle = asBothDiamond then
+              S := S + ' [constraint=false]';
+           }
+
+            SL.Add(S);
+
+            Inc(edgnum);
+          end;
+        end;
+      finally
+        Connections.Free;
+        ManagedObjs.Free;
+      end;
+      for i := 0 to AddCons.Count-1 do
+      begin
+        TConnection(AddCons[i]).Free;
+      end;
+    finally
+      AddCons.Free;
+    end;
+
+    SL.Add('}');
+    SL.SaveToFile(FileName);
+  finally
+    SL.Free;
+  end;
+end;
+
 
 
 procedure TRtfdDiagram.ModelBeforeChange(Sender: TModelEntity);
@@ -282,6 +610,7 @@ begin
   BoxNames.Clear;
   FHasHidden := False;
   FHasChanged := False;
+
 end;
 
 
@@ -334,6 +663,7 @@ begin
         while Mi.HasNext do
         begin
           A := TAttribute(Mi.Next);
+          if A.Visibility >= VisibilityFilter then
           if Assigned(A.TypeClassifier) and (GetBox(A.TypeClassifier.FullName)=nil) and
             (A.TypeClassifier<>C) and (A.TypeClassifier<>C.Ancestor) and
             (A.TypeClassifier.Owner<>Model.UnknownPackage) then //Avoid getting temp-types from unknown (java 'int' for example)
@@ -368,14 +698,20 @@ end;
 //Make arrows between boxes
 procedure TRtfdDiagram.ResolveAssociations;
 var
-  I : integer;
+  I, J : integer;
   CBox: TRtfdClass;
   IBox : TRtfdInterface;
   A : TAttribute;
+  O : uModel.TOperation;
 
   UBox : TRtfdUnitPackage;
   U : TUnitPackage;
   Dep : TUnitDependency;
+
+  AtrLab : TRtfdAttribute;
+  OpLab  : TRtfdOperation;
+
+  arT : TessConnectionArrowStyle;
 
   Mi : IModelIterator;
   DestBox: TRtfdBox;
@@ -384,63 +720,130 @@ begin
     if (BoxNames.Objects[I] is TRtfdClass) then
     begin //Class
       CBox := (BoxNames.Objects[I] as TRtfdClass);
-      //Ancestor
-      if Assigned((CBox.Entity as TClass).Ancestor) then
+      if (CBox.Entity is TClass) then
       begin
-        DestBox := GetBox( (CBox.Entity as TClass).Ancestor.FullName );
-        if Assigned(DestBox) then
-          Panel.ConnectObjects(CBox,DestBox);
-      end;
-      //Implements
-      Mi := (CBox.Entity as TClass).GetImplements;
-      while Mi.HasNext do
-      begin
-        DestBox := GetBox( Mi.Next.FullName );
-        if Assigned(DestBox) then
-          Panel.ConnectObjects(CBox,DestBox,csThinDash);
-      end;
-      //Attributes associations
-      if ShowAssoc then
-      begin
-        Mi := (CBox.Entity as TClass).GetAttributes;
+        //Ancestor
+        if Assigned((CBox.Entity as TClass).Ancestor) then
+        begin
+          DestBox := GetBox( (CBox.Entity as TClass).Ancestor.FullName );
+          if Assigned(DestBox) then
+            Panel.ConnectObjects(CBox,DestBox,'',csNormal,asNone,asEmptyClosed);
+        end;
+        //Implements
+        Mi := (CBox.Entity as TClass).GetImplements;
         while Mi.HasNext do
         begin
-          A := TAttribute(Mi.Next);
-          //Avoid arrows that points to themselves, also associations to ancestor (double arrows)
-          if Assigned(A.TypeClassifier) and
-            (A.TypeClassifier<>CBox.Entity) and
-            (A.TypeClassifier<>(CBox.Entity as TClass).Ancestor) then
+          DestBox := GetBox( Mi.Next.FullName );
+          if Assigned(DestBox) then
+            Panel.ConnectObjects(CBox,DestBox,'',csThinDash,asNone,asEmptyOpen);
+        end;
+        //Attributes associations
+        if ShowAssoc then
+        begin
+          Mi := (CBox.Entity as TClass).GetAttributes;
+          while Mi.HasNext do
           begin
-            DestBox := GetBox( A.TypeClassifier.FullName );
-            //Test for same entity, this will filter out TDatatype that can have same name as a class
-            if Assigned(DestBox) and (DestBox.Entity=A.TypeClassifier) then
-              Panel.ConnectObjects(CBox,DestBox,csThin,asEmptyOpen);
+            A := TAttribute(Mi.Next);
+            //Avoid arrows that points to themselves, also associations to ancestor (double arrows)
+            if A.Visibility >= VisibilityFilter then
+            if Assigned(A.TypeClassifier) and
+              (A.TypeClassifier<>CBox.Entity) and
+              (A.TypeClassifier<>(CBox.Entity as TClass).Ancestor) then
+            begin
+              DestBox := GetBox( A.TypeClassifier.FullName );
+              //Test for same entity, this will filter out TDatatype that can have same name as a class
+              if Assigned(DestBox) and (DestBox.Entity=A.TypeClassifier) then
+              begin
+                AtrLab := nil;
+                for J := 0 to CBox.ComponentCount-1 do
+                begin
+                  if CBox.Components[j] is TRtfdAttribute then
+                  begin
+                    if TRtfdAttribute(CBox.Components[j]).ModelEntity = A then
+                    begin
+                      AtrLab := TRtfdAttribute(CBox.Components[j]);
+                      Break;
+                    end;
+                  end;
+                end;
+                if Assigned(AtrLab) then begin
+                  if (A is TProperty) then
+                  begin
+                    if (TProperty(A).ReadAttr is TAttribute) then
+                      arT := asDiamond else
+                      arT := asEmptyOpen;
+                  end else
+                    arT := asDiamond;
+
+                  Panel.ConnectObjectsLables(CBox,DestBox,A.Name,AtrLab,nil,csThinDash,arT,asNone);
+                end;
+                { else
+                  Panel.ConnectObjects(CBox,DestBox,csThinDash,asDiamond);}
+              end;
+            end;
+          end;
+          Mi := (CBox.Entity as TClass).GetOperations;
+          while Mi.HasNext do
+          begin
+            O := uModel.TOperation(Mi.Next);
+            //Avoid arrows that points to themselves, also associations to ancestor (double arrows)
+            if O.Visibility >= VisibilityFilter then
+            if Assigned(O.ReturnValue) and
+              (O.ReturnValue<>CBox.Entity) and
+              (O.ReturnValue<>(CBox.Entity as TClass).Ancestor) then
+            begin
+              DestBox := GetBox( O.ReturnValue.FullName );
+              //Test for same entity, this will filter out TDatatype that can have same name as a class
+              if Assigned(DestBox) and (DestBox.Entity=O.ReturnValue) then
+              begin
+                OpLab := nil;
+                for J := 0 to CBox.ComponentCount-1 do
+                begin
+                  if CBox.Components[j] is TRtfdOperation then
+                  begin
+                    if TRtfdOperation(CBox.Components[j]).ModelEntity = O then
+                    begin
+                      OpLab := TRtfdOperation(CBox.Components[j]);
+                      Break;
+                    end;
+                  end;
+                end;
+                if Assigned(AtrLab) then
+                  Panel.ConnectObjectsLables(CBox,DestBox,O.Name,OpLab,nil,csThinDash,asEmptyOpen,asNone);
+              end;
+            end;
           end;
         end;
       end;
     end else if (BoxNames.Objects[I] is TRtfdInterface) then
     begin //Interface
       IBox := (BoxNames.Objects[I] as TRtfdInterface);
-      //Ancestor
-      if Assigned((IBox.Entity as TInterface).Ancestor) then
+      if (IBox.Entity is TInterface) then
       begin
-        DestBox := GetBox( (IBox.Entity as TInterface).Ancestor.FullName );
-        if Assigned(DestBox) then
-          Panel.ConnectObjects(IBox,DestBox);
+        //Ancestor
+        if Assigned((IBox.Entity as TInterface).Ancestor) then
+        begin
+          DestBox := GetBox( (IBox.Entity as TInterface).Ancestor.FullName );
+          if Assigned(DestBox) then
+            Panel.ConnectObjects(IBox,DestBox,'',csNormal,asNone,asEmptyClosed);
+        end;
       end;
     end else if (BoxNames.Objects[I] is TRtfdUnitPackage) then
     begin //Unit
       UBox := (BoxNames.Objects[I] as TRtfdUnitPackage);
-      U := UBox.Entity as TUnitPackage;
-      Mi := U.GetUnitDependencies;
-      while Mi.HasNext do
+      if (UBox.Entity is TUnitPackage) then
       begin
-        Dep := Mi.Next as TUnitDependency;
-        if Dep.Visibility=viPublic then
+        U := UBox.Entity as TUnitPackage;
+        Mi := U.GetUnitDependencies;
+        while Mi.HasNext do
         begin
-          DestBox := GetBox( Dep.Package.FullName );
-          if Assigned(DestBox) then
-            Panel.ConnectObjects(UBox,DestBox,csThinDash,asEmptyOpen);
+          Dep := Mi.Next as TUnitDependency;
+          if Dep.Visibility=viPublic then
+          begin
+            DestBox := GetBox( Dep.Package.FullName );
+            if Assigned(DestBox) then
+              Panel.ConnectObjects(UBox,DestBox,'',csThinDash,asNone,asEmptyOpen);
+          end;
         end;
       end;
     end;
@@ -464,7 +867,8 @@ begin
 end;
 
 
-procedure TRtfdDiagram.UnitPackageAfterAddChild(Sender, NewChild: TModelEntity);
+procedure TRtfdDiagram.UnitPackageAfterAddChild(Sender : TModelEntity;
+  NewChild : TModelEntity);
 begin
   ErrorHandler.Trace(Format('%s : %s : %s', ['UnitPackageAfterAddChild', ClassName, Sender.Name]));
   if (NewChild is TClass) or (NewChild is TInterface) then

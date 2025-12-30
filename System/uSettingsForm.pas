@@ -26,11 +26,24 @@ interface
 
 uses
   LCLIntf, LCLType, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls;
+  StdCtrls, Spin, Grids;
 
 
 type
+
+  { TSettingsForm }
+
   TSettingsForm = class(TForm)
+    cbDotSaveWithUrls : TCheckBox;
+    eAdditionalDefines : TEdit;
+    eDotURLPrefix : TEdit;
+    GroupBox1 : TGroupBox;
+    GroupBox2 : TGroupBox;
+    Label10 : TLabel;
+    Label4 : TLabel;
+    Label5 : TLabel;
+    sgDotPrefs : TStringGrid;
+    mdgIgnoreEntites : TMemo;
     OkButton: TButton;
     DiSaveCombo: TComboBox;
     Label1: TLabel;
@@ -42,6 +55,7 @@ type
     eEditorCommandLine: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure DelphiIDECheckClick(Sender: TObject);
+    procedure Label8Click(Sender : TObject);
     procedure ShellCheckClick(Sender: TObject);
     procedure OkButtonClick(Sender: TObject);
   private
@@ -55,13 +69,17 @@ type
 
 implementation
 
-uses uIntegrator, uConfig;
+uses uIntegrator, uConfig, uViewIntegrator;
 
 {$R *.lfm}
 
 
 procedure TSettingsForm.FormCreate(Sender: TObject);
+var o : TDotPrefs;
 begin
+  sgDotPrefs.RowCount := Integer(High(TDotPrefs)) - Integer(Low(TDotPrefs)) + 2;
+  for o := Low(TDotPrefs) to High(TDotPrefs) do
+    sgDotPrefs.Cells[0, Byte(o)+1] := cDOTP2STR[o];
   ReadSettings;
   IDEChanged := False;
   ShellChanged := False;
@@ -70,6 +88,11 @@ end;
 procedure TSettingsForm.DelphiIDECheckClick(Sender: TObject);
 begin
   IDEChanged := True;
+end;
+
+procedure TSettingsForm.Label8Click(Sender : TObject);
+begin
+
 end;
 
 
@@ -85,19 +108,45 @@ begin
 end;
 
 procedure TSettingsForm.ReadSettings;
+var i : TDiagramKind;
+    o : TDotPrefs;
 begin
   DiSaveCombo.ItemIndex := integer(Config.DiSave);
   ShowAssocCheck.Checked := Config.DiShowAssoc;
   VisibilityCombo.ItemIndex := Config.DiVisibilityFilter;
   eEditorCommandLine.Text := Config.EditorCommandLine;
+  eAdditionalDefines.Text := Config.AdditionalDefines;
+
+  eDotURLPrefix.Text :=        Config.DotUrlsPrefix;
+  cbDotSaveWithUrls.Checked := Config.DotAddUrls;
+
+  for i := Low(TDiagramKind) to High(TDiagramKind) do
+  for o := Low(TDotPrefs) to High(TDotPrefs) do
+    sgDotPrefs.Cells[Byte(i)+1, Byte(o)+1] :=  Config.DotPref[i, o];
+
+  mdgIgnoreEntites.Lines.Delimiter := ';';
+  mdgIgnoreEntites.Lines.DelimitedText := Config.MDGenIgnoreEntites;
 end;
 
 procedure TSettingsForm.SaveSettings;
+var i : TDiagramKind;
+    o : TDotPrefs;
 begin
   Config.DiSave := TDiSaveSetting(DiSaveCombo.ItemIndex);
   Config.DiShowAssoc := ShowAssocCheck.Checked;
   Config.DiVisibilityFilter := VisibilityCombo.ItemIndex;
   Config.EditorCommandLine :=  eEditorCommandLine.Text;
+  Config.AdditionalDefines := eAdditionalDefines.Text;
+
+  Config.DotUrlsPrefix     := eDotURLPrefix.Text;
+  Config.DotAddUrls        := cbDotSaveWithUrls.Checked;
+
+  for i := Low(TDiagramKind) to High(TDiagramKind) do
+  for o := Low(TDotPrefs) to High(TDotPrefs) do
+    Config.DotPref[i, o] := sgDotPrefs.Cells[Byte(i)+1, Byte(o)+1];
+
+  mdgIgnoreEntites.Lines.Delimiter := ';';
+  Config.MDGenIgnoreEntites := mdgIgnoreEntites.Lines.DelimitedText;
   Config.StoreSettings;
 end;
 
