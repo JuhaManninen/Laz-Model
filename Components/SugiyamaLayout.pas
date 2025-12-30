@@ -24,16 +24,16 @@ unit SugiyamaLayout;
 
 {
   Layout according to the 'Sugiyama'-algoritm.
-
-
   Here is a good description of how it works:
-
     http://www.csi.uottawa.ca/ordal/papers/sander/main.html
 }
 
 interface
 
-uses essLayout, contnrs, Controls;
+uses
+  Classes, SysUtils, Contnrs, Math,
+  Controls,
+  essLayout, essConnectPanel;
 
 type
   TEdgeList = class;
@@ -113,13 +113,6 @@ type
 
 implementation
 
-uses Classes,
-     essConnectPanel,
-     Math,
-     SysUtils;
-
-
-
 { TSugiyamaLayout }
 
 procedure TSugiyamaLayout.Execute;
@@ -188,7 +181,6 @@ begin
     L.Free;
   end;
 end;
-
 
 
 //Writes back layout to essconnectpanel

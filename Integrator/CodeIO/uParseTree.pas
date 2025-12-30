@@ -23,7 +23,10 @@ unit uParseTree;
 {$mode objfpc}{$H+}
 
 interface
-uses  uModelEntity, Contnrs;
+
+uses
+  Classes, SysUtils, Contnrs,
+  uModelEntity;
 
 type
 
@@ -74,8 +77,8 @@ type
     property Code: string read FCode write FCode;
   end;
 
+
 implementation
-uses Classes, SysUtils;
 
 { TParseTree }
 

@@ -28,8 +28,9 @@ interface
   Iterators and filters for model navigation.
 }
 
-uses Contnrs, uModelEntity;
-
+uses
+  Classes, SysUtils, Contnrs,
+  uModelEntity;
 
 type
 
@@ -97,11 +98,8 @@ type
     function Accept(M : TModelEntity) : boolean; override;
   end;
 
+
 implementation
-
-uses Classes, SysUtils;
-
-
 
 { TModelIterator }
 

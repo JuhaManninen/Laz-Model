@@ -30,7 +30,10 @@ unit uModelEntity;
 
 interface
 
-uses Classes, Contnrs, uDocumentation;
+uses
+  Classes, Sysutils, Contnrs,
+  LCLIntf, LCLType,
+  uDocumentation;
 
 type
   TListenerMethodType = (mtBeforeChange, mtBeforeAddChild, mtBeforeRemove, mtBeforeEntityChange,
@@ -110,10 +113,11 @@ var
   CurrentSourcefilename: PString;
   CurrentSourceX: PInteger;
   CurrentSourceY: PInteger;
+
+
 implementation
 
-uses Sysutils, LCLIntf, LCLType, uListeners ;
-
+uses uListeners;
 
 { TModelEntity }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="11"/>
+    <Version Value="12"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
@@ -10,7 +10,6 @@
         <MainUnitHasTitleStatement Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <MainUnit Value="0"/>
       <Title Value="EssModel"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
@@ -18,15 +17,9 @@
     <i18n>
       <EnableI18N LFM="False"/>
     </i18n>
-    <MacroValues Count="1">
-      <Macro1 Name="LCLWidgetType" Value="gtk2"/>
-    </MacroValues>
-    <BuildModes Count="4">
-      <Item1 Name="Debug" Default="True"/>
-      <Item2 Name="Release">
-        <MacroValues Count="1">
-          <Macro1 Name="LCLWidgetType" Value="gtk2"/>
-        </MacroValues>
+    <BuildModes>
+      <Item Name="Debug" Default="True"/>
+      <Item Name="Release">
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>
@@ -55,8 +48,8 @@
             </Options>
           </Linking>
         </CompilerOptions>
-      </Item2>
-      <Item3 Name="Debug Win">
+      </Item>
+      <Item Name="Debug Win">
         <MacroValues Count="1">
           <Macro2 Name="LCLWidgetType" Value="win32"/>
         </MacroValues>
@@ -97,8 +90,8 @@
             </Options>
           </Linking>
         </CompilerOptions>
-      </Item3>
-      <Item4 Name="Release Win">
+      </Item>
+      <Item Name="Release Win">
         <MacroValues Count="1">
           <Macro2 Name="LCLWidgetType" Value="win32"/>
         </MacroValues>
@@ -130,9 +123,9 @@
             </Options>
           </Linking>
         </CompilerOptions>
-      </Item4>
+      </Item>
       <SharedMatrixOptions Count="2">
-        <Item1 ID="136284461055" Modes="Debug,Release" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
+        <Item1 ID="136284461055" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
         <Item2 ID="811002104120" Modes="Release Win,Debug Win" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
       </SharedMatrixOptions>
     </BuildModes>
@@ -141,219 +134,219 @@
     </PublishOptions>
     <RunParams>
       <FormatVersion Value="2"/>
-      <Modes Count="1">
-        <Mode0 Name="default"/>
+      <Modes>
+        <Mode Name="default"/>
       </Modes>
     </RunParams>
-    <RequiredPackages Count="1">
-      <Item1>
+    <RequiredPackages>
+      <Item>
         <PackageName Value="LCL"/>
-      </Item1>
+      </Item>
     </RequiredPackages>
-    <Units Count="45">
-      <Unit0>
+    <Units>
+      <Unit>
         <Filename Value="EssModel.lpr"/>
         <IsPartOfProject Value="True"/>
-      </Unit0>
-      <Unit1>
+      </Unit>
+      <Unit>
         <Filename Value="System\uMainForm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit1>
-      <Unit2>
+      </Unit>
+      <Unit>
         <Filename Value="System\uMainModule.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MainModule"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-      </Unit2>
-      <Unit3>
+      </Unit>
+      <Unit>
         <Filename Value="Model\uListeners.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit3>
-      <Unit4>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\uIntegrator.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit4>
-      <Unit5>
+      </Unit>
+      <Unit>
         <Filename Value="Model\uModel.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit5>
-      <Unit6>
+      </Unit>
+      <Unit>
         <Filename Value="CodeProvider\uCodeProvider.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit6>
-      <Unit7>
+      </Unit>
+      <Unit>
         <Filename Value="CodeProvider\uFileProvider.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit7>
-      <Unit8>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\CodeIO\uCodeParser.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit8>
-      <Unit9>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\Code\uCodeIntegrator.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit9>
-      <Unit10>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\View\uViewIntegrator.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit10>
-      <Unit11>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\View\RtfdDiagram\uRtfdComponents.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit11>
-      <Unit12>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\View\RtfdDiagram\uRtfdDiagram.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit12>
-      <Unit13>
+      </Unit>
+      <Unit>
         <Filename Value="System\uError.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit13>
-      <Unit14>
+      </Unit>
+      <Unit>
         <Filename Value="System\uUseful.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit14>
-      <Unit15>
+      </Unit>
+      <Unit>
         <Filename Value="Model\uModelEntity.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit15>
-      <Unit16>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\CodeIO\uParseTree.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit16>
-      <Unit17>
+      </Unit>
+      <Unit>
         <Filename Value="System\uConfig.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit17>
-      <Unit18>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\View\uDiagramFrame.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="DiagramFrame"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
-      </Unit18>
-      <Unit19>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\View\RtfdDiagram\uRtfdDiagramFrame.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit19>
-      <Unit20>
+      </Unit>
+      <Unit>
         <Filename Value="Model\uIterators.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit20>
-      <Unit21>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\Doc\uDocGen.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit21>
-      <Unit22>
+      </Unit>
+      <Unit>
         <Filename Value="Model\uDocumentation.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit22>
-      <Unit23>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\CodeIO\JavaClass\uJavaClassImport.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit23>
-      <Unit24>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\CodeIO\JavaClass\uJavaClass.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit24>
-      <Unit25>
+      </Unit>
+      <Unit>
         <Filename Value="Components\essConnectPanel.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit25>
-      <Unit26>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\Export\uXmiExport.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit26>
-      <Unit27>
+      </Unit>
+      <Unit>
         <Filename Value="Components\essLayout.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit27>
-      <Unit28>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\Doc\uHtmlDocGen.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit28>
-      <Unit29>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\CodeIO\uJavaParser.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit29>
-      <Unit30>
+      </Unit>
+      <Unit>
         <Filename Value="Components\SugiyamaLayout.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit30>
-      <Unit31>
+      </Unit>
+      <Unit>
         <Filename Value="System\uConst.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit31>
-      <Unit32>
+      </Unit>
+      <Unit>
         <Filename Value="System\uAboutForm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AboutForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit32>
-      <Unit33>
+      </Unit>
+      <Unit>
         <Filename Value="System\uSettingsForm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="SettingsForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit33>
-      <Unit34>
+      </Unit>
+      <Unit>
         <Filename Value="System\uFeedback.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit34>
-      <Unit35>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\View\uTreeViewFrame.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="TreeViewFrame"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
-      </Unit35>
-      <Unit36>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\View\uTreeViewIntegrator.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit36>
-      <Unit37>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\Export\uXmiExportArgoUML.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit37>
-      <Unit38>
+      </Unit>
+      <Unit>
         <Filename Value="System\uZoomFrame.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="ZoomFrame"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
-      </Unit38>
-      <Unit39>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\Export\uEmxExport.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit39>
-      <Unit40>
+      </Unit>
+      <Unit>
         <Filename Value="EssModelReadme.txt"/>
         <IsPartOfProject Value="True"/>
-      </Unit40>
-      <Unit41>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\CodeIO\ufpcParser.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit41>
-      <Unit42>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\Code\Delphi\ufpcIntegrator.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit42>
-      <Unit43>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\View\RtfdDiagram\uRtfdLabel.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit43>
-      <Unit44>
+      </Unit>
+      <Unit>
         <Filename Value="Integrator\Doc\umdocgen.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uMDocGen"/>
-      </Unit44>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -384,6 +377,7 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
+        <DebugInfoType Value="dsDwarf3"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>
@@ -394,16 +388,16 @@
     </Linking>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="3">
-      <Item1>
+    <Exceptions>
+      <Item>
         <Name Value="EAbort"/>
-      </Item1>
-      <Item2>
+      </Item>
+      <Item>
         <Name Value="ECodetoolError"/>
-      </Item2>
-      <Item3>
+      </Item>
+      <Item>
         <Name Value="EFOpenError"/>
-      </Item3>
+      </Item>
     </Exceptions>
   </Debugging>
 </CONFIG>

@@ -23,7 +23,8 @@ unit uFeedback;
 {$mode objfpc}{$H+}
 
 interface
-uses classes, extctrls;
+
+uses Classes, SysUtils, ExtCtrls;
 
 type
   IEldeanFeedback = interface(IUnknown)
@@ -48,9 +49,6 @@ var
 
 
 implementation
-
-
-uses SysUtils;
 
 { TGuiFeedback }
 

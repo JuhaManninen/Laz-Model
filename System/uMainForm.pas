@@ -26,8 +26,9 @@ interface
 
 
 uses
-  LCLIntf, LCLType, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, Menus, uMainModule,  Buttons;
+  SysUtils, Math,
+  LCLIntf, Graphics, Controls, Forms, Dialogs, ExtCtrls, Menus, Buttons,
+  uMainModule, uConst;
 
 type
 
@@ -79,8 +80,6 @@ var
   MainForm: TMainForm;
 
 implementation
-
-uses uConst, Math;
 
 {$R *.lfm}
 

@@ -32,7 +32,10 @@ unit uXmiExportArgoUML;
 
 interface
 
-uses uIntegrator, uModelEntity, Classes, uModel, uFeedback;
+uses
+  Classes, SysUtils,
+  Dialogs,
+  uIntegrator, uModelEntity, uModel, uFeedback, uConst;
 
 type
 
@@ -84,7 +87,6 @@ type
 
 
 implementation
-uses SysUtils, Dialogs, uConst;
 
 const
   Core = 'Foundation.Core.';

@@ -24,11 +24,11 @@ unit uRtfdDiagram;
 
 interface
 
-uses uViewIntegrator, essConnectPanel, uModelEntity, uModel, Controls, uListeners, Graphics,
-  Classes, Forms, uDiagramFrame, uRtfdComponents, uFeedback,
- { Windows, }
-   Types;
-
+uses
+  Types, Classes, SysUtils, IniFiles, Contnrs, Math,
+  LCLIntf, LCLType, Controls, Graphics, Forms, Dialogs, ExtCtrls,
+  uViewIntegrator, essConnectPanel, uModelEntity, uModel, uListeners, uConfig,
+  uRtfdComponents, uDiagramFrame, uFeedback, uError, uIterators, essLayout;
 
 type
 
@@ -92,12 +92,10 @@ type
     procedure ScreenCenterEntity(E : TModelEntity); override;
   end;
 
+
 implementation
 
-uses uRtfdDiagramFrame, Math, LCLIntf, LCLType, uError, SysUtils,
-  uIterators, IniFiles, Dialogs, essLayout, uConfig, contnrs, ExtCtrls,
-  uIntegrator;
-
+uses uRtfdDiagramFrame;
 
 { TRtfdDiagram }
 

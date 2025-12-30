@@ -24,7 +24,9 @@ unit uJavaClassImport;
 
 interface
 
-uses uCodeParser, Classes, uModel, uIntegrator, uModelEntity, uCodeProvider;
+uses
+  Classes, SysUtils,
+  uCodeParser, uModel, uIntegrator, uModelEntity, uJavaClass, uError;
 
 type
 
@@ -42,8 +44,6 @@ type
 
 implementation
 
-uses uJavaClass, SysUtils, uError;
-
 type
   TJavaClassParser = class(TCodeParser)
   private
@@ -58,7 +58,6 @@ type
   end;
 
 { TJavaClassImporter }
-
 
 procedure TJavaClassImporter.ImportOneFile(const FileName : string);
 var
@@ -256,7 +255,6 @@ begin
   else
     Result := Copy(CName,I+1,255);
 end;
-
 
 function TJavaClassParser.NeedClassifier(CName: string; TheClass : TModelEntityClass = nil): TClassifier;
 var

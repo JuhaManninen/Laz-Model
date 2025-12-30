@@ -24,7 +24,10 @@ unit uJavaParser;
 
 interface
 
-uses Classes, uCodeParser, uModel, uModelEntity, uIntegrator, uCodeProvider, Types;
+uses
+  Classes, Types, SysUtils,
+  LCLIntf, LCLType, Dialogs,
+  uCodeParser, uModel, uModelEntity, uIntegrator;
 
 type
   TJavaImporter = class(TImportIntegrator)
@@ -34,7 +37,6 @@ type
     procedure ImportOneFile(const FileName : string); override;
     class function GetFileExtensions : TStringList; override;
   end;
-
 
   TJavaParser = class(TCodeParser)
   private
@@ -81,9 +83,8 @@ type
     property Filename: String read FFilename write FFilename;
   end;
 
-implementation
 
-uses LCLIntf, LCLType, Dialogs, SysUtils, uError;
+implementation
 
 function ExtractPackageName(const CName: string): string;
 var

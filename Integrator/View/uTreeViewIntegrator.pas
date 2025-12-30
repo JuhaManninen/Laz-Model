@@ -24,9 +24,11 @@ unit uTreeViewIntegrator;
 
 interface
 
-uses SysUtils, uViewIntegrator, uTreeViewFrame, uModel, Controls, uFeedback,
-  ComCtrls, uModelEntity, uListeners;
-
+uses
+  SysUtils, Classes, Contnrs,
+  Controls, ComCtrls,
+  uViewIntegrator, uTreeViewFrame, uModel, uFeedback, uModelEntity, uListeners,
+  uIterators;
 
 type
   TTreeViewIntegrator = class(TViewIntegrator, IAfterObjectModelListener)
@@ -66,7 +68,6 @@ type
   end;
 
 implementation
-uses uIntegrator, uIterators, Classes, Contnrs;
 
 const
   ALL_CLASSES_TEXT: string = 'All classes';

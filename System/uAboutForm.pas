@@ -25,9 +25,8 @@ unit uAboutForm;
 interface
 
 uses
-  LCLIntf, LCLType, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, StdCtrls;
-
+  Forms, Dialogs, ExtCtrls, StdCtrls,
+  uConst;
 
 type
   TAboutForm = class(TForm)
@@ -47,11 +46,10 @@ type
 
   end;
 
+
 implementation
 
 {$R *.lfm}
-
-uses uConst, uConfig;
 
 procedure TAboutForm.FormActivate(Sender: TObject);
 begin

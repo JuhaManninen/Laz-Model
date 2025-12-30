@@ -24,7 +24,10 @@ unit uHtmlDocGen;
 
 interface
 
-uses uDocGen, uModel, uModelEntity, uXmiExport;
+uses
+  Classes, SysUtils,
+  Forms, Graphics, LCLIntf, LCLType, Dialogs,
+  uDocGen, uModel, uModelEntity, uXmiExport, uViewIntegrator;
 
 type
   //Html documentation generator
@@ -42,13 +45,8 @@ type
     destructor Destroy; override;
   end;
 
+
 implementation
-
-uses Forms, SysUtils, Graphics,
-  LCLIntf, LCLType, {ComObj,}
-  uConfig, Classes, Dialogs, uViewIntegrator;
-
-
 
 {$IFDEF false}
 function MakeDOM : variant;
@@ -81,7 +79,6 @@ begin
 { TODO : linux xsl-processor }
 end;
 {$ENDIF}
-
 
 
 { THtmlDocGen }

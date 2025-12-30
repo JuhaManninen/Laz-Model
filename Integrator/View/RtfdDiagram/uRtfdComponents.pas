@@ -23,9 +23,12 @@ unit uRtfdComponents;
 {$mode objfpc}{$H+}
 
 interface
-uses LCLIntf, LCLType,
-  ExtCtrls, Classes, uModel, uModelEntity, Controls, uListeners,
-  uViewIntegrator, uDiagramFrame, uRtfdLabel;
+
+uses
+  Classes, SysUtils, Math,
+  LCLIntf, LCLType, ExtCtrls, Controls, Graphics,
+  uModel, uModelEntity, uListeners, uViewIntegrator, uDiagramFrame, uRtfdLabel,
+  essConnectPanel, uIterators, uConfig;
 
 type
 
@@ -179,13 +182,10 @@ type
     procedure IAfterUnitPackageListener.EntityChange = EntityChange;
   end;
 
+
 implementation
 
-uses Graphics, uError, SysUtils, essConnectPanel, uIterators,
-uConfig, uRtfdDiagramFrame, Math;
-
-
-
+uses uRtfdDiagramFrame;
 
 { TRtfdCustomLabel }
 

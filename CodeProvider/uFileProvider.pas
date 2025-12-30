@@ -23,10 +23,11 @@ unit uFileProvider;
 {$mode objfpc}{$H+}
 
 interface
-uses Classes, uCodeProvider;
+
+uses
+  Classes, SysUtils, uCodeProvider;
 
 type
-
   {
     Implementation of a TCodeProvider using the physical filesystem.
   }
@@ -40,9 +41,8 @@ type
     function LocateFile(const AName: string): string; override;
   end;
 
-implementation
 
-uses SysUtils, uConfig;
+implementation
 
 { TFileProvider }
 

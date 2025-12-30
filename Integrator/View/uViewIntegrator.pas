@@ -24,8 +24,10 @@ unit uViewIntegrator;
 
 interface
 
-uses uIntegrator, uModel, uModelEntity, Controls, Graphics,
-      IniFiles, Classes, uFeedback, Contnrs, Types;
+uses
+  Classes, SysUtils, Contnrs, Types, IniFiles, Math,
+  Controls, Graphics, Forms,
+  uFeedback, uIntegrator, uModel, uModelEntity;
 
 type
 
@@ -101,9 +103,10 @@ type
 
   procedure SetCurrentEntity(Value : TModelEntity);
 
+
 implementation
 
-uses uRtfdDiagram, SysUtils, Forms,  math, uConfig;
+uses uRtfdDiagram, uConfig;
 
 var
   _CurrentEntity : TModelEntity = nil;

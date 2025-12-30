@@ -24,7 +24,6 @@ unit uConst;
 
 interface
 
-
 const
   ProgName = 'Eldean ESS-Model';
   ProgVersion = '2.2';

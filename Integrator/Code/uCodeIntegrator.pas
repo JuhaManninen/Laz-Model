@@ -23,7 +23,9 @@ unit uCodeIntegrator;
 {$mode objfpc}{$H+}
 
 interface
-uses uIntegrator, uCodeProvider;
+
+uses
+  uIntegrator, uCodeProvider;
 
 type
   {
@@ -37,8 +39,8 @@ type
     property CodeProvider: TCodeProvider read FCodeProvider write SetCodeProvider;
   end;
 
-implementation
 
+implementation
 
 procedure TCodeIntegrator.SetCodeProvider(const Value: TCodeProvider);
 begin
@@ -47,10 +49,8 @@ begin
     FCodeProvider.Free;
     FCodeProvider := nil;
   end;
-
   FCodeProvider := Value;
 end;
-
 
 end.
 

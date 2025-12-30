@@ -26,9 +26,14 @@ interface
 
 
 uses
-  LCLIntf, LCLType,  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  uModel, uIntegrator, ufpcIntegrator, ActnList, uViewIntegrator,
-  {$IFDEF DRAG_SUPPORT}DropSource, DropTarget, {$ENDIF}Menus, uFeedback, uTreeViewIntegrator,ExtCtrls;
+  SysUtils, Classes, Contnrs,
+  LCLIntf, LCLType, Graphics, Controls, Forms, Dialogs, ActnList, Menus, ExtCtrls,
+  Clipbrd, Printers,
+  {$IFDEF DRAG_SUPPORT}DropSource, DropTarget, {$ENDIF}
+  uFeedback, uTreeViewIntegrator, uModel, uIntegrator, ufpcIntegrator, uViewIntegrator,
+  uFileProvider, uDocGen, uConfig, uJavaClassImport, uJavaParser,
+  {$IFDEF ARGO_XMI}uXmiExportArgoUML, {$ELSE}uXmiExport, {$ENDIF}
+  uConst, uError, uAboutForm, uSettingsForm, uZoomFrame, uEmxExport;
 
 type
 
@@ -106,25 +111,9 @@ var
 
 implementation
 
-uses uMainForm,
-  Clipbrd,
-  Printers,
-  uFileProvider,
-  uDocGen,
-  uConfig,
-  uJavaClassImport,
-  uJavaParser,
-  {$IFDEF ARGO_XMI}uXmiExportArgoUML, {$ELSE}uXmiExport, {$ENDIF}
-  uConst,
-  uError,
-  Contnrs,
-  uAboutForm,
-  uSettingsForm,
-  uZoomFrame,
-  uEmxExport;
+uses uMainForm;
 
 {$R *.lfm}
-
 
 procedure TMainModule.DataModuleCreate(Sender: TObject);
 begin

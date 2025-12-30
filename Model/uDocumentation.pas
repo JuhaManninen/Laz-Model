@@ -24,6 +24,8 @@ unit uDocumentation;
 
 interface
 
+uses SysUtils;
+
 type
   //Instance of this class is a member of TModelEntity
   TDocumentation = class
@@ -37,8 +39,6 @@ type
   end;
 
 implementation
-
-uses SysUtils;
 
 { TDocumentation }
 

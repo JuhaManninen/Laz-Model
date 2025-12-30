@@ -26,10 +26,10 @@ interface
 
 
 uses
-  LCLIntf, LCLType, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ActnList, Menus, uViewIntegrator, StdCtrls, ExtCtrls, uListeners, uModelEntity,
-  uModel, Buttons;
-
+  SysUtils, Classes,
+  LCLIntf, LCLType, Messages, Buttons, Graphics, Controls, Forms, Dialogs,
+  ActnList, Menus, StdCtrls, ExtCtrls,
+  uViewIntegrator, uListeners, uModelEntity, uModel;
 
 //const
 //  WM_ChangePackage = WM_USER + 1;
@@ -91,13 +91,9 @@ diagramframe
     OnUpdateToolbar event
 }
 
-
 implementation
 
-uses uError;
-
 {$R *.lfm}
-
 
 type
   TScrollBoxWithNotify = class(TScrollBox)
@@ -107,8 +103,6 @@ type
   public
     constructor Create(AOwner: TComponent); override;
   end;
-
-
 
 { TDiagramFrame }
 
@@ -131,7 +125,6 @@ begin
     Model.RemoveListener(IAfterObjectModelListener(Self));
   inherited;
 end;
-
 
 procedure TDiagramFrame.OnUpdateToolbar(Sender: TObject);
 const
@@ -188,10 +181,7 @@ begin
   Diagram.HideSelectedDiagramElements;
 end;
 
-
-
 { TScrollBoxWithNotify }
-
 
 constructor TScrollBoxWithNotify.Create(AOwner: TComponent);
 begin

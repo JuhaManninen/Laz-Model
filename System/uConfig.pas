@@ -25,7 +25,9 @@ unit uConfig;
 interface
 
 uses
-  Classes, IniFiles, uViewIntegrator;
+  Classes, SysUtils, IniFiles,
+  Forms, LResources,
+  uViewIntegrator;
 
 type
   //Save changed diagram layout setting
@@ -101,17 +103,13 @@ var
 
 implementation
 
-uses
-  Forms, SysUtils, LResources;
-
 const
   cSettings = 'Settings';
   cDotDefaults : Array [TDiagramKind, TDotPrefs] of String = (
   ('BT', '0.75', '0.25', '12', 'sans', '_', 'true', 'false'),
   ('LR', '1.25', '0.25', '12', 'courier', 'e', 'ortho', 'true'));
 
-function TConfig.GetDotPref(DiaKind : TDiagramKind; DotOpt : TDotPrefs
-  ) : String;
+function TConfig.GetDotPref(DiaKind : TDiagramKind; DotOpt : TDotPrefs) : String;
 begin
   Result := FDotPrefs[DiaKind, DotOpt];
 end;
@@ -149,8 +147,7 @@ begin
   for i := Low(TDiagramKind) to high(TDiagramKind) do
   for o := Low(TDotPrefs) to high(TDotPrefs) do
   begin
-    FDotPrefs[i, o] := ReadStr('DotPref'+cDIA2STR[i]+cDOTP2STR[o],
-                                  cDotDefaults[i, o]);
+    FDotPrefs[i, o] := ReadStr('DotPref'+cDIA2STR[i]+cDOTP2STR[o], cDotDefaults[i, o]);
   end;
 
   FMDGenIgnoreEntites := ReadStr('MDGenIgnoreEntites', '');

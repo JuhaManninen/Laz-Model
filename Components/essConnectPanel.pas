@@ -25,10 +25,9 @@ unit essConnectPanel;
 interface
 
 uses
-
-  LCLIntf, LCLType, {windows,} Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls,Contnrs, uViewIntegrator;
-
+  SysUtils, Classes, Contnrs, Math,
+  LCLIntf, LCLType, Messages, Graphics, Controls, Forms, Dialogs, ExtCtrls,
+  uViewIntegrator;
 
 type
   // Available linestyles
@@ -48,7 +47,6 @@ type
     ArrowToStyle : TessConnectionArrowStyle;
     ArrowFromStyle : TessConnectionArrowStyle;
   end;
-
 
   {
     Wrapper around a control managed by essConnectPanel
@@ -221,8 +219,10 @@ type
 
 procedure Register;
 
+
 implementation
-uses Math, uRtfdComponents, uConfig;
+
+uses uRtfdComponents;
 
 type
   TCrackControl = class(TControl) end;
@@ -231,7 +231,6 @@ procedure Register;
 begin
   RegisterComponents('Eldean', [TessConnectPanel]);
 end;
-
 
 
 procedure DrawArrow(Canvas:TCanvas; pfrom, pto: TPoint; ArrowStyle : TessConnectionArrowStyle);
@@ -483,7 +482,6 @@ begin
   inherited CreateParams(Params);
 //  Params.Style := Params.Style and (not WS_CLIPCHILDREN);
 end;
-
 
 
 destructor TessConnectPanel.Destroy;

@@ -25,9 +25,9 @@ unit uSettingsForm;
 interface
 
 uses
-  LCLIntf, LCLType, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, Spin, Grids;
-
+  SysUtils,
+  LCLType, Controls, Forms, Dialogs, StdCtrls, Grids,
+  uConfig, uViewIntegrator;
 
 type
 
@@ -68,10 +68,7 @@ type
 
 implementation
 
-uses uIntegrator, uConfig, uViewIntegrator;
-
 {$R *.lfm}
-
 
 procedure TSettingsForm.FormCreate(Sender: TObject);
 var o : TDotPrefs;

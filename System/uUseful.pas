@@ -24,8 +24,8 @@ unit uUseful;
 
 interface
 
-
-uses Classes, SysUtils, Forms, LCLIntf, LCLType, Controls, ComCtrls ;
+uses
+  Classes, SysUtils, Forms, LCLIntf, LCLType, Controls, ComCtrls ;
 
 type
   IEldeanProgress = interface(IUnknown)

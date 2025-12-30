@@ -28,7 +28,10 @@ unit uXmiExport;
 
 interface
 
-uses uIntegrator, uModelEntity, Classes, uModel, uFeedback;
+uses
+  Classes, SysUtils,
+  Dialogs,
+  uIntegrator, uModelEntity, uModel, uFeedback, uConst;
 
 type
   TXMIExporter = class(TExportIntegrator)
@@ -66,8 +69,6 @@ type
   end;
 
 implementation
-
-uses SysUtils, Dialogs, uConst;
 
 const
   Core = 'Foundation.Core.';

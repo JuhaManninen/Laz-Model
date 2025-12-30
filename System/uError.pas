@@ -30,9 +30,8 @@ unit uError;
 interface
 
 {$IFNDEF Release}
-uses SysUtils, Forms, StdCtrls;
+uses SysUtils, LCLIntf, LCLType, Controls, Forms, StdCtrls;
 {$ENDIF}
-
 
 type
   TTraceMode = (trOff, trShowWindow);
@@ -56,11 +55,6 @@ var
 
 
 implementation
-
-{$IFNDEF Release}
-uses LCLIntf, LCLType, Controls;
-{$ENDIF}
-
 
 {-------------------}
 { ErrorHandler }

@@ -2,12 +2,12 @@ unit uRtfdLabel;
 
 {$mode objfpc}{$H+}
 
-
 interface
-uses LCLIntf, LCLType,
-  ExtCtrls, Classes, Graphics, uModel, uModelEntity, Controls, uListeners,
-  uConfig;
 
+uses
+  Classes,
+  LCLIntf, LCLType, Controls, ExtCtrls, Graphics,
+  uModelEntity, uListeners, uConfig;
 
 const
   ClassShadowWidth = 3;
@@ -22,9 +22,7 @@ const
 var
   TopColor : array[boolean] of TColor = ($EAF4F8, clWhite);
 
-
 type
-
 {
   This label will be given it's Top at create
   Left will be global EnitiyLeftMargin
@@ -48,9 +46,7 @@ private
   procedure SetAlignment(const Value: TAlignment);
   procedure SetTransparent(const Value: Boolean);
   procedure SetWantedBounds;
-
 protected
-
   FBox: TRect;
   Entity: TModelEntity;
 
@@ -79,8 +75,6 @@ end;
 
 implementation
 
-
-
 { TRtfdODLabel }
 
 function TRtfdODLabel.GetAlignment: TAlignment;
@@ -105,7 +99,6 @@ begin
     FOwner.Invalidate;
   end;
 end;
-
 
 procedure TRtfdODLabel.SetWantedBounds;
 var
@@ -133,7 +126,6 @@ begin
   FBox.Right := Rect.Right;
 
 end;
-
 
 procedure TRtfdODLabel.Paint(width: integer);
 begin
@@ -226,12 +218,10 @@ begin
    // stub
 end;
 
-
 procedure TRtfdODLabel.EntityChange(Sender: TModelEntity);
 begin
   // fOwner.Invalidate;
 end;
-
 
 function TRtfdODLabel.WidthNeeded: integer;
 begin

@@ -28,7 +28,9 @@ unit uModel;
 
 interface
 
-uses Contnrs, Classes, uListeners, uModelEntity, uIterators;
+uses
+  Classes, SysUtils, Contnrs,
+  uListeners, uModelEntity, uIterators, uError;
 
 const
 {$IFDEF LINUX}
@@ -232,7 +234,6 @@ type
     function FindOperation(O : TOperation) : TOperation;
   end;
 
-
   TAbstractPackage = class(TModelEntity)
   private
     ConfigFile : string;
@@ -273,7 +274,6 @@ type
     function GetUnitDependencies : IModelIterator;
   end;
 
-
   TLogicPackage = class(TAbstractPackage)
   private
     FPackages: TObjectList;
@@ -293,15 +293,11 @@ type
 
   function AllClassesPackage : TAbstractPackage;
 
+
 implementation
 
-uses SysUtils, uError;
-
-
 Var
-
-_AllClassesPackage : TAbstractPackage = nil;
-
+  _AllClassesPackage : TAbstractPackage = nil;
 
 type
   //Used by Class.GetDescendant

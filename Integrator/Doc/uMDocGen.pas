@@ -5,7 +5,9 @@ unit uMDocGen;
 interface
 
 uses
-  uDocGen, uModel, uModelEntity, uXmiExport;
+  SysUtils,
+  LCLIntf, LCLType, Forms, Graphics,
+  uDocGen, uModel, uModelEntity, uConfig, Classes, uViewIntegrator;
 
 type
   //MARKDOWN documentation generator
@@ -29,11 +31,8 @@ type
     destructor Destroy; override;
   end;
 
-implementation
 
-uses Forms, SysUtils, Graphics,
-  LCLIntf, LCLType, {ComObj,}
-  uConfig, Classes, Dialogs, uViewIntegrator;
+implementation
 
 const OverviewPackage = 'Overview';
 

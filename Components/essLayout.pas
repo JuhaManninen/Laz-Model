@@ -24,7 +24,10 @@ unit essLayout;
 
 interface
 
-uses essConnectPanel;
+uses
+  Classes,
+  Controls, ExtCtrls,
+  essConnectPanel;
 
 type
   TEssLayout = class
@@ -36,9 +39,10 @@ type
     class function CreateLayout(APanel : TEssConnectPanel) : TEssLayout;
   end;
 
+
 implementation
 
-uses Controls, ExtCtrls, SugiyamaLayout, Classes;
+uses SugiyamaLayout;
 
 type
   TSimpleLayout = class(TEssLayout)

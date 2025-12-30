@@ -24,7 +24,7 @@ unit uCodeProvider;
 
 interface
 
-uses Classes, uFeedback;
+uses Classes, SysUtils, uFeedback, uConst;
 
 type
   { Enum specifying the reason OnCodeChange was called.}
@@ -75,8 +75,6 @@ type
 
 
 implementation
-
-uses SysUtils, uConst;
 
 { TCodeProvider }
 
