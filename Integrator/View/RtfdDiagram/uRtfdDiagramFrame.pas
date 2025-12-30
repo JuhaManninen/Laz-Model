@@ -37,9 +37,8 @@ type
     VisProtectedImage: TImage;
     procedure OpenSelectedPackageActionExecute(Sender: TObject);
   private
-    { Private declarations }
+
   public
-    { Public declarations }
     constructor Create(AOwner: TComponent; ADiagram: TRtfdDiagram); reintroduce;
   end;
 
@@ -48,8 +47,6 @@ implementation
 uses uError;
 
 {$R *.lfm}
-
-
 
 { TRtfdDiagramFrame }
 

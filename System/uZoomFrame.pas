@@ -39,14 +39,12 @@ type
       Y: Integer);
     procedure FrameResize(Sender: TObject);
   private
-    { Private declarations }
     Diagram : TDiagramIntegrator;
     procedure OnUpdateZoom(Sender : TObject);
     procedure SyncScroll(X,Y : integer);
     procedure RedrawZoom;
   public
     constructor Create(AOwner: TComponent; ADiagram : TDiagramIntegrator); reintroduce;
-    { Public declarations }
   end;
 
 implementation

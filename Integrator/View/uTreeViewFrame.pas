@@ -34,9 +34,9 @@ type
     ilTreeImages: TImageList;
     procedure tvModelDblClick(Sender: TObject);
   private
-    { Private declarations }
+
   public
-    { Public declarations }
+
   end;
 
 implementation

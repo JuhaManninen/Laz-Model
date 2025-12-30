@@ -42,9 +42,9 @@ type
     Label1: TLabel;
     procedure FormActivate(Sender: TObject);
   private
-    { Private declarations }
+
   public
-    { Public declarations }
+
   end;
 
 implementation

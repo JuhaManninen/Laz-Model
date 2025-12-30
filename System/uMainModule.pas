@@ -74,7 +74,6 @@ type
     procedure OpenFolderActionExecute(Sender: TObject);
     procedure ExportEmxActionExecute(Sender: TObject);
   private
-    { Private declarations }
     FModel: TObjectModel;
     FDiagram: TDiagramIntegrator;
     OpenDlg : TOpenDialog;
@@ -96,7 +95,6 @@ type
     //property BackEnd: TCodeIntegrator read FBackEnd;
     property Diagram: TDiagramIntegrator read FDiagram;
   public
-    { Public declarations }
     procedure LoadProject(FileNames : TStrings); overload;
     procedure LoadProject(FileName : string); overload;
 

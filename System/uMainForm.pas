@@ -70,10 +70,9 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
     Created : boolean;
   public
-    { Public declarations }
+
   end;
 
 var
@@ -84,7 +83,6 @@ implementation
 uses uConst, Math;
 
 {$R *.lfm}
-
 
 procedure TMainForm.FormClose(Sender: TObject; var aAction: TCloseAction);
 begin

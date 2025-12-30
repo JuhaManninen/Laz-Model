@@ -55,7 +55,6 @@ type
     procedure HideDiagramElementActionExecute(Sender: TObject);
     procedure ConnectionsComboChange(Sender: TObject);
   private
-    { Private declarations }
     Bypass : boolean;
     //Model listener
     procedure ModelBeforeChange(Sender: TModelEntity);
@@ -64,9 +63,7 @@ type
     procedure IAfterObjectModelListener.Change = ModelAfterChange;
   protected
   public
-    { Public declarations }
 //    procedure PackageChange(var M: TMessage); message WM_ChangePackage;
-
     constructor Create(AOwner: TComponent; Model : TObjectModel); reintroduce;
     destructor Destroy; override;
     procedure OnUpdateToolbar(Sender : TObject);
